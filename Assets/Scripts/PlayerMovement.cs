@@ -6,7 +6,10 @@ using UnityEngine.SceneManagement;
 public class PlayerMovement : MonoBehaviour
 {
     private const string MainSceneName = "Main";
+    private const string BuildingSceneName = "Building";
     private const string RoadSceneName = "Road";
+    private const string DrainSceneName = "Drain";
+    private const string ArtificialRiverSceneName = "ArtificialRiver";
     private const string ExitObjectName = "Next";
     private const string GroundObjectName = "Ground";
 
@@ -69,7 +72,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (WasInteractPressed() && CanInteractWithExit())
         {
-            LoadRoadScene();
+            LoadExitScene();
         }
 
         UpdateFacingDirection();
@@ -228,24 +231,53 @@ public class PlayerMovement : MonoBehaviour
     private bool IsExitCollider(Collider2D other)
     {
         return other != null
-            && SceneManager.GetActiveScene().name == MainSceneName
-            && other.gameObject.name == ExitObjectName;
+            && other.gameObject.name == ExitObjectName
+            && TryGetExitSceneName(SceneManager.GetActiveScene().name, out _);
     }
 
     private bool CanInteractWithExit()
     {
-        return exitColliders.Count > 0 && SceneManager.GetActiveScene().name == MainSceneName;
+        return exitColliders.Count > 0
+            && TryGetExitSceneName(SceneManager.GetActiveScene().name, out _);
     }
 
-    private void LoadRoadScene()
+    private void LoadExitScene()
     {
-        SceneManager.LoadScene(RoadSceneName);
+        if (TryGetExitSceneName(SceneManager.GetActiveScene().name, out string nextSceneName))
+        {
+            SceneManager.LoadScene(nextSceneName);
+        }
     }
 
     private void ConfigureMovementMode()
     {
-        isTopDownScene = SceneManager.GetActiveScene().name == RoadSceneName;
+        isTopDownScene = IsTopDownScene(SceneManager.GetActiveScene().name);
         rb.gravityScale = isTopDownScene ? 0f : baseGravityScale;
+    }
+
+    private bool TryGetExitSceneName(string currentSceneName, out string nextSceneName)
+    {
+        switch (currentSceneName)
+        {
+            case MainSceneName:
+            case BuildingSceneName:
+                nextSceneName = RoadSceneName;
+                return true;
+            case RoadSceneName:
+                nextSceneName = DrainSceneName;
+                return true;
+            case DrainSceneName:
+                nextSceneName = ArtificialRiverSceneName;
+                return true;
+            default:
+                nextSceneName = string.Empty;
+                return false;
+        }
+    }
+
+    private bool IsTopDownScene(string sceneName)
+    {
+        return sceneName == RoadSceneName;
     }
 
     private void CacheMovementBounds()
