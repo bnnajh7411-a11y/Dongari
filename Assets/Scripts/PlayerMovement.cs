@@ -10,8 +10,10 @@ public class PlayerMovement : MonoBehaviour
     private const string RoadSceneName = "Road";
     private const string DrainSceneName = "Drain";
     private const string ArtificialRiverSceneName = "ArtificialRiver";
+    private const string MountainSceneName = "Mountain";
     private const string ExitObjectName = "Next";
     private const string GroundObjectName = "Ground";
+    private const string WaterObjectName = "Water";
 
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 5f;
@@ -22,6 +24,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField, Min(1f)] private float riseGravityMultiplier = 1.2f;
     [SerializeField, Min(1f)] private float fallGravityMultiplier = 2.4f;
     [SerializeField, Min(0f)] private float maxFallSpeed = 20f;
+
+    [Header("Water")]
+    [SerializeField, Min(0f)] private float waterSinkSpeed = 2.5f;
+    [SerializeField, Min(0f)] private float waterRiseSpeed = 4f;
 
     private const float FacingThreshold = 0.01f;
     private const float GroundNormalThreshold = 0.5f;
@@ -35,12 +41,14 @@ public class PlayerMovement : MonoBehaviour
     private bool isRunning;
     private bool isGrounded;
     private bool isTopDownScene;
+    private bool isWaterScene;
     private bool hasMovementBounds;
     private bool jumpRequested;
     private Vector3 defaultScale;
     private Bounds movementBounds;
     private readonly HashSet<Collider2D> groundColliders = new HashSet<Collider2D>();
     private readonly HashSet<Collider2D> exitColliders = new HashSet<Collider2D>();
+    private readonly HashSet<Collider2D> waterColliders = new HashSet<Collider2D>();
 
     protected virtual void Awake()
     {
@@ -62,10 +70,10 @@ public class PlayerMovement : MonoBehaviour
     protected virtual void Update()
     {
         horizontalInput = ReadHorizontalInput();
-        verticalInput = isTopDownScene ? ReadVerticalInput() : 0f;
+        verticalInput = (isTopDownScene || isWaterScene) ? ReadVerticalInput() : 0f;
         isRunning = IsRunPressed();
 
-        if (!isTopDownScene && WasJumpPressed() && isGrounded)
+        if (!isTopDownScene && !IsWaterMovementActive() && WasJumpPressed() && isGrounded)
         {
             jumpRequested = true;
         }
@@ -80,6 +88,13 @@ public class PlayerMovement : MonoBehaviour
 
     protected virtual void FixedUpdate()
     {
+        if (IsWaterMovementActive())
+        {
+            jumpRequested = false;
+            ApplyWaterMovement();
+            return;
+        }
+
         if (isTopDownScene)
         {
             ApplyTopDownMovement();
@@ -158,16 +173,19 @@ public class PlayerMovement : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         UpdateExitContacts(other, true);
+        UpdateWaterContacts(other, true);
     }
 
     private void OnTriggerStay2D(Collider2D other)
     {
         UpdateExitContacts(other, true);
+        UpdateWaterContacts(other, true);
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
         UpdateExitContacts(other, false);
+        UpdateWaterContacts(other, false);
     }
 
     private void UpdateCollisionContacts(Collision2D collision, bool isContacting)
@@ -228,6 +246,22 @@ public class PlayerMovement : MonoBehaviour
         exitColliders.Remove(other);
     }
 
+    private void UpdateWaterContacts(Collider2D other, bool isContacting)
+    {
+        if (!IsWaterCollider(other))
+        {
+            return;
+        }
+
+        if (isContacting)
+        {
+            waterColliders.Add(other);
+            return;
+        }
+
+        waterColliders.Remove(other);
+    }
+
     private bool IsExitCollider(Collider2D other)
     {
         return other != null
@@ -241,6 +275,18 @@ public class PlayerMovement : MonoBehaviour
             && TryGetExitSceneName(SceneManager.GetActiveScene().name, out _);
     }
 
+    private bool IsWaterCollider(Collider2D other)
+    {
+        return isWaterScene
+            && other != null
+            && other.gameObject.name == WaterObjectName;
+    }
+
+    private bool IsWaterMovementActive()
+    {
+        return isWaterScene && waterColliders.Count > 0;
+    }
+
     private void LoadExitScene()
     {
         if (TryGetExitSceneName(SceneManager.GetActiveScene().name, out string nextSceneName))
@@ -252,6 +298,7 @@ public class PlayerMovement : MonoBehaviour
     private void ConfigureMovementMode()
     {
         isTopDownScene = IsTopDownScene(SceneManager.GetActiveScene().name);
+        isWaterScene = SceneManager.GetActiveScene().name == ArtificialRiverSceneName;
         rb.gravityScale = isTopDownScene ? 0f : baseGravityScale;
     }
 
@@ -268,6 +315,9 @@ public class PlayerMovement : MonoBehaviour
                 return true;
             case DrainSceneName:
                 nextSceneName = ArtificialRiverSceneName;
+                return true;
+            case ArtificialRiverSceneName:
+                nextSceneName = MountainSceneName;
                 return true;
             default:
                 nextSceneName = string.Empty;
@@ -384,6 +434,17 @@ public class PlayerMovement : MonoBehaviour
         }
 
         rb.linearVelocity = movementInput * currentSpeed;
+    }
+
+    private void ApplyWaterMovement()
+    {
+        float currentSpeed = isRunning ? runSpeed : moveSpeed;
+        float verticalSpeed = verticalInput > 0f
+            ? waterRiseSpeed * verticalInput
+            : -waterSinkSpeed;
+
+        rb.gravityScale = 0f;
+        rb.linearVelocity = new Vector2(horizontalInput * currentSpeed, verticalSpeed);
     }
 
     private void ApplyGravity()
