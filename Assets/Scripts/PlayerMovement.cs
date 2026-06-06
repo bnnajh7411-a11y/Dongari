@@ -8,6 +8,7 @@ public class PlayerMovement : MonoBehaviour
     private const string MainSceneName = "Main";
     private const string RoadSceneName = "Road";
     private const string ExitObjectName = "Next";
+    private const string GroundObjectName = "Ground";
 
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 5f;
@@ -24,30 +25,44 @@ public class PlayerMovement : MonoBehaviour
     private const float VerticalVelocityThreshold = 0.01f;
 
     private Rigidbody2D rb;
+    private Collider2D playerCollider;
     private float baseGravityScale;
     private float horizontalInput;
+    private float verticalInput;
     private bool isRunning;
     private bool isGrounded;
+    private bool isTopDownScene;
+    private bool hasMovementBounds;
     private bool jumpRequested;
     private Vector3 defaultScale;
+    private Bounds movementBounds;
     private readonly HashSet<Collider2D> groundColliders = new HashSet<Collider2D>();
     private readonly HashSet<Collider2D> exitColliders = new HashSet<Collider2D>();
 
     protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        playerCollider = GetComponent<Collider2D>();
         baseGravityScale = rb.gravityScale;
 
         defaultScale = transform.localScale;
         defaultScale.x = Mathf.Abs(defaultScale.x);
+
+        ConfigureMovementMode();
+    }
+
+    protected virtual void Start()
+    {
+        CacheMovementBounds();
     }
 
     protected virtual void Update()
     {
         horizontalInput = ReadHorizontalInput();
+        verticalInput = isTopDownScene ? ReadVerticalInput() : 0f;
         isRunning = IsRunPressed();
 
-        if (WasJumpPressed() && isGrounded)
+        if (!isTopDownScene && WasJumpPressed() && isGrounded)
         {
             jumpRequested = true;
         }
@@ -62,6 +77,13 @@ public class PlayerMovement : MonoBehaviour
 
     protected virtual void FixedUpdate()
     {
+        if (isTopDownScene)
+        {
+            ApplyTopDownMovement();
+            ClampPositionToGroundBounds();
+            return;
+        }
+
         float currentSpeed = isRunning ? runSpeed : moveSpeed;
         rb.linearVelocity = new Vector2(horizontalInput * currentSpeed, rb.linearVelocity.y);
 
@@ -93,6 +115,11 @@ public class PlayerMovement : MonoBehaviour
     private float ReadHorizontalInput()
     {
         return Input.GetAxisRaw("Horizontal");
+    }
+
+    private float ReadVerticalInput()
+    {
+        return Input.GetAxisRaw("Vertical");
     }
 
     private bool IsRunPressed()
@@ -213,6 +240,118 @@ public class PlayerMovement : MonoBehaviour
     private void LoadRoadScene()
     {
         SceneManager.LoadScene(RoadSceneName);
+    }
+
+    private void ConfigureMovementMode()
+    {
+        isTopDownScene = SceneManager.GetActiveScene().name == RoadSceneName;
+        rb.gravityScale = isTopDownScene ? 0f : baseGravityScale;
+    }
+
+    private void CacheMovementBounds()
+    {
+        hasMovementBounds = isTopDownScene && TryGetGroundBounds(out movementBounds);
+    }
+
+    private bool TryGetGroundBounds(out Bounds bounds)
+    {
+        GameObject groundObject = GameObject.Find(GroundObjectName);
+
+        if (groundObject == null)
+        {
+            bounds = default;
+            return false;
+        }
+
+        Collider2D groundCollider = groundObject.GetComponent<Collider2D>();
+        if (groundCollider != null)
+        {
+            bounds = groundCollider.bounds;
+            return true;
+        }
+
+        SpriteRenderer groundRenderer = groundObject.GetComponent<SpriteRenderer>();
+        if (groundRenderer != null)
+        {
+            bounds = groundRenderer.bounds;
+            return true;
+        }
+
+        bounds = default;
+        return false;
+    }
+
+    private void ClampPositionToGroundBounds()
+    {
+        if (!isTopDownScene || !hasMovementBounds || playerCollider == null)
+        {
+            return;
+        }
+
+        Bounds playerBounds = playerCollider.bounds;
+        float halfPlayerWidth = playerBounds.extents.x;
+        float halfPlayerHeight = playerBounds.extents.y;
+        float minX = movementBounds.min.x + halfPlayerWidth;
+        float maxX = movementBounds.max.x - halfPlayerWidth;
+        float minY = movementBounds.min.y + halfPlayerHeight;
+        float maxY = movementBounds.max.y - halfPlayerHeight;
+
+        if (minX > maxX)
+        {
+            float centerX = movementBounds.center.x;
+            minX = centerX;
+            maxX = centerX;
+        }
+
+        if (minY > maxY)
+        {
+            float centerY = movementBounds.center.y;
+            minY = centerY;
+            maxY = centerY;
+        }
+
+        Vector2 clampedPosition = rb.position;
+        float clampedX = Mathf.Clamp(clampedPosition.x, minX, maxX);
+        float clampedY = Mathf.Clamp(clampedPosition.y, minY, maxY);
+
+        if (Mathf.Approximately(clampedPosition.x, clampedX)
+            && Mathf.Approximately(clampedPosition.y, clampedY))
+        {
+            return;
+        }
+
+        clampedPosition.x = clampedX;
+        clampedPosition.y = clampedY;
+        rb.position = clampedPosition;
+
+        Vector2 clampedVelocity = rb.linearVelocity;
+
+        if ((clampedX <= minX && clampedVelocity.x < 0f)
+            || (clampedX >= maxX && clampedVelocity.x > 0f))
+        {
+            clampedVelocity.x = 0f;
+        }
+
+        if ((clampedY <= minY && clampedVelocity.y < 0f)
+            || (clampedY >= maxY && clampedVelocity.y > 0f))
+        {
+            clampedVelocity.y = 0f;
+        }
+
+        rb.linearVelocity = clampedVelocity;
+    }
+
+    private void ApplyTopDownMovement()
+    {
+        float currentSpeed = isRunning ? runSpeed : moveSpeed;
+        Vector2 movementInput = new Vector2(horizontalInput, verticalInput);
+
+        if (movementInput.sqrMagnitude > 1f)
+        {
+            movementInput.Normalize();
+        }
+
+        rb.linearVelocity = movementInput * currentSpeed;
     }
 
     private void ApplyGravity()
