@@ -18,7 +18,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float runSpeed = 8f;
-    [SerializeField] private float jumpForce = 5f;
+    [SerializeField] private float jumpForce = 13f;
 
     [Header("Gravity")]
     [SerializeField, Min(1f)] private float riseGravityMultiplier = 1.2f;
