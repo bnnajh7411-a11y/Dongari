@@ -15,7 +15,6 @@ public class CameraFollow : MonoBehaviour
     private const string RightWallObjectName = "RWall";
     private const string GroundObjectName = "Ground";
     private const string RoadSceneName = "Road";
-    private const string DrainSceneName = "Drain";
 
     private Camera attachedCamera;
     private float depthOffset;

@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class StartSceneController : MonoBehaviour
 {
     private const string EventSystemObjectName = "EventSystem";
+    private const string CanvasObjectName = "StartCanvas";
     private const string ButtonObjectName = "StartButton";
 
     [SerializeField] private string sceneToLoad = "Building";
@@ -21,7 +22,7 @@ public class StartSceneController : MonoBehaviour
 
     private void EnsureEventSystem()
     {
-        if (FindObjectOfType<EventSystem>() != null)
+        if (FindAnyObjectByType<EventSystem>() != null)
         {
             return;
         }
@@ -31,14 +32,14 @@ public class StartSceneController : MonoBehaviour
 
     private Canvas EnsureCanvas()
     {
-        Canvas existingCanvas = FindObjectOfType<Canvas>();
+        Canvas existingCanvas = FindAnyObjectByType<Canvas>();
         if (existingCanvas != null)
         {
             return existingCanvas;
         }
 
         GameObject canvasObject = new GameObject(
-            "StartCanvas",
+            CanvasObjectName,
             typeof(Canvas),
             typeof(CanvasScaler),
             typeof(GraphicRaycaster));

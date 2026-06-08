@@ -9,6 +9,7 @@ public class BuildingCollapseController : MonoBehaviour
     private const string FloorObjectName = "Floor";
     private const string LeftWallObjectName = "LWall";
     private const string RightWallObjectName = "RWall";
+    private const string PlayerObjectName = "Player";
     private const string BaseBlockObjectName = "1";
     private const float CollapseEpsilon = 0.01f;
 
@@ -129,7 +130,7 @@ public class BuildingCollapseController : MonoBehaviour
         for (int i = 0; i < transform.childCount; i++)
         {
             Transform child = transform.GetChild(i);
-            if (child == null || child.gameObject.layer != collapseLayer)
+            if (child.gameObject.layer != collapseLayer)
             {
                 continue;
             }
@@ -160,7 +161,7 @@ public class BuildingCollapseController : MonoBehaviour
     {
         playerColliders.Clear();
 
-        GameObject playerObject = GameObject.Find("Player");
+        GameObject playerObject = GameObject.Find(PlayerObjectName);
         if (playerObject == null)
         {
             return;
