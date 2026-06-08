@@ -4967,8 +4967,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4285f5f75e34de8b8303f86acb9ce39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FallingHazardSpawner
-  minSpawnInterval: 0.2
-  maxSpawnInterval: 0.6
+  minSpawnInterval: 0.4
+  maxSpawnInterval: 1
   horizontalPadding: 0.75
   spawnHeightOffset: 1.5
   minHazardSize: 0.6
