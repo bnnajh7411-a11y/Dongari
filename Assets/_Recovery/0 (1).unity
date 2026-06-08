@@ -4454,8 +4454,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   moveSpeed: 5
   runSpeed: 8
-  jumpForce: 9
-  riseGravityMultiplier: 2.4
+  jumpForce: 13
+  riseGravityMultiplier: 1.2
   fallGravityMultiplier: 2.4
   maxFallSpeed: 20
   waterSinkSpeed: 2.5
@@ -4920,8 +4920,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   maxHealth: 3
   damageCooldown: 0.75
-  damageFlashDuration: 0.3
-  damageFlashColor: {r: 1, g: 0, b: 0, a: 1}
   reloadSceneOnDeath: 1
 --- !u!1 &2056000100
 GameObject:
@@ -4976,8 +4974,8 @@ MonoBehaviour:
   initialFallSpeed: 0.75
   fallGravityScale: 0.8
   hazardDamage: 1
-  hazardLifetime: 20
-  hazardColor: {r: 0.38846958, g: 0.33490568, b: 1, a: 1}
+  hazardLifetime: 10
+  hazardColor: {r: 0.45, g: 0.43, b: 0.4, a: 1}
   sortingOrder: 5
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
