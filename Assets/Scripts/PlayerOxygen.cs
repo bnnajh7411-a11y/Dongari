@@ -55,14 +55,26 @@ public class PlayerOxygen : MonoBehaviour
 
     private void Update()
     {
+        RefreshWaterCollider();
+
+        float deltaTime = Time.deltaTime;
+        bool isFullySubmerged = IsFullySubmerged();
+
+        UpdateOxygenLevel(deltaTime, isFullySubmerged);
+        UpdateOxygenDepletion(deltaTime);
+        RefreshHud();
+    }
+
+    private void RefreshWaterCollider()
+    {
         if (waterCollider == null)
         {
             waterCollider = FindWaterCollider();
         }
+    }
 
-        bool isFullySubmerged = IsFullySubmerged();
-        float deltaTime = Time.deltaTime;
-
+    private void UpdateOxygenLevel(float deltaTime, bool isFullySubmerged)
+    {
         if (isFullySubmerged)
         {
             CurrentOxygen -= (oxygenDrainPerSecond * deltaTime) / 3f;
@@ -73,7 +85,10 @@ public class PlayerOxygen : MonoBehaviour
         }
 
         CurrentOxygen = Mathf.Clamp(CurrentOxygen, 0f, maxOxygen);
+    }
 
+    private void UpdateOxygenDepletion(float deltaTime)
+    {
         if (CurrentOxygen <= 0f)
         {
             if (!wasOutOfOxygen)
@@ -93,14 +108,11 @@ public class PlayerOxygen : MonoBehaviour
             }
 
             wasOutOfOxygen = true;
-        }
-        else
-        {
-            wasOutOfOxygen = false;
-            depletionDamageTimer = 0f;
+            return;
         }
 
-        RefreshHud();
+        wasOutOfOxygen = false;
+        depletionDamageTimer = 0f;
     }
 
     private Collider2D FindWaterCollider()
@@ -189,11 +201,6 @@ public class PlayerOxygen : MonoBehaviour
         if (healthCanvasObject != null)
         {
             existingCanvas = healthCanvasObject.GetComponent<Canvas>();
-        }
-
-        if (existingCanvas == null)
-        {
-            existingCanvas = FindAnyObjectByType<Canvas>();
         }
         if (existingCanvas == null)
         {

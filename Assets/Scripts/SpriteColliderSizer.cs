@@ -37,9 +37,9 @@ public static class SpriteColliderSizer
 
     private static Vector2 GetRenderedSize(SpriteRenderer spriteRenderer)
     {
-        if (spriteRenderer.drawMode == SpriteDrawMode.Simple || spriteRenderer.sprite == null)
+        if (spriteRenderer.drawMode == SpriteDrawMode.Simple)
         {
-            return spriteRenderer.sprite != null ? spriteRenderer.sprite.bounds.size : Vector2.one;
+            return spriteRenderer.sprite.bounds.size;
         }
 
         return spriteRenderer.size;

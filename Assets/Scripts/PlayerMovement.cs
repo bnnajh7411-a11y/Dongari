@@ -16,6 +16,12 @@ public class PlayerMovement : MonoBehaviour
     private const string ExitObjectName = "Next";
     private const string GroundObjectName = "Ground";
     private const string WaterObjectName = "Water";
+    private static readonly string[] ArtificialRiverColliderObjectNames =
+    {
+        GreenAlgaeObjectName,
+        WaterObjectName,
+        ExitObjectName
+    };
     private const float GreenAlgaeSlowMultiplier = 0.5f;
     private const float GreenAlgaeSlowDuration = 3f;
 
@@ -173,40 +179,35 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        UpdateCollisionContacts(collision, true);
+        HandleCollisionContact(collision, true);
     }
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        UpdateCollisionContacts(collision, true);
+        HandleCollisionContact(collision, true);
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        UpdateCollisionContacts(collision, false);
+        HandleCollisionContact(collision, false);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        UpdateExitContacts(other, true);
-        UpdateWaterContacts(other, true);
-        TryApplyGreenAlgaeSlow(other);
+        HandleTriggerContact(other, true);
     }
 
     private void OnTriggerStay2D(Collider2D other)
     {
-        UpdateExitContacts(other, true);
-        UpdateWaterContacts(other, true);
-        TryApplyGreenAlgaeSlow(other);
+        HandleTriggerContact(other, true);
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        UpdateExitContacts(other, false);
-        UpdateWaterContacts(other, false);
+        HandleTriggerContact(other, false);
     }
 
-    private void UpdateCollisionContacts(Collision2D collision, bool isContacting)
+    private void HandleCollisionContact(Collision2D collision, bool isContacting)
     {
         if (collision == null || collision.collider == null)
         {
@@ -214,38 +215,34 @@ public class PlayerMovement : MonoBehaviour
         }
 
         Collider2D otherCollider = collision.collider;
+        bool hasGroundContact = false;
 
-        if (!isContacting)
+        if (isContacting)
         {
-            groundColliders.Remove(otherCollider);
-        }
-        else
-        {
-            bool hasGroundContact = false;
-
             foreach (ContactPoint2D contact in collision.contacts)
             {
                 if (contact.normal.y > GroundNormalThreshold)
                 {
                     hasGroundContact = true;
+                    break;
                 }
             }
-
-            UpdateGroundContactSet(otherCollider, hasGroundContact);
         }
+
+        SetTrackedContact(groundColliders, otherCollider, hasGroundContact);
 
         isGrounded = groundColliders.Count > 0;
     }
 
-    private void UpdateGroundContactSet(Collider2D otherCollider, bool hasGroundContact)
+    private void HandleTriggerContact(Collider2D other, bool isContacting)
     {
-        if (hasGroundContact)
-        {
-            groundColliders.Add(otherCollider);
-            return;
-        }
+        UpdateExitContacts(other, isContacting);
+        UpdateWaterContacts(other, isContacting);
 
-        groundColliders.Remove(otherCollider);
+        if (isContacting)
+        {
+            TryApplyGreenAlgaeSlow(other);
+        }
     }
 
     private void UpdateExitContacts(Collider2D other, bool isContacting)
@@ -255,13 +252,7 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        if (isContacting)
-        {
-            exitColliders.Add(other);
-            return;
-        }
-
-        exitColliders.Remove(other);
+        SetTrackedContact(exitColliders, other, isContacting);
     }
 
     private void UpdateWaterContacts(Collider2D other, bool isContacting)
@@ -271,13 +262,7 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        if (isContacting)
-        {
-            waterColliders.Add(other);
-            return;
-        }
-
-        waterColliders.Remove(other);
+        SetTrackedContact(waterColliders, other, isContacting);
     }
 
     private void TryApplyGreenAlgaeSlow(Collider2D other)
@@ -365,9 +350,10 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        FitSpriteColliders(GreenAlgaeObjectName);
-        FitSpriteColliders(WaterObjectName);
-        FitSpriteColliders(ExitObjectName);
+        for (int i = 0; i < ArtificialRiverColliderObjectNames.Length; i++)
+        {
+            FitSpriteColliders(ArtificialRiverColliderObjectNames[i]);
+        }
     }
 
     private void FitSpriteColliders(string objectName)
@@ -379,6 +365,22 @@ public class PlayerMovement : MonoBehaviour
         }
 
         SpriteColliderSizer.FitBoxCollidersToSpriteRenderers(sceneObject.transform);
+    }
+
+    private static void SetTrackedContact(HashSet<Collider2D> contacts, Collider2D other, bool isContacting)
+    {
+        if (other == null)
+        {
+            return;
+        }
+
+        if (isContacting)
+        {
+            contacts.Add(other);
+            return;
+        }
+
+        contacts.Remove(other);
     }
 
     private bool TryGetExitSceneName(string currentSceneName, out string nextSceneName)
