@@ -65,7 +65,7 @@ public class PlayerOxygen : MonoBehaviour
 
         if (isFullySubmerged)
         {
-            CurrentOxygen -= oxygenDrainPerSecond * deltaTime;
+            CurrentOxygen -= (oxygenDrainPerSecond * deltaTime) / 3f;
         }
         else
         {

@@ -31,7 +31,9 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Water")]
     [SerializeField, Min(0f)] private float waterSinkSpeed = 2.5f;
+    [SerializeField, Min(1f)] private float waterFastSinkMultiplier = 1.75f;
     [SerializeField, Min(0f)] private float waterRiseSpeed = 4f;
+    [SerializeField, Min(1f)] private float waterFastRiseMultiplier = 1.3f;
 
     private const float FacingThreshold = 0.01f;
     private const float GroundNormalThreshold = 0.5f;
@@ -68,6 +70,7 @@ public class PlayerMovement : MonoBehaviour
         ConfigureMovementMode();
         EnsurePlayerHealthComponent();
         EnsureWaterSceneSystems();
+        EnsureArtificialRiverColliderSizing();
     }
 
     protected virtual void OnDisable()
@@ -355,6 +358,29 @@ public class PlayerMovement : MonoBehaviour
         gameObject.AddComponent<PlayerOxygen>();
     }
 
+    private void EnsureArtificialRiverColliderSizing()
+    {
+        if (!isWaterScene)
+        {
+            return;
+        }
+
+        FitSpriteColliders(GreenAlgaeObjectName);
+        FitSpriteColliders(WaterObjectName);
+        FitSpriteColliders(ExitObjectName);
+    }
+
+    private void FitSpriteColliders(string objectName)
+    {
+        GameObject sceneObject = GameObject.Find(objectName);
+        if (sceneObject == null)
+        {
+            return;
+        }
+
+        SpriteColliderSizer.FitBoxCollidersToSpriteRenderers(sceneObject.transform);
+    }
+
     private bool TryGetExitSceneName(string currentSceneName, out string nextSceneName)
     {
         switch (currentSceneName)
@@ -492,9 +518,20 @@ public class PlayerMovement : MonoBehaviour
     private void ApplyWaterMovement()
     {
         float currentSpeed = (isRunning ? runSpeed : moveSpeed) * movementSpeedMultiplier;
-        float verticalSpeed = verticalInput > 0f
-            ? waterRiseSpeed * verticalInput * movementSpeedMultiplier
-            : -waterSinkSpeed * movementSpeedMultiplier;
+        float verticalSpeed;
+
+        if (verticalInput > 0f)
+        {
+            verticalSpeed = waterRiseSpeed * waterFastRiseMultiplier * verticalInput * movementSpeedMultiplier;
+        }
+        else if (verticalInput < 0f)
+        {
+            verticalSpeed = -waterSinkSpeed * waterFastSinkMultiplier * movementSpeedMultiplier;
+        }
+        else
+        {
+            verticalSpeed = -waterSinkSpeed * movementSpeedMultiplier;
+        }
 
         rb.gravityScale = 0f;
         rb.linearVelocity = new Vector2(horizontalInput * currentSpeed, verticalSpeed);
