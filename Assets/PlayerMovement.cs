@@ -66,6 +66,7 @@ public class PlayerMovement : MonoBehaviour
         defaultScale.x = Mathf.Abs(defaultScale.x);
 
         ConfigureMovementMode();
+        EnsurePlayerHealthComponent();
         EnsureWaterSceneSystems();
     }
 
@@ -332,6 +333,16 @@ public class PlayerMovement : MonoBehaviour
         isTopDownScene = IsTopDownScene(SceneManager.GetActiveScene().name);
         isWaterScene = SceneManager.GetActiveScene().name == ArtificialRiverSceneName;
         rb.gravityScale = isTopDownScene ? 0f : baseGravityScale;
+    }
+
+    private void EnsurePlayerHealthComponent()
+    {
+        if (GetComponent<PlayerHealth>() != null)
+        {
+            return;
+        }
+
+        gameObject.AddComponent<PlayerHealth>();
     }
 
     private void EnsureWaterSceneSystems()
