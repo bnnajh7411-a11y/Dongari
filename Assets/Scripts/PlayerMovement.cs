@@ -15,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
     private const string GreenAlgaeObjectName = "GreenAlgae";
     private const string ExitObjectName = "Next";
     private const string GroundObjectName = "Ground";
+    private const string RopeObjectName = "Rope";
     private const string WaterObjectName = "Water";
     private static readonly string[] ArtificialRiverColliderObjectNames =
     {
@@ -29,6 +30,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float runSpeed = 8f;
     [SerializeField] private float jumpForce = 13f;
+
+    [Header("Climbing")]
+    [SerializeField, Min(0f)] private float climbSpeed = 4.5f;
 
     [Header("Gravity")]
     [SerializeField, Min(1f)] private float riseGravityMultiplier = 1.2f;
@@ -52,6 +56,7 @@ public class PlayerMovement : MonoBehaviour
     private float verticalInput;
     private bool isRunning;
     private bool isGrounded;
+    private bool isClimbing;
     private bool isTopDownScene;
     private bool isWaterScene;
     private bool hasMovementBounds;
@@ -62,6 +67,8 @@ public class PlayerMovement : MonoBehaviour
     private Coroutine movementSpeedModifierRoutine;
     private readonly HashSet<Collider2D> groundColliders = new HashSet<Collider2D>();
     private readonly HashSet<Collider2D> exitColliders = new HashSet<Collider2D>();
+    private readonly HashSet<Collider2D> ropeColliders = new HashSet<Collider2D>();
+    private readonly HashSet<Collider2D> wallColliders = new HashSet<Collider2D>();
     private readonly HashSet<Collider2D> waterColliders = new HashSet<Collider2D>();
 
     protected virtual void Awake()
@@ -92,10 +99,11 @@ public class PlayerMovement : MonoBehaviour
     protected virtual void Update()
     {
         horizontalInput = ReadHorizontalInput();
-        verticalInput = (isTopDownScene || isWaterScene) ? ReadVerticalInput() : 0f;
+        verticalInput = ReadVerticalInput();
         isRunning = IsRunPressed();
+        UpdateClimbingState();
 
-        if (!isTopDownScene && !IsWaterMovementActive() && WasJumpPressed() && isGrounded)
+        if (!isClimbing && !isTopDownScene && !IsWaterMovementActive() && WasJumpPressed() && isGrounded)
         {
             jumpRequested = true;
         }
@@ -124,8 +132,19 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
+        if (isClimbing)
+        {
+            jumpRequested = false;
+            ApplyClimbMovement();
+            return;
+        }
+
         float currentSpeed = (isRunning ? runSpeed : moveSpeed) * movementSpeedMultiplier;
-        rb.linearVelocity = new Vector2(horizontalInput * currentSpeed, rb.linearVelocity.y);
+        float horizontalSpeed = (!isGrounded && wallColliders.Count > 0)
+            ? 0f
+            : horizontalInput * currentSpeed;
+
+        rb.linearVelocity = new Vector2(horizontalSpeed, rb.linearVelocity.y);
 
         if (jumpRequested)
         {
@@ -215,7 +234,9 @@ public class PlayerMovement : MonoBehaviour
         }
 
         Collider2D otherCollider = collision.collider;
+        UpdateRopeContacts(otherCollider, isContacting);
         bool hasGroundContact = false;
+        bool hasSideContact = false;
 
         if (isContacting)
         {
@@ -226,10 +247,17 @@ public class PlayerMovement : MonoBehaviour
                     hasGroundContact = true;
                     break;
                 }
+
+                if (Mathf.Abs(contact.normal.x) > GroundNormalThreshold
+                    && Mathf.Abs(contact.normal.y) < GroundNormalThreshold)
+                {
+                    hasSideContact = true;
+                }
             }
         }
 
         SetTrackedContact(groundColliders, otherCollider, hasGroundContact);
+        SetTrackedContact(wallColliders, otherCollider, hasSideContact);
 
         isGrounded = groundColliders.Count > 0;
     }
@@ -237,6 +265,7 @@ public class PlayerMovement : MonoBehaviour
     private void HandleTriggerContact(Collider2D other, bool isContacting)
     {
         UpdateExitContacts(other, isContacting);
+        UpdateRopeContacts(other, isContacting);
         UpdateWaterContacts(other, isContacting);
 
         if (isContacting)
@@ -263,6 +292,21 @@ public class PlayerMovement : MonoBehaviour
         }
 
         SetTrackedContact(waterColliders, other, isContacting);
+    }
+
+    private void UpdateRopeContacts(Collider2D other, bool isContacting)
+    {
+        if (!IsRopeCollider(other))
+        {
+            return;
+        }
+
+        SetTrackedContact(ropeColliders, other, isContacting);
+
+        if (!isContacting && ropeColliders.Count == 0)
+        {
+            StopClimbing();
+        }
     }
 
     private void TryApplyGreenAlgaeSlow(Collider2D other)
@@ -306,6 +350,28 @@ public class PlayerMovement : MonoBehaviour
     private bool IsWaterMovementActive()
     {
         return isWaterScene && waterColliders.Count > 0;
+    }
+
+    private bool IsRopeCollider(Collider2D other)
+    {
+        if (isTopDownScene || isWaterScene || other == null)
+        {
+            return false;
+        }
+
+        Transform current = other.transform;
+
+        while (current != null)
+        {
+            if (current.name.StartsWith(RopeObjectName, System.StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            current = current.parent;
+        }
+
+        return false;
     }
 
     private void LoadExitScene()
@@ -517,6 +583,13 @@ public class PlayerMovement : MonoBehaviour
         rb.linearVelocity = movementInput * currentSpeed;
     }
 
+    private void ApplyClimbMovement()
+    {
+        float currentSpeed = (isRunning ? runSpeed : moveSpeed) * movementSpeedMultiplier;
+        rb.gravityScale = 0f;
+        rb.linearVelocity = new Vector2(horizontalInput * currentSpeed, verticalInput * climbSpeed);
+    }
+
     private void ApplyWaterMovement()
     {
         float currentSpeed = (isRunning ? runSpeed : moveSpeed) * movementSpeedMultiplier;
@@ -558,6 +631,46 @@ public class PlayerMovement : MonoBehaviour
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, -maxFallSpeed);
         }
+    }
+
+    private void UpdateClimbingState()
+    {
+        if (isTopDownScene || isWaterScene)
+        {
+            StopClimbing();
+            return;
+        }
+
+        bool hasClimbInput = Mathf.Abs(verticalInput) > VerticalVelocityThreshold;
+
+        if (!isClimbing)
+        {
+            if (ropeColliders.Count > 0 && hasClimbInput)
+            {
+                BeginClimbing();
+            }
+
+            return;
+        }
+
+        if (ropeColliders.Count == 0 || (isGrounded && !hasClimbInput))
+        {
+            StopClimbing();
+        }
+    }
+
+    private void BeginClimbing()
+    {
+        isClimbing = true;
+        jumpRequested = false;
+        isGrounded = false;
+        groundColliders.Clear();
+        rb.gravityScale = 0f;
+    }
+
+    private void StopClimbing()
+    {
+        isClimbing = false;
     }
 
     private void ApplyTemporaryMovementSpeedMultiplier(float multiplier, float duration)
