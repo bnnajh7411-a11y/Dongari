@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -11,9 +12,12 @@ public class PlayerMovement : MonoBehaviour
     private const string DrainSceneName = "Drain";
     private const string ArtificialRiverSceneName = "ArtificialRiver";
     private const string MountainSceneName = "Mountain";
+    private const string GreenAlgaeObjectName = "GreenAlgae";
     private const string ExitObjectName = "Next";
     private const string GroundObjectName = "Ground";
     private const string WaterObjectName = "Water";
+    private const float GreenAlgaeSlowMultiplier = 0.5f;
+    private const float GreenAlgaeSlowDuration = 3f;
 
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 5f;
@@ -46,6 +50,8 @@ public class PlayerMovement : MonoBehaviour
     private bool jumpRequested;
     private Vector3 defaultScale;
     private Bounds movementBounds;
+    private float movementSpeedMultiplier = 1f;
+    private Coroutine movementSpeedModifierRoutine;
     private readonly HashSet<Collider2D> groundColliders = new HashSet<Collider2D>();
     private readonly HashSet<Collider2D> exitColliders = new HashSet<Collider2D>();
     private readonly HashSet<Collider2D> waterColliders = new HashSet<Collider2D>();
@@ -60,6 +66,12 @@ public class PlayerMovement : MonoBehaviour
         defaultScale.x = Mathf.Abs(defaultScale.x);
 
         ConfigureMovementMode();
+        EnsureWaterSceneSystems();
+    }
+
+    protected virtual void OnDisable()
+    {
+        ResetMovementSpeedModifier();
     }
 
     protected virtual void Start()
@@ -102,7 +114,7 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        float currentSpeed = isRunning ? runSpeed : moveSpeed;
+        float currentSpeed = (isRunning ? runSpeed : moveSpeed) * movementSpeedMultiplier;
         rb.linearVelocity = new Vector2(horizontalInput * currentSpeed, rb.linearVelocity.y);
 
         if (jumpRequested)
@@ -174,12 +186,14 @@ public class PlayerMovement : MonoBehaviour
     {
         UpdateExitContacts(other, true);
         UpdateWaterContacts(other, true);
+        TryApplyGreenAlgaeSlow(other);
     }
 
     private void OnTriggerStay2D(Collider2D other)
     {
         UpdateExitContacts(other, true);
         UpdateWaterContacts(other, true);
+        TryApplyGreenAlgaeSlow(other);
     }
 
     private void OnTriggerExit2D(Collider2D other)
@@ -262,6 +276,16 @@ public class PlayerMovement : MonoBehaviour
         waterColliders.Remove(other);
     }
 
+    private void TryApplyGreenAlgaeSlow(Collider2D other)
+    {
+        if (!IsGreenAlgaeCollider(other))
+        {
+            return;
+        }
+
+        ApplyTemporaryMovementSpeedMultiplier(GreenAlgaeSlowMultiplier, GreenAlgaeSlowDuration);
+    }
+
     private bool IsExitCollider(Collider2D other)
     {
         return other != null
@@ -282,6 +306,14 @@ public class PlayerMovement : MonoBehaviour
             && other.gameObject.name == WaterObjectName;
     }
 
+    private bool IsGreenAlgaeCollider(Collider2D other)
+    {
+        return isWaterScene
+            && other != null
+            && other.transform.root != null
+            && other.transform.root.name == GreenAlgaeObjectName;
+    }
+
     private bool IsWaterMovementActive()
     {
         return isWaterScene && waterColliders.Count > 0;
@@ -300,6 +332,16 @@ public class PlayerMovement : MonoBehaviour
         isTopDownScene = IsTopDownScene(SceneManager.GetActiveScene().name);
         isWaterScene = SceneManager.GetActiveScene().name == ArtificialRiverSceneName;
         rb.gravityScale = isTopDownScene ? 0f : baseGravityScale;
+    }
+
+    private void EnsureWaterSceneSystems()
+    {
+        if (!isWaterScene || GetComponent<PlayerOxygen>() != null)
+        {
+            return;
+        }
+
+        gameObject.AddComponent<PlayerOxygen>();
     }
 
     private bool TryGetExitSceneName(string currentSceneName, out string nextSceneName)
@@ -425,7 +467,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void ApplyTopDownMovement()
     {
-        float currentSpeed = isRunning ? runSpeed : moveSpeed;
+        float currentSpeed = (isRunning ? runSpeed : moveSpeed) * movementSpeedMultiplier;
         Vector2 movementInput = new Vector2(horizontalInput, verticalInput);
 
         if (movementInput.sqrMagnitude > 1f)
@@ -438,10 +480,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void ApplyWaterMovement()
     {
-        float currentSpeed = isRunning ? runSpeed : moveSpeed;
+        float currentSpeed = (isRunning ? runSpeed : moveSpeed) * movementSpeedMultiplier;
         float verticalSpeed = verticalInput > 0f
-            ? waterRiseSpeed * verticalInput
-            : -waterSinkSpeed;
+            ? waterRiseSpeed * verticalInput * movementSpeedMultiplier
+            : -waterSinkSpeed * movementSpeedMultiplier;
 
         rb.gravityScale = 0f;
         rb.linearVelocity = new Vector2(horizontalInput * currentSpeed, verticalSpeed);
@@ -466,5 +508,41 @@ public class PlayerMovement : MonoBehaviour
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, -maxFallSpeed);
         }
+    }
+
+    private void ApplyTemporaryMovementSpeedMultiplier(float multiplier, float duration)
+    {
+        if (duration <= 0f)
+        {
+            return;
+        }
+
+        movementSpeedMultiplier = Mathf.Max(0f, multiplier);
+
+        if (movementSpeedModifierRoutine != null)
+        {
+            StopCoroutine(movementSpeedModifierRoutine);
+        }
+
+        movementSpeedModifierRoutine = StartCoroutine(ResetMovementSpeedMultiplierAfterDelay(duration));
+    }
+
+    private IEnumerator ResetMovementSpeedMultiplierAfterDelay(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+
+        movementSpeedMultiplier = 1f;
+        movementSpeedModifierRoutine = null;
+    }
+
+    private void ResetMovementSpeedModifier()
+    {
+        if (movementSpeedModifierRoutine != null)
+        {
+            StopCoroutine(movementSpeedModifierRoutine);
+            movementSpeedModifierRoutine = null;
+        }
+
+        movementSpeedMultiplier = 1f;
     }
 }
