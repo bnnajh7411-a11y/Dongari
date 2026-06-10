@@ -96,7 +96,14 @@ public class StartSceneController : MonoBehaviour
         labelRectTransform.offsetMax = Vector2.zero;
 
         Text label = labelObject.GetComponent<Text>();
-        label.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+        Font builtinFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        if (builtinFont == null)
+        {
+            Debug.LogError("Could not load the built-in runtime font for the start button.", this);
+            return;
+        }
+
+        label.font = builtinFont;
         label.text = buttonLabel;
         label.alignment = TextAnchor.MiddleCenter;
         label.color = Color.white;
