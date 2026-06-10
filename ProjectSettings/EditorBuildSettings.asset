@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Start.unity
     guid: a4b94d526dba48c44842e59921b97496
   - enabled: 1
+    path: Assets/Scenes/Zoo.unity
+    guid: 4702234abcb9d5948b0c0949ce4bc031
+  - enabled: 1
     path: Assets/Scenes/Building.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 1

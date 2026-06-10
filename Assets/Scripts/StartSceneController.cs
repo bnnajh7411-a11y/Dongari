@@ -10,7 +10,7 @@ public class StartSceneController : MonoBehaviour
     private const string CanvasObjectName = "StartCanvas";
     private const string ButtonObjectName = "StartButton";
 
-    [SerializeField] private string sceneToLoad = "Building";
+    [SerializeField] private string sceneToLoad = "Zoo";
     [SerializeField] private string buttonLabel = "START";
 
     private void Awake()
