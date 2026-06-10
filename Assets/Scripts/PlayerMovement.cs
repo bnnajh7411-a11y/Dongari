@@ -1,19 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
 public class PlayerMovement : MonoBehaviour
 {
-    private const string MainSceneName = "Main";
-    private const string BuildingSceneName = "Building";
+    private const string StartSceneName = "Start";
     private const string RoadSceneName = "Road";
-    private const string DrainSceneName = "Drain";
+    private const string ZooSceneName = "Zoo";
     private const string ArtificialRiverSceneName = "ArtificialRiver";
-    private const string MountainSceneName = "Mountain";
     private const string GreenAlgaeObjectName = "GreenAlgae";
-    private const string ExitObjectName = "Next";
+    private const string NextObjectName = "Next";
     private const string GroundObjectName = "Ground";
     private const string RopeObjectName = "Rope";
     private const string WaterObjectName = "Water";
@@ -21,7 +20,7 @@ public class PlayerMovement : MonoBehaviour
     {
         GreenAlgaeObjectName,
         WaterObjectName,
-        ExitObjectName
+        NextObjectName
     };
     private const float GreenAlgaeSlowMultiplier = 0.5f;
     private const float GreenAlgaeSlowDuration = 3f;
@@ -66,7 +65,7 @@ public class PlayerMovement : MonoBehaviour
     private float movementSpeedMultiplier = 1f;
     private Coroutine movementSpeedModifierRoutine;
     private readonly HashSet<Collider2D> groundColliders = new HashSet<Collider2D>();
-    private readonly HashSet<Collider2D> exitColliders = new HashSet<Collider2D>();
+    private readonly HashSet<Collider2D> nextColliders = new HashSet<Collider2D>();
     private readonly HashSet<Collider2D> ropeColliders = new HashSet<Collider2D>();
     private readonly HashSet<Collider2D> wallColliders = new HashSet<Collider2D>();
     private readonly HashSet<Collider2D> waterColliders = new HashSet<Collider2D>();
@@ -108,9 +107,9 @@ public class PlayerMovement : MonoBehaviour
             jumpRequested = true;
         }
 
-        if (WasInteractPressed() && CanInteractWithExit())
+        if (WasInteractPressed() && CanInteractWithNext())
         {
-            LoadExitScene();
+            LoadNextScene();
         }
 
         UpdateFacingDirection();
@@ -264,7 +263,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleTriggerContact(Collider2D other, bool isContacting)
     {
-        UpdateExitContacts(other, isContacting);
+        UpdateNextContacts(other, isContacting);
         UpdateRopeContacts(other, isContacting);
         UpdateWaterContacts(other, isContacting);
 
@@ -274,14 +273,14 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void UpdateExitContacts(Collider2D other, bool isContacting)
+    private void UpdateNextContacts(Collider2D other, bool isContacting)
     {
-        if (!IsExitCollider(other))
+        if (!IsNextCollider(other))
         {
             return;
         }
 
-        SetTrackedContact(exitColliders, other, isContacting);
+        SetTrackedContact(nextColliders, other, isContacting);
     }
 
     private void UpdateWaterContacts(Collider2D other, bool isContacting)
@@ -319,17 +318,17 @@ public class PlayerMovement : MonoBehaviour
         ApplyTemporaryMovementSpeedMultiplier(GreenAlgaeSlowMultiplier, GreenAlgaeSlowDuration);
     }
 
-    private bool IsExitCollider(Collider2D other)
+    private bool IsNextCollider(Collider2D other)
     {
         return other != null
-            && other.gameObject.name == ExitObjectName
-            && TryGetExitSceneName(SceneManager.GetActiveScene().name, out _);
+            && other.gameObject.name == NextObjectName
+            && TryGetNextSceneName(SceneManager.GetActiveScene().name, out _);
     }
 
-    private bool CanInteractWithExit()
+    private bool CanInteractWithNext()
     {
-        return exitColliders.Count > 0
-            && TryGetExitSceneName(SceneManager.GetActiveScene().name, out _);
+        return nextColliders.Count > 0
+            && TryGetNextSceneName(SceneManager.GetActiveScene().name, out _);
     }
 
     private bool IsWaterCollider(Collider2D other)
@@ -374,9 +373,9 @@ public class PlayerMovement : MonoBehaviour
         return false;
     }
 
-    private void LoadExitScene()
+    private void LoadNextScene()
     {
-        if (TryGetExitSceneName(SceneManager.GetActiveScene().name, out string nextSceneName))
+        if (TryGetNextSceneName(SceneManager.GetActiveScene().name, out string nextSceneName))
         {
             SceneManager.LoadScene(nextSceneName);
         }
@@ -449,32 +448,43 @@ public class PlayerMovement : MonoBehaviour
         contacts.Remove(other);
     }
 
-    private bool TryGetExitSceneName(string currentSceneName, out string nextSceneName)
+    private bool TryGetNextSceneName(string currentSceneName, out string nextSceneName)
     {
-        switch (currentSceneName)
+        // The start scene is a menu, so it uses its own button instead of the Next trigger.
+        if (string.Equals(currentSceneName, StartSceneName, System.StringComparison.OrdinalIgnoreCase))
         {
-            case MainSceneName:
-            case BuildingSceneName:
-                nextSceneName = RoadSceneName;
-                return true;
-            case RoadSceneName:
-                nextSceneName = DrainSceneName;
-                return true;
-            case DrainSceneName:
-                nextSceneName = ArtificialRiverSceneName;
-                return true;
-            case ArtificialRiverSceneName:
-                nextSceneName = MountainSceneName;
-                return true;
-            default:
-                nextSceneName = string.Empty;
-                return false;
+            nextSceneName = string.Empty;
+            return false;
         }
+
+        int currentBuildIndex = SceneManager.GetActiveScene().buildIndex;
+        if (currentBuildIndex < 0)
+        {
+            nextSceneName = string.Empty;
+            return false;
+        }
+
+        int sceneCountInBuildSettings = SceneManager.sceneCountInBuildSettings;
+        for (int buildIndex = currentBuildIndex + 1; buildIndex < sceneCountInBuildSettings; buildIndex++)
+        {
+            string scenePath = SceneUtility.GetScenePathByBuildIndex(buildIndex);
+            if (string.IsNullOrWhiteSpace(scenePath))
+            {
+                continue;
+            }
+
+            string candidateSceneName = Path.GetFileNameWithoutExtension(scenePath);
+            nextSceneName = candidateSceneName;
+            return true;
+        }
+
+        nextSceneName = string.Empty;
+        return false;
     }
 
     private bool IsTopDownScene(string sceneName)
     {
-        return sceneName == RoadSceneName;
+        return sceneName == RoadSceneName || sceneName == ZooSceneName;
     }
 
     private void CacheMovementBounds()
