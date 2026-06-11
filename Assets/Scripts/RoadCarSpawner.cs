@@ -13,6 +13,7 @@ public class RoadCarSpawner : MonoBehaviour
     private const string GroundObjectName = "Ground";
     private const string PlayerObjectName = "Player";
     private const string CarResourcesPath = "RoadCars";
+    private const float UpperLaneYOffsetPercent = 0.20f;
 
 #if UNITY_EDITOR
     private const string EditorCarAssetFolder = "Assets/Sprites";
@@ -24,7 +25,7 @@ public class RoadCarSpawner : MonoBehaviour
     [SerializeField, Min(0.5f)] private float maxCarSpeed = 9.5f;
     [SerializeField, Min(0f)] private float spawnPadding = 1.25f;
     [SerializeField, Min(0f)] private float verticalPadding = 1.25f;
-    [SerializeField, Min(1)] private int laneCount = 8;
+    [SerializeField, Min(1)] private int laneCount = 4;
     [SerializeField, Min(0f)] private float laneFollowGap = 1.1f;
     [SerializeField, Min(0f)] private float spawnLaneGap = 1.6f;
     [SerializeField, Min(0.1f)] private float carScale = 2.5f;
@@ -219,12 +220,12 @@ public class RoadCarSpawner : MonoBehaviour
 
         float minY = groundBounds.min.y + verticalPadding + halfHeight;
         float maxY = groundBounds.max.y - verticalPadding - halfHeight;
-        float spawnX = groundBounds.max.x + spawnPadding + halfWidth;
-        if (!TrySelectSpawnLane(spawnX, halfWidth, out int laneIndex))
+        if (!TrySelectSpawnLane(groundBounds, halfWidth, out int laneIndex, out bool movesRight))
         {
             return;
         }
 
+        float spawnX = GetSpawnX(groundBounds, halfWidth, movesRight);
         float spawnY = GetLaneCenterY(laneIndex, minY, maxY);
         float moveSpeed = Random.Range(minCarSpeed, maxCarSpeed);
 
@@ -235,7 +236,7 @@ public class RoadCarSpawner : MonoBehaviour
         SpriteRenderer spriteRenderer = carObject.AddComponent<SpriteRenderer>();
         spriteRenderer.sprite = sprite;
         spriteRenderer.sortingOrder = sortingOrder;
-        spriteRenderer.flipX = true;
+        spriteRenderer.flipX = !movesRight;
 
         BoxCollider2D collider = carObject.AddComponent<BoxCollider2D>();
         collider.isTrigger = true;
@@ -257,8 +258,10 @@ public class RoadCarSpawner : MonoBehaviour
             rigidbody2D,
             moveSpeed,
             groundBounds.min.x,
+            groundBounds.max.x,
             laneFollowGap,
-            carDamage);
+            carDamage,
+            movesRight);
     }
 
     public void RegisterCar(RoadCar roadCar, int laneIndex)
@@ -297,8 +300,9 @@ public class RoadCarSpawner : MonoBehaviour
             return null;
         }
 
+        bool movesRight = IsLaneRightMoving(laneIndex);
         RoadCar nearestFrontCar = null;
-        float nearestFrontX = float.NegativeInfinity;
+        float nearestFrontX = movesRight ? float.PositiveInfinity : float.NegativeInfinity;
 
         for (int i = laneCars.Count - 1; i >= 0; i--)
         {
@@ -309,16 +313,27 @@ public class RoadCarSpawner : MonoBehaviour
                 continue;
             }
 
-            if (candidate == requester || candidate.transform.position.x >= requester.transform.position.x)
+            float candidateX = candidate.transform.position.x;
+            float requesterX = requester.transform.position.x;
+            if (candidate == requester)
             {
                 continue;
             }
 
-            if (candidate.transform.position.x > nearestFrontX)
+            if (movesRight)
             {
-                nearestFrontX = candidate.transform.position.x;
-                nearestFrontCar = candidate;
+                if (candidateX <= requesterX || candidateX >= nearestFrontX)
+                {
+                    continue;
+                }
             }
+            else if (candidateX >= requesterX || candidateX <= nearestFrontX)
+            {
+                continue;
+            }
+
+            nearestFrontX = candidateX;
+            nearestFrontCar = candidate;
         }
 
         return nearestFrontCar;
@@ -339,31 +354,34 @@ public class RoadCarSpawner : MonoBehaviour
         }
     }
 
-    private bool TrySelectSpawnLane(float spawnX, float halfWidth, out int laneIndex)
+    private bool TrySelectSpawnLane(Bounds groundBounds, float halfWidth, out int laneIndex, out bool movesRight)
     {
         EnsureLaneRegistry();
 
         int totalLanes = carsByLane.Count;
         int startIndex = Random.Range(0, totalLanes);
-        float spawnFrontEdge = spawnX - halfWidth;
 
         for (int offset = 0; offset < totalLanes; offset++)
         {
             int candidateLaneIndex = (startIndex + offset) % totalLanes;
-            RoadCar rearMostCar = GetRearMostCar(candidateLaneIndex);
+            bool candidateMovesRight = IsLaneRightMoving(candidateLaneIndex);
+            float candidateSpawnX = GetSpawnX(groundBounds, halfWidth, candidateMovesRight);
+            RoadCar boundaryCar = GetBoundaryCarClosestToSpawn(candidateLaneIndex, candidateMovesRight);
 
-            if (rearMostCar == null || spawnFrontEdge - rearMostCar.RearEdgeX >= spawnLaneGap)
+            if (boundaryCar == null || HasSpawnGap(candidateSpawnX, halfWidth, candidateMovesRight, boundaryCar))
             {
                 laneIndex = candidateLaneIndex;
+                movesRight = candidateMovesRight;
                 return true;
             }
         }
 
         laneIndex = 0;
+        movesRight = false;
         return false;
     }
 
-    private RoadCar GetRearMostCar(int laneIndex)
+    private RoadCar GetBoundaryCarClosestToSpawn(int laneIndex, bool movesRight)
     {
         if (laneIndex < 0 || laneIndex >= carsByLane.Count)
         {
@@ -372,20 +390,65 @@ public class RoadCarSpawner : MonoBehaviour
 
         List<RoadCar> laneCars = carsByLane[laneIndex];
         PruneLaneCars(laneCars);
-        RoadCar rearMostCar = null;
-        float rearMostX = float.NegativeInfinity;
+        RoadCar boundaryCar = null;
+        float boundaryX = movesRight ? float.PositiveInfinity : float.NegativeInfinity;
 
         for (int i = laneCars.Count - 1; i >= 0; i--)
         {
             RoadCar candidate = laneCars[i];
-            if (candidate.transform.position.x > rearMostX)
+            if (candidate == null || !candidate.IsActiveOnRoad)
             {
-                rearMostX = candidate.transform.position.x;
-                rearMostCar = candidate;
+                continue;
+            }
+
+            float candidateX = candidate.transform.position.x;
+            if (movesRight)
+            {
+                if (candidateX < boundaryX)
+                {
+                    boundaryX = candidateX;
+                    boundaryCar = candidate;
+                }
+            }
+            else if (candidateX > boundaryX)
+            {
+                boundaryX = candidateX;
+                boundaryCar = candidate;
             }
         }
 
-        return rearMostCar;
+        return boundaryCar;
+    }
+
+    private bool HasSpawnGap(float spawnX, float halfWidth, bool movesRight, RoadCar boundaryCar)
+    {
+        float spawnFrontEdge = GetFrontEdgeX(spawnX, halfWidth, movesRight);
+        float boundaryRearEdge = boundaryCar.RearEdgeX;
+
+        if (movesRight)
+        {
+            return boundaryRearEdge - spawnFrontEdge >= spawnLaneGap;
+        }
+
+        return spawnFrontEdge - boundaryRearEdge >= spawnLaneGap;
+    }
+
+    private float GetSpawnX(Bounds groundBounds, float halfWidth, bool movesRight)
+    {
+        return movesRight
+            ? groundBounds.min.x - spawnPadding - halfWidth
+            : groundBounds.max.x + spawnPadding + halfWidth;
+    }
+
+    private static float GetFrontEdgeX(float centerX, float halfWidth, bool movesRight)
+    {
+        return movesRight ? centerX + halfWidth : centerX - halfWidth;
+    }
+
+    private bool IsLaneRightMoving(int laneIndex)
+    {
+        int totalLanes = Mathf.Max(1, laneCount);
+        return laneIndex >= totalLanes / 2;
     }
 
     private float GetLaneCenterY(int laneIndex, float minY, float maxY)
@@ -398,8 +461,14 @@ public class RoadCarSpawner : MonoBehaviour
         int totalLanes = Mathf.Max(1, laneCount);
         float laneHeight = (maxY - minY) / totalLanes;
         int clampedLaneIndex = Mathf.Clamp(laneIndex, 0, totalLanes - 1);
+        float laneCenterY = minY + (laneHeight * (clampedLaneIndex + 0.5f));
 
-        return minY + (laneHeight * (clampedLaneIndex + 0.5f));
+        if (IsLaneRightMoving(clampedLaneIndex))
+        {
+            laneCenterY += (maxY - minY) * UpperLaneYOffsetPercent;
+        }
+
+        return Mathf.Clamp(laneCenterY, minY, maxY);
     }
 
     private bool TryGetLaneCars(int laneIndex, out List<RoadCar> laneCars)
@@ -429,15 +498,17 @@ public class RoadCar : MonoBehaviour
     private Rigidbody2D cachedBody;
     private float halfWidth;
     private float roadLeftEdgeX;
+    private float roadRightEdgeX;
     private float baseMoveSpeed;
     private float followGap;
     private int damage = 1;
     private int laneIndex = -1;
+    private bool movesRight;
 
     public bool IsActiveOnRoad => gameObject.activeInHierarchy;
-    public float RearEdgeX => transform.position.x + halfWidth;
-    public float FrontEdgeX => transform.position.x - halfWidth;
-    public float CurrentRoadSpeed => cachedBody == null ? 0f : Mathf.Max(0f, -cachedBody.linearVelocity.x);
+    public float RearEdgeX => movesRight ? transform.position.x - halfWidth : transform.position.x + halfWidth;
+    public float FrontEdgeX => movesRight ? transform.position.x + halfWidth : transform.position.x - halfWidth;
+    public float CurrentRoadSpeed => cachedBody == null ? 0f : Mathf.Abs(cachedBody.linearVelocity.x);
 
     public void Initialize(
         RoadCarSpawner spawner,
@@ -445,16 +516,20 @@ public class RoadCar : MonoBehaviour
         Rigidbody2D body,
         float moveSpeed,
         float roadLeftBoundaryX,
+        float roadRightBoundaryX,
         float followDistance,
-        int damageAmount)
+        int damageAmount,
+        bool laneMovesRight)
     {
         owner = spawner;
         laneIndex = assignedLaneIndex;
         cachedBody = body;
         roadLeftEdgeX = roadLeftBoundaryX;
+        roadRightEdgeX = roadRightBoundaryX;
         baseMoveSpeed = Mathf.Max(0.5f, moveSpeed);
         followGap = Mathf.Max(0f, followDistance);
         damage = Mathf.Max(1, damageAmount);
+        movesRight = laneMovesRight;
 
         if (TryGetComponent(out SpriteRenderer spriteRenderer))
         {
@@ -462,14 +537,21 @@ public class RoadCar : MonoBehaviour
         }
 
         owner?.RegisterCar(this, laneIndex);
-        cachedBody.linearVelocity = Vector2.left * baseMoveSpeed;
+        cachedBody.linearVelocity = new Vector2(movesRight ? baseMoveSpeed : -baseMoveSpeed, 0f);
     }
 
     private void Update()
     {
         UpdateRoadSpeed();
 
-        if (transform.position.x - halfWidth <= roadLeftEdgeX - 0.01f)
+        if (movesRight)
+        {
+            if (transform.position.x + halfWidth >= roadRightEdgeX + 0.01f)
+            {
+                Destroy(gameObject);
+            }
+        }
+        else if (transform.position.x - halfWidth <= roadLeftEdgeX - 0.01f)
         {
             Destroy(gameObject);
         }
@@ -521,12 +603,14 @@ public class RoadCar : MonoBehaviour
 
         if (frontCar != null)
         {
-            float gap = FrontEdgeX - frontCar.RearEdgeX;
+            float gap = movesRight
+                ? frontCar.RearEdgeX - FrontEdgeX
+                : FrontEdgeX - frontCar.RearEdgeX;
             float fixedDeltaTime = Mathf.Max(Time.deltaTime, 0.0001f);
             float maxAllowedSpeed = frontCar.CurrentRoadSpeed + Mathf.Max(0f, gap - followGap) / fixedDeltaTime;
             targetSpeed = Mathf.Min(targetSpeed, Mathf.Max(0f, maxAllowedSpeed));
         }
 
-        cachedBody.linearVelocity = new Vector2(-targetSpeed, 0f);
+        cachedBody.linearVelocity = new Vector2(movesRight ? targetSpeed : -targetSpeed, 0f);
     }
 }

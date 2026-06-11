@@ -130,7 +130,6 @@ GameObject:
   - component: {fileID: 136338883}
   - component: {fileID: 136338882}
   - component: {fileID: 136338881}
-  - component: {fileID: 136338880}
   m_Layer: 0
   m_Name: Ground
   m_TagString: Untagged
@@ -138,34 +137,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &136338880
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 136338879}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfe954308965473ca1d9602fd250ad5b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RoadCarSpawner
-  minSpawnInterval: 0.6
-  maxSpawnInterval: 1.2
-  minCarSpeed: 10
-  maxCarSpeed: 15
-  spawnPadding: 1.25
-  verticalPadding: 1
-  laneCount: 8
-  laneFollowGap: 1.1
-  spawnLaneGap: 1.6
-  carScale: 1
-  colliderWidthFactor: 0.8
-  colliderHeightFactor: 0.257
-  colliderVerticalOffsetFactor: -0.31
-  carDamage: 1
-  sortingOrder: 1
-  pixelsPerUnit: 10
 --- !u!61 &136338881
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -418,7 +389,7 @@ Transform:
   m_GameObject: {fileID: 379055929}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 115.6, y: 1, z: 0}
+  m_LocalPosition: {x: 115.9, y: 61.1, z: 0}
   m_LocalScale: {x: 3.9860404, y: 1.7057658, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -510,7 +481,7 @@ Transform:
   m_GameObject: {fileID: 609125030}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 36.1, y: 55.8, z: 0}
+  m_LocalPosition: {x: 48.8, y: 47.7, z: 0}
   m_LocalScale: {x: 4.758944, y: 4.758944, z: 4.758944}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -620,7 +591,7 @@ Transform:
   m_GameObject: {fileID: 875909233}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.9, y: 59.6, z: -10}
+  m_LocalPosition: {x: -3.6, y: 4.999996, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -833,7 +804,7 @@ Transform:
   m_GameObject: {fileID: 919034115}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 15.2, y: 37, z: -0}
+  m_LocalPosition: {x: 48.3, y: 31.4, z: -0}
   m_LocalScale: {x: 33.273922, y: 33.273922, z: 33.273922}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1152,7 +1123,7 @@ Transform:
   m_GameObject: {fileID: 1812676428}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.9, y: 59.7, z: 0}
+  m_LocalPosition: {x: -4.6, y: 5.1, z: 0}
   m_LocalScale: {x: 1.9940761, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
