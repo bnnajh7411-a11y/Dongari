@@ -11,21 +11,28 @@ public class StartSceneController : MonoBehaviour
     private const string CanvasObjectName = "StartCanvas";
     private const string ButtonObjectName = "StartButton";
     private const string ReconfigureButtonObjectName = "ReconfigureButton";
+    private const string OptionButtonObjectName = "OptionButton";
     private const string ButtonLabelObjectName = "Label";
     private const string KeyMappingPanelObjectName = "KeyMappingPanel";
     private const string KeyMappingWindowObjectName = "KeyMappingWindow";
+    private const string OptionsPanelObjectName = "OptionsPanel";
+    private const string OptionsWindowObjectName = "OptionsWindow";
     private const string KeyBindingScrollAreaObjectName = "KeyBindingScrollArea";
     private const string KeyBindingViewportObjectName = "KeyBindingViewport";
     private const string KeyBindingContentObjectName = "KeyBindingContent";
     private const string DefaultStatusText = "";
-    private static readonly Vector2 SingleButtonPosition = Vector2.zero;
-    private static readonly Vector2 StartButtonWithReconfigurePosition = new Vector2(0f, 56f);
-    private static readonly Vector2 ReconfigureButtonPosition = new Vector2(0f, -56f);
+    private static readonly Vector2 StartButtonWithOptionPosition = new Vector2(0f, 44f);
+    private static readonly Vector2 StartButtonWithSettingsButtonsPosition = new Vector2(0f, 112f);
+    private static readonly Vector2 ReconfigureButtonPosition = new Vector2(0f, 28f);
+    private static readonly Vector2 OptionButtonWithTwoButtonsPosition = new Vector2(0f, -44f);
+    private static readonly Vector2 OptionButtonWithThreeButtonsPosition = new Vector2(0f, -56f);
     private static readonly Vector2 KeyBindingScrollAreaSize = new Vector2(760f, 340f);
     private static readonly Vector2 KeyBindingScrollAreaPosition = new Vector2(0f, -24f);
     private static readonly Vector2 KeyBindingStatusPosition = new Vector2(0f, 28f);
     private static readonly Vector2 CancelButtonPosition = new Vector2(-150f, 96f);
     private static readonly Vector2 ConfirmButtonPosition = new Vector2(150f, 96f);
+    private static readonly Vector2 OptionsWindowSize = new Vector2(760f, 420f);
+    private static readonly Vector2 OptionsCloseButtonPosition = new Vector2(0f, 58f);
     private const float KeyBindingRowSpacing = 68f;
     private const float KeyBindingTopPadding = 24f;
     private const float KeyBindingBottomPadding = 24f;
@@ -48,17 +55,25 @@ public class StartSceneController : MonoBehaviour
     [SerializeField] private string sceneToLoad = "Zoo";
     [SerializeField] private string buttonLabel = "START";
     [SerializeField] private string reconfigureButtonLabel = "KEY SETUP";
+    [SerializeField] private string optionButtonLabel = "OPTION";
 
     private readonly Dictionary<InputActionType, Text> bindingValueTexts = new Dictionary<InputActionType, Text>();
 
     private Button startButton;
     private Button reconfigureButton;
+    private Button optionButton;
     private Canvas rootCanvas;
     private Font builtinFont;
     private GameObject keyMappingPanel;
+    private GameObject optionsPanel;
     private ScrollRect bindingScrollRect;
+    private Slider backgroundMusicSlider;
+    private Slider soundEffectSlider;
+    private Text backgroundMusicValueText;
+    private Text soundEffectValueText;
     private Text statusText;
     private bool isWaitingForBinding;
+    private bool isRefreshingAudioControls;
     private bool shouldLoadSceneAfterConfirm;
     private InputActionType pendingBindingAction;
 
@@ -68,8 +83,11 @@ public class StartSceneController : MonoBehaviour
         rootCanvas = EnsureCanvas();
         EnsureStartButton(rootCanvas.transform);
         EnsureReconfigureButton(rootCanvas.transform);
+        EnsureOptionButton(rootCanvas.transform);
         EnsureKeyMappingPanel(rootCanvas.transform);
+        EnsureOptionsPanel(rootCanvas.transform);
         SetKeyMappingPanelVisible(false);
+        SetOptionsPanelVisible(false);
         RefreshMenuButtons();
         RefreshBindingValueTexts();
         UpdateStatusText(DefaultStatusText);
@@ -160,7 +178,7 @@ public class StartSceneController : MonoBehaviour
             parent,
             ButtonObjectName,
             buttonLabel,
-            SingleButtonPosition,
+            StartButtonWithOptionPosition,
             new Vector2(280f, 80f),
             new Color(0.16f, 0.44f, 0.25f, 1f));
         startButton.onClick.AddListener(HandleStartButtonPressed);
@@ -195,6 +213,140 @@ public class StartSceneController : MonoBehaviour
         {
             label.color = new Color(0.12f, 0.22f, 0.16f, 1f);
         }
+    }
+
+    private void EnsureOptionButton(Transform parent)
+    {
+        GameObject existingButtonObject = GameObject.Find(OptionButtonObjectName);
+        if (existingButtonObject != null)
+        {
+            optionButton = existingButtonObject.GetComponent<Button>();
+            if (optionButton != null)
+            {
+                optionButton.onClick.RemoveListener(HandleOptionButtonPressed);
+                optionButton.onClick.AddListener(HandleOptionButtonPressed);
+            }
+
+            return;
+        }
+
+        optionButton = CreateButton(
+            parent,
+            OptionButtonObjectName,
+            optionButtonLabel,
+            OptionButtonWithTwoButtonsPosition,
+            new Vector2(280f, 68f),
+            new Color(0.84f, 0.74f, 0.46f, 1f));
+        optionButton.onClick.AddListener(HandleOptionButtonPressed);
+
+        Text label = optionButton.GetComponentInChildren<Text>();
+        if (label != null)
+        {
+            label.color = new Color(0.18f, 0.16f, 0.09f, 1f);
+        }
+    }
+
+    private void EnsureOptionsPanel(Transform parent)
+    {
+        if (optionsPanel != null)
+        {
+            return;
+        }
+
+        optionsPanel = new GameObject(
+            OptionsPanelObjectName,
+            typeof(RectTransform),
+            typeof(Image));
+
+        optionsPanel.transform.SetParent(parent, false);
+
+        RectTransform panelRectTransform = optionsPanel.GetComponent<RectTransform>();
+        panelRectTransform.anchorMin = Vector2.zero;
+        panelRectTransform.anchorMax = Vector2.one;
+        panelRectTransform.offsetMin = Vector2.zero;
+        panelRectTransform.offsetMax = Vector2.zero;
+
+        Image panelOverlay = optionsPanel.GetComponent<Image>();
+        panelOverlay.color = new Color(0f, 0f, 0f, 0.72f);
+
+        GameObject windowObject = new GameObject(
+            OptionsWindowObjectName,
+            typeof(RectTransform),
+            typeof(Image));
+
+        windowObject.transform.SetParent(optionsPanel.transform, false);
+
+        RectTransform windowRectTransform = windowObject.GetComponent<RectTransform>();
+        windowRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        windowRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        windowRectTransform.pivot = new Vector2(0.5f, 0.5f);
+        windowRectTransform.sizeDelta = OptionsWindowSize;
+        windowRectTransform.anchoredPosition = Vector2.zero;
+
+        Image windowImage = windowObject.GetComponent<Image>();
+        windowImage.color = new Color(0.95f, 0.96f, 0.9f, 1f);
+
+        CreateTextElement(
+            windowObject.transform,
+            "OptionsTitle",
+            "Audio Settings",
+            38,
+            FontStyle.Bold,
+            TextAnchor.MiddleCenter,
+            new Vector2(0.5f, 1f),
+            new Vector2(0.5f, 1f),
+            new Vector2(0f, -56f),
+            new Vector2(620f, 60f),
+            new Color(0.13f, 0.2f, 0.14f, 1f));
+
+        CreateTextElement(
+            windowObject.transform,
+            "OptionsSubtitle",
+            "Adjust the volume levels for background music and sound effects.",
+            21,
+            FontStyle.Normal,
+            TextAnchor.MiddleCenter,
+            new Vector2(0.5f, 1f),
+            new Vector2(0.5f, 1f),
+            new Vector2(0f, -112f),
+            new Vector2(640f, 56f),
+            new Color(0.26f, 0.32f, 0.27f, 1f));
+
+        CreateAudioSliderRow(
+            windowObject.transform,
+            "BackgroundMusic",
+            "Background Music",
+            28f,
+            out backgroundMusicSlider,
+            out backgroundMusicValueText);
+
+        CreateAudioSliderRow(
+            windowObject.transform,
+            "SoundEffect",
+            "Sound Effects",
+            -54f,
+            out soundEffectSlider,
+            out soundEffectValueText);
+
+        if (backgroundMusicSlider != null)
+        {
+            backgroundMusicSlider.onValueChanged.AddListener(HandleBackgroundMusicSliderChanged);
+        }
+
+        if (soundEffectSlider != null)
+        {
+            soundEffectSlider.onValueChanged.AddListener(HandleSoundEffectSliderChanged);
+        }
+
+        Button closeButton = CreateButton(
+            windowObject.transform,
+            "OptionsCloseButton",
+            "Close",
+            OptionsCloseButtonPosition,
+            new Vector2(240f, 64f),
+            new Color(0.16f, 0.44f, 0.25f, 1f));
+        SetBottomAnchoredRect(closeButton.GetComponent<RectTransform>());
+        closeButton.onClick.AddListener(CloseOptionsPanel);
     }
 
     private void EnsureKeyMappingPanel(Transform parent)
@@ -303,6 +455,57 @@ public class StartSceneController : MonoBehaviour
             new Color(0.16f, 0.44f, 0.25f, 1f));
         SetBottomAnchoredRect(confirmButton.GetComponent<RectTransform>());
         confirmButton.onClick.AddListener(ConfirmKeyMappingAndLoadScene);
+    }
+
+    private void CreateAudioSliderRow(
+        Transform parent,
+        string objectPrefix,
+        string labelText,
+        float anchoredY,
+        out Slider slider,
+        out Text valueText)
+    {
+        GameObject rowObject = new GameObject($"{objectPrefix}Row", typeof(RectTransform));
+        rowObject.transform.SetParent(parent, false);
+
+        RectTransform rowRectTransform = rowObject.GetComponent<RectTransform>();
+        rowRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        rowRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        rowRectTransform.pivot = new Vector2(0.5f, 0.5f);
+        rowRectTransform.anchoredPosition = new Vector2(0f, anchoredY);
+        rowRectTransform.sizeDelta = new Vector2(620f, 72f);
+
+        CreateTextElement(
+            rowObject.transform,
+            $"{objectPrefix}Label",
+            labelText,
+            24,
+            FontStyle.Bold,
+            TextAnchor.MiddleLeft,
+            new Vector2(0f, 0.5f),
+            new Vector2(0f, 0.5f),
+            new Vector2(110f, 0f),
+            new Vector2(220f, 44f),
+            new Color(0.14f, 0.22f, 0.16f, 1f));
+
+        slider = CreateSlider(
+            rowObject.transform,
+            $"{objectPrefix}Slider",
+            new Vector2(90f, 0f),
+            new Vector2(280f, 26f));
+
+        valueText = CreateTextElement(
+            rowObject.transform,
+            $"{objectPrefix}Value",
+            "100%",
+            22,
+            FontStyle.Bold,
+            TextAnchor.MiddleCenter,
+            new Vector2(1f, 0.5f),
+            new Vector2(1f, 0.5f),
+            new Vector2(-56f, 0f),
+            new Vector2(96f, 40f),
+            new Color(0.14f, 0.22f, 0.16f, 1f));
     }
 
     private RectTransform CreateBindingScrollArea(Transform parent)
@@ -491,6 +694,85 @@ public class StartSceneController : MonoBehaviour
         return button;
     }
 
+    private Slider CreateSlider(
+        Transform parent,
+        string objectName,
+        Vector2 anchoredPosition,
+        Vector2 sizeDelta)
+    {
+        GameObject sliderObject = new GameObject(objectName, typeof(RectTransform), typeof(Slider));
+        sliderObject.transform.SetParent(parent, false);
+
+        RectTransform sliderRectTransform = sliderObject.GetComponent<RectTransform>();
+        sliderRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        sliderRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        sliderRectTransform.pivot = new Vector2(0.5f, 0.5f);
+        sliderRectTransform.anchoredPosition = anchoredPosition;
+        sliderRectTransform.sizeDelta = sizeDelta;
+
+        GameObject backgroundObject = new GameObject("Background", typeof(RectTransform), typeof(Image));
+        backgroundObject.transform.SetParent(sliderObject.transform, false);
+
+        RectTransform backgroundRectTransform = backgroundObject.GetComponent<RectTransform>();
+        backgroundRectTransform.anchorMin = Vector2.zero;
+        backgroundRectTransform.anchorMax = Vector2.one;
+        backgroundRectTransform.offsetMin = Vector2.zero;
+        backgroundRectTransform.offsetMax = Vector2.zero;
+
+        Image backgroundImage = backgroundObject.GetComponent<Image>();
+        backgroundImage.color = new Color(0.72f, 0.77f, 0.7f, 1f);
+
+        GameObject fillAreaObject = new GameObject("Fill Area", typeof(RectTransform));
+        fillAreaObject.transform.SetParent(sliderObject.transform, false);
+
+        RectTransform fillAreaRectTransform = fillAreaObject.GetComponent<RectTransform>();
+        fillAreaRectTransform.anchorMin = Vector2.zero;
+        fillAreaRectTransform.anchorMax = Vector2.one;
+        fillAreaRectTransform.offsetMin = new Vector2(10f, 5f);
+        fillAreaRectTransform.offsetMax = new Vector2(-10f, -5f);
+
+        GameObject fillObject = new GameObject("Fill", typeof(RectTransform), typeof(Image));
+        fillObject.transform.SetParent(fillAreaObject.transform, false);
+
+        RectTransform fillRectTransform = fillObject.GetComponent<RectTransform>();
+        fillRectTransform.anchorMin = new Vector2(0f, 0f);
+        fillRectTransform.anchorMax = new Vector2(1f, 1f);
+        fillRectTransform.offsetMin = Vector2.zero;
+        fillRectTransform.offsetMax = Vector2.zero;
+
+        Image fillImage = fillObject.GetComponent<Image>();
+        fillImage.color = new Color(0.16f, 0.44f, 0.25f, 1f);
+
+        GameObject handleAreaObject = new GameObject("Handle Slide Area", typeof(RectTransform));
+        handleAreaObject.transform.SetParent(sliderObject.transform, false);
+
+        RectTransform handleAreaRectTransform = handleAreaObject.GetComponent<RectTransform>();
+        handleAreaRectTransform.anchorMin = Vector2.zero;
+        handleAreaRectTransform.anchorMax = Vector2.one;
+        handleAreaRectTransform.offsetMin = new Vector2(10f, 0f);
+        handleAreaRectTransform.offsetMax = new Vector2(-10f, 0f);
+
+        GameObject handleObject = new GameObject("Handle", typeof(RectTransform), typeof(Image));
+        handleObject.transform.SetParent(handleAreaObject.transform, false);
+
+        RectTransform handleRectTransform = handleObject.GetComponent<RectTransform>();
+        handleRectTransform.sizeDelta = new Vector2(24f, 24f);
+
+        Image handleImage = handleObject.GetComponent<Image>();
+        handleImage.color = new Color(0.96f, 0.98f, 0.92f, 1f);
+
+        Slider slider = sliderObject.GetComponent<Slider>();
+        slider.targetGraphic = handleImage;
+        slider.fillRect = fillRectTransform;
+        slider.handleRect = handleRectTransform;
+        slider.direction = Slider.Direction.LeftToRight;
+        slider.minValue = 0f;
+        slider.maxValue = 1f;
+        slider.wholeNumbers = false;
+        slider.value = 1f;
+        return slider;
+    }
+
     private Text CreateButtonLabel(Transform parent, string labelText)
     {
         GameObject labelObject = new GameObject(ButtonLabelObjectName, typeof(RectTransform), typeof(Text));
@@ -568,6 +850,11 @@ public class StartSceneController : MonoBehaviour
         OpenKeyMappingPanel(false);
     }
 
+    private void HandleOptionButtonPressed()
+    {
+        OpenOptionsPanel();
+    }
+
     private void OpenKeyMappingPanel(bool loadSceneAfterConfirm)
     {
         shouldLoadSceneAfterConfirm = loadSceneAfterConfirm;
@@ -579,11 +866,25 @@ public class StartSceneController : MonoBehaviour
         SetMenuButtonsInteractable(false);
     }
 
+    private void OpenOptionsPanel()
+    {
+        RefreshAudioControls();
+        SetOptionsPanelVisible(true);
+        SetMenuButtonsInteractable(false);
+    }
+
     private void CloseKeyMappingPanel()
     {
         CancelPendingRebind();
         SetKeyMappingPanelVisible(false);
         shouldLoadSceneAfterConfirm = false;
+        RefreshMenuButtons();
+        SetMenuButtonsInteractable(true);
+    }
+
+    private void CloseOptionsPanel()
+    {
+        SetOptionsPanelVisible(false);
         RefreshMenuButtons();
         SetMenuButtonsInteractable(true);
     }
@@ -632,6 +933,28 @@ public class StartSceneController : MonoBehaviour
         CloseKeyMappingPanel();
     }
 
+    private void HandleBackgroundMusicSliderChanged(float value)
+    {
+        if (isRefreshingAudioControls)
+        {
+            return;
+        }
+
+        AudioSettingsStore.SetBackgroundMusicVolume(value);
+        UpdateAudioValueText(backgroundMusicValueText, value);
+    }
+
+    private void HandleSoundEffectSliderChanged(float value)
+    {
+        if (isRefreshingAudioControls)
+        {
+            return;
+        }
+
+        AudioSettingsStore.SetSoundEffectVolume(value);
+        UpdateAudioValueText(soundEffectValueText, value);
+    }
+
     private void RefreshBindingValueTexts()
     {
         foreach (KeyValuePair<InputActionType, Text> entry in bindingValueTexts)
@@ -643,6 +966,36 @@ public class StartSceneController : MonoBehaviour
 
             entry.Value.text = PlayerInputBindings.GetKeyDisplayName(entry.Key);
         }
+    }
+
+    private void RefreshAudioControls()
+    {
+        isRefreshingAudioControls = true;
+
+        if (backgroundMusicSlider != null)
+        {
+            backgroundMusicSlider.value = AudioSettingsStore.BackgroundMusicVolume;
+        }
+
+        if (soundEffectSlider != null)
+        {
+            soundEffectSlider.value = AudioSettingsStore.SoundEffectVolume;
+        }
+
+        UpdateAudioValueText(backgroundMusicValueText, AudioSettingsStore.BackgroundMusicVolume);
+        UpdateAudioValueText(soundEffectValueText, AudioSettingsStore.SoundEffectVolume);
+
+        isRefreshingAudioControls = false;
+    }
+
+    private void UpdateAudioValueText(Text valueText, float value)
+    {
+        if (valueText == null)
+        {
+            return;
+        }
+
+        valueText.text = $"{Mathf.RoundToInt(Mathf.Clamp01(value) * 100f)}%";
     }
 
     private void UpdateStatusText(string message)
@@ -659,6 +1012,14 @@ public class StartSceneController : MonoBehaviour
         if (keyMappingPanel != null)
         {
             keyMappingPanel.SetActive(isVisible);
+        }
+    }
+
+    private void SetOptionsPanelVisible(bool isVisible)
+    {
+        if (optionsPanel != null)
+        {
+            optionsPanel.SetActive(isVisible);
         }
     }
 
@@ -683,8 +1044,8 @@ public class StartSceneController : MonoBehaviour
             if (startButtonRect != null)
             {
                 startButtonRect.anchoredPosition = isConfigured
-                    ? StartButtonWithReconfigurePosition
-                    : SingleButtonPosition;
+                    ? StartButtonWithSettingsButtonsPosition
+                    : StartButtonWithOptionPosition;
             }
         }
 
@@ -696,6 +1057,19 @@ public class StartSceneController : MonoBehaviour
             if (reconfigureButtonRect != null)
             {
                 reconfigureButtonRect.anchoredPosition = ReconfigureButtonPosition;
+            }
+        }
+
+        if (optionButton != null)
+        {
+            optionButton.gameObject.SetActive(true);
+
+            RectTransform optionButtonRect = optionButton.GetComponent<RectTransform>();
+            if (optionButtonRect != null)
+            {
+                optionButtonRect.anchoredPosition = isConfigured
+                    ? OptionButtonWithThreeButtonsPosition
+                    : OptionButtonWithTwoButtonsPosition;
             }
         }
     }
@@ -710,6 +1084,11 @@ public class StartSceneController : MonoBehaviour
         if (reconfigureButton != null)
         {
             reconfigureButton.interactable = isInteractable;
+        }
+
+        if (optionButton != null)
+        {
+            optionButton.interactable = isInteractable;
         }
     }
 

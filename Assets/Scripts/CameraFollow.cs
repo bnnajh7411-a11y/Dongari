@@ -8,12 +8,14 @@ public class CameraFollow : MonoBehaviour
     [SerializeField] private Collider2D leftWall;
     [SerializeField] private Collider2D rightWall;
     [SerializeField] private Collider2D groundBounds;
+    [SerializeField] private Collider2D cameraBounds;
     [SerializeField, Min(0f)] private float smoothTime = 0.15f;
 
     private const string PlayerObjectName = "Player";
     private const string LeftWallObjectName = "LWall";
     private const string RightWallObjectName = "RWall";
     private const string GroundObjectName = "Ground";
+    private const string CameraBoundsObjectName = "CameraBounds";
     private const string RoadSceneName = "Road";
 
     private Camera attachedCamera;
@@ -70,6 +72,12 @@ public class CameraFollow : MonoBehaviour
     private void TryAssignReferences()
     {
         TryAssignTarget();
+        TryAssignCameraBounds();
+
+        if (cameraBounds != null)
+        {
+            return;
+        }
 
         if (IsTopDownScene())
         {
@@ -135,6 +143,20 @@ public class CameraFollow : MonoBehaviour
         }
     }
 
+    private void TryAssignCameraBounds()
+    {
+        if (cameraBounds != null)
+        {
+            return;
+        }
+
+        GameObject boundsObject = GameObject.Find(CameraBoundsObjectName);
+        if (boundsObject != null)
+        {
+            cameraBounds = boundsObject.GetComponent<Collider2D>();
+        }
+    }
+
     private bool IsTopDownScene()
     {
         string activeSceneName = SceneManager.GetActiveScene().name;
@@ -143,27 +165,32 @@ public class CameraFollow : MonoBehaviour
 
     private Vector3 GetClampedCameraPosition(Vector3 desiredPosition)
     {
+        if (cameraBounds != null)
+        {
+            return GetBoundsClampedPosition(cameraBounds, desiredPosition);
+        }
+
         if (IsTopDownScene())
         {
-            return GetGroundClampedPosition(desiredPosition);
+            return GetBoundsClampedPosition(groundBounds, desiredPosition);
         }
 
         return new Vector3(GetClampedCameraX(desiredPosition.x), desiredPosition.y, desiredPosition.z);
     }
 
-    private Vector3 GetGroundClampedPosition(Vector3 desiredPosition)
+    private Vector3 GetBoundsClampedPosition(Collider2D boundsCollider, Vector3 desiredPosition)
     {
-        if (groundBounds == null || attachedCamera == null)
+        if (boundsCollider == null || attachedCamera == null)
         {
             return desiredPosition;
         }
 
         GetCameraHalfExtents(out float cameraHalfWidth, out float cameraHalfHeight);
 
-        float minCameraX = groundBounds.bounds.min.x + cameraHalfWidth;
-        float maxCameraX = groundBounds.bounds.max.x - cameraHalfWidth;
-        float minCameraY = groundBounds.bounds.min.y + cameraHalfHeight;
-        float maxCameraY = groundBounds.bounds.max.y - cameraHalfHeight;
+        float minCameraX = boundsCollider.bounds.min.x + cameraHalfWidth;
+        float maxCameraX = boundsCollider.bounds.max.x - cameraHalfWidth;
+        float minCameraY = boundsCollider.bounds.min.y + cameraHalfHeight;
+        float maxCameraY = boundsCollider.bounds.max.y - cameraHalfHeight;
 
         float clampedX = ClampAxisToBounds(desiredPosition.x, minCameraX, maxCameraX);
         float clampedY = ClampAxisToBounds(desiredPosition.y, minCameraY, maxCameraY);
