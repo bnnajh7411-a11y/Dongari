@@ -172,27 +172,27 @@ public class PlayerMovement : MonoBehaviour
 
     private float ReadHorizontalInput()
     {
-        return Input.GetAxisRaw("Horizontal");
+        return PlayerInputBindings.GetHorizontalInput();
     }
 
     private float ReadVerticalInput()
     {
-        return Input.GetAxisRaw("Vertical");
+        return PlayerInputBindings.GetVerticalInput();
     }
 
     private bool IsRunPressed()
     {
-        return Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+        return PlayerInputBindings.IsRunPressed();
     }
 
     private bool WasJumpPressed()
     {
-        return Input.GetKeyDown(KeyCode.Space);
+        return PlayerInputBindings.WasJumpPressedThisFrame();
     }
 
     private bool WasInteractPressed()
     {
-        return Input.GetKeyDown(KeyCode.Z);
+        return PlayerInputBindings.WasInteractPressedThisFrame();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

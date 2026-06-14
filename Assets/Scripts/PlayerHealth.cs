@@ -17,6 +17,7 @@ public class PlayerHealth : MonoBehaviour
     [Header("UI")]
     [SerializeField] private Vector2 gaugeSize = new Vector2(320f, 24f);
     [SerializeField] private Vector2 gaugeAnchoredPosition = new Vector2(24f, -24f);
+    [SerializeField] private bool showBackgroundFrame = false;
     [SerializeField] private Color backgroundColor = new Color(0f, 0f, 0f, 0.55f);
     [SerializeField] private Color healthFillColor = new Color(0.86f, 0.2f, 0.2f, 1f);
 
@@ -202,7 +203,8 @@ public class PlayerHealth : MonoBehaviour
         Image backgroundImage = gaugeObject.GetComponent<Image>();
         backgroundImage.sprite = uiSprite;
         backgroundImage.type = Image.Type.Simple;
-        backgroundImage.color = backgroundColor;
+        backgroundImage.color = showBackgroundFrame ? backgroundColor : Color.clear;
+        backgroundImage.enabled = showBackgroundFrame;
         backgroundImage.raycastTarget = false;
 
         GameObject fillObject = new GameObject("Fill", typeof(RectTransform), typeof(Image));
