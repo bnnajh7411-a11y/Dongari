@@ -77,6 +77,11 @@ public class BuildingCollapseController : MonoBehaviour
 
     private void Update()
     {
+        if (GamePauseState.IsPaused)
+        {
+            return;
+        }
+
         if (!isInitialized || Time.time < collapseStartTime)
         {
             return;

@@ -83,6 +83,7 @@ public class PlayerMovement : MonoBehaviour
         EnsurePlayerHealthComponent();
         EnsureWaterSceneSystems();
         EnsureArtificialRiverColliderSizing();
+        StartSceneController.EnsurePauseMenuInstance();
     }
 
     protected virtual void OnDisable()
@@ -97,6 +98,11 @@ public class PlayerMovement : MonoBehaviour
 
     protected virtual void Update()
     {
+        if (GamePauseState.IsPaused)
+        {
+            return;
+        }
+
         horizontalInput = ReadHorizontalInput();
         verticalInput = ReadVerticalInput();
         isRunning = IsRunPressed();
@@ -117,6 +123,12 @@ public class PlayerMovement : MonoBehaviour
 
     protected virtual void FixedUpdate()
     {
+        if (GamePauseState.IsPaused)
+        {
+            rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
         if (IsWaterMovementActive())
         {
             jumpRequested = false;

@@ -27,6 +27,11 @@ public class FallingHazardSpawner : MonoBehaviour
 
     private void Update()
     {
+        if (GamePauseState.IsPaused)
+        {
+            return;
+        }
+
         if (mainCamera == null)
         {
             mainCamera = Camera.main;

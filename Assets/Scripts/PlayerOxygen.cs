@@ -56,6 +56,11 @@ public class PlayerOxygen : MonoBehaviour
 
     private void Update()
     {
+        if (GamePauseState.IsPaused)
+        {
+            return;
+        }
+
         RefreshWaterCollider();
 
         float deltaTime = Time.deltaTime;

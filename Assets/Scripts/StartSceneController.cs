@@ -7,11 +7,16 @@ using UnityEngine.UI;
 [DisallowMultipleComponent]
 public class StartSceneController : MonoBehaviour
 {
+    private const string StartSceneName = "Start";
     private const string EventSystemObjectName = "EventSystem";
     private const string CanvasObjectName = "StartCanvas";
+    private const string PauseCanvasObjectName = "PauseMenuCanvas";
+    private const string PauseMenuObjectName = "PauseMenuController";
+    private const string MenuButtonsContainerObjectName = "MenuButtonsContainer";
     private const string ButtonObjectName = "StartButton";
     private const string ReconfigureButtonObjectName = "ReconfigureButton";
     private const string OptionButtonObjectName = "OptionButton";
+    private const string ExitButtonObjectName = "ExitButton";
     private const string ButtonLabelObjectName = "Label";
     private const string KeyMappingPanelObjectName = "KeyMappingPanel";
     private const string KeyMappingWindowObjectName = "KeyMappingWindow";
@@ -21,11 +26,7 @@ public class StartSceneController : MonoBehaviour
     private const string KeyBindingViewportObjectName = "KeyBindingViewport";
     private const string KeyBindingContentObjectName = "KeyBindingContent";
     private const string DefaultStatusText = "";
-    private static readonly Vector2 StartButtonWithOptionPosition = new Vector2(0f, 44f);
-    private static readonly Vector2 StartButtonWithSettingsButtonsPosition = new Vector2(0f, 112f);
-    private static readonly Vector2 ReconfigureButtonPosition = new Vector2(0f, 28f);
-    private static readonly Vector2 OptionButtonWithTwoButtonsPosition = new Vector2(0f, -44f);
-    private static readonly Vector2 OptionButtonWithThreeButtonsPosition = new Vector2(0f, -56f);
+    private const float MenuButtonVerticalSpacing = 92f;
     private static readonly Vector2 KeyBindingScrollAreaSize = new Vector2(760f, 340f);
     private static readonly Vector2 KeyBindingScrollAreaPosition = new Vector2(0f, -24f);
     private static readonly Vector2 KeyBindingStatusPosition = new Vector2(0f, 28f);
@@ -56,14 +57,20 @@ public class StartSceneController : MonoBehaviour
     [SerializeField] private string buttonLabel = "START";
     [SerializeField] private string reconfigureButtonLabel = "KEY SETUP";
     [SerializeField] private string optionButtonLabel = "OPTION";
+    [SerializeField] private string exitButtonLabel = "EXIT";
 
     private readonly Dictionary<InputActionType, Text> bindingValueTexts = new Dictionary<InputActionType, Text>();
+
+    private static bool isCreatingPauseMenuInstance;
+    private static StartSceneController pauseMenuInstance;
 
     private Button startButton;
     private Button reconfigureButton;
     private Button optionButton;
+    private Button exitButton;
     private Canvas rootCanvas;
     private Font builtinFont;
+    private GameObject menuButtonsContainer;
     private GameObject keyMappingPanel;
     private GameObject optionsPanel;
     private ScrollRect bindingScrollRect;
@@ -75,15 +82,33 @@ public class StartSceneController : MonoBehaviour
     private bool isWaitingForBinding;
     private bool isRefreshingAudioControls;
     private bool shouldLoadSceneAfterConfirm;
+    private bool isPauseMenu;
     private InputActionType pendingBindingAction;
+
+    public static void EnsurePauseMenuInstance()
+    {
+        if (pauseMenuInstance != null || SceneManager.GetActiveScene().name == StartSceneName)
+        {
+            return;
+        }
+
+        isCreatingPauseMenuInstance = true;
+        GameObject pauseMenuObject = new GameObject(PauseMenuObjectName);
+        DontDestroyOnLoad(pauseMenuObject);
+        pauseMenuInstance = pauseMenuObject.AddComponent<StartSceneController>();
+        isCreatingPauseMenuInstance = false;
+    }
 
     private void Awake()
     {
+        isPauseMenu = isCreatingPauseMenuInstance;
         EnsureEventSystem();
         rootCanvas = EnsureCanvas();
-        EnsureStartButton(rootCanvas.transform);
-        EnsureReconfigureButton(rootCanvas.transform);
-        EnsureOptionButton(rootCanvas.transform);
+        menuButtonsContainer = EnsureMenuButtonsContainer(rootCanvas.transform);
+        EnsureStartButton(menuButtonsContainer.transform);
+        EnsureReconfigureButton(menuButtonsContainer.transform);
+        EnsureOptionButton(menuButtonsContainer.transform);
+        EnsureExitButton(menuButtonsContainer.transform);
         EnsureKeyMappingPanel(rootCanvas.transform);
         EnsureOptionsPanel(rootCanvas.transform);
         SetKeyMappingPanelVisible(false);
@@ -91,10 +116,62 @@ public class StartSceneController : MonoBehaviour
         RefreshMenuButtons();
         RefreshBindingValueTexts();
         UpdateStatusText(DefaultStatusText);
+
+        if (isPauseMenu)
+        {
+            SceneManager.sceneLoaded += HandleSceneLoaded;
+            SetMenuButtonsVisible(false);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (pauseMenuInstance == this)
+        {
+            pauseMenuInstance = null;
+        }
+
+        if (isPauseMenu)
+        {
+            SceneManager.sceneLoaded -= HandleSceneLoaded;
+            ResumeSceneActivity();
+        }
     }
 
     private void Update()
     {
+        if (isPauseMenu)
+        {
+            if (SceneManager.GetActiveScene().name == StartSceneName)
+            {
+                return;
+            }
+
+            if (isWaitingForBinding && Input.GetKeyDown(KeyCode.Escape))
+            {
+                CancelPendingRebind();
+                return;
+            }
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                if (keyMappingPanel != null && keyMappingPanel.activeSelf)
+                {
+                    CloseKeyMappingPanel();
+                    return;
+                }
+
+                if (optionsPanel != null && optionsPanel.activeSelf)
+                {
+                    CloseOptionsPanel();
+                    return;
+                }
+
+                TogglePauseMenu();
+                return;
+            }
+        }
+
         if (!isWaitingForBinding)
         {
             return;
@@ -135,20 +212,22 @@ public class StartSceneController : MonoBehaviour
 
     private Canvas EnsureCanvas()
     {
-        Canvas existingCanvas = FindAnyObjectByType<Canvas>();
-        if (existingCanvas != null)
+        string canvasObjectName = isPauseMenu ? PauseCanvasObjectName : CanvasObjectName;
+        GameObject existingCanvasObject = GameObject.Find(canvasObjectName);
+        if (existingCanvasObject != null && existingCanvasObject.TryGetComponent(out Canvas existingCanvas))
         {
             return existingCanvas;
         }
 
         GameObject canvasObject = new GameObject(
-            CanvasObjectName,
+            canvasObjectName,
             typeof(Canvas),
             typeof(CanvasScaler),
             typeof(GraphicRaycaster));
 
         Canvas canvas = canvasObject.GetComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = isPauseMenu ? 500 : 200;
 
         CanvasScaler canvasScaler = canvasObject.GetComponent<CanvasScaler>();
         canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
@@ -157,6 +236,27 @@ public class StartSceneController : MonoBehaviour
         canvasScaler.matchWidthOrHeight = 0.5f;
 
         return canvas;
+    }
+
+    private GameObject EnsureMenuButtonsContainer(Transform parent)
+    {
+        Transform existingContainerTransform = parent.Find(MenuButtonsContainerObjectName);
+        if (existingContainerTransform != null)
+        {
+            return existingContainerTransform.gameObject;
+        }
+
+        GameObject containerObject = new GameObject(MenuButtonsContainerObjectName, typeof(RectTransform));
+        containerObject.transform.SetParent(parent, false);
+
+        RectTransform containerRectTransform = containerObject.GetComponent<RectTransform>();
+        containerRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        containerRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        containerRectTransform.pivot = new Vector2(0.5f, 0.5f);
+        containerRectTransform.sizeDelta = new Vector2(320f, 420f);
+        containerRectTransform.anchoredPosition = Vector2.zero;
+
+        return containerObject;
     }
 
     private void EnsureStartButton(Transform parent)
@@ -178,7 +278,7 @@ public class StartSceneController : MonoBehaviour
             parent,
             ButtonObjectName,
             buttonLabel,
-            StartButtonWithOptionPosition,
+            Vector2.zero,
             new Vector2(280f, 80f),
             new Color(0.16f, 0.44f, 0.25f, 1f));
         startButton.onClick.AddListener(HandleStartButtonPressed);
@@ -203,7 +303,7 @@ public class StartSceneController : MonoBehaviour
             parent,
             ReconfigureButtonObjectName,
             reconfigureButtonLabel,
-            ReconfigureButtonPosition,
+            Vector2.zero,
             new Vector2(280f, 68f),
             new Color(0.74f, 0.81f, 0.72f, 1f));
         reconfigureButton.onClick.AddListener(HandleReconfigureButtonPressed);
@@ -234,7 +334,7 @@ public class StartSceneController : MonoBehaviour
             parent,
             OptionButtonObjectName,
             optionButtonLabel,
-            OptionButtonWithTwoButtonsPosition,
+            Vector2.zero,
             new Vector2(280f, 68f),
             new Color(0.84f, 0.74f, 0.46f, 1f));
         optionButton.onClick.AddListener(HandleOptionButtonPressed);
@@ -244,6 +344,31 @@ public class StartSceneController : MonoBehaviour
         {
             label.color = new Color(0.18f, 0.16f, 0.09f, 1f);
         }
+    }
+
+    private void EnsureExitButton(Transform parent)
+    {
+        GameObject existingButtonObject = GameObject.Find(ExitButtonObjectName);
+        if (existingButtonObject != null)
+        {
+            exitButton = existingButtonObject.GetComponent<Button>();
+            if (exitButton != null)
+            {
+                exitButton.onClick.RemoveListener(HandleExitButtonPressed);
+                exitButton.onClick.AddListener(HandleExitButtonPressed);
+            }
+
+            return;
+        }
+
+        exitButton = CreateButton(
+            parent,
+            ExitButtonObjectName,
+            exitButtonLabel,
+            Vector2.zero,
+            new Vector2(280f, 68f),
+            new Color(0.71f, 0.35f, 0.3f, 1f));
+        exitButton.onClick.AddListener(HandleExitButtonPressed);
     }
 
     private void EnsureOptionsPanel(Transform parent)
@@ -807,6 +932,20 @@ public class StartSceneController : MonoBehaviour
         rectTransform.pivot = new Vector2(0.5f, 0.5f);
     }
 
+    private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (!isPauseMenu)
+        {
+            return;
+        }
+
+        EnsureEventSystem();
+        SetKeyMappingPanelVisible(false);
+        SetOptionsPanelVisible(false);
+        SetMenuButtonsVisible(false);
+        ResumeSceneActivity();
+    }
+
     private Font GetBuiltinFont()
     {
         if (builtinFont != null)
@@ -853,6 +992,73 @@ public class StartSceneController : MonoBehaviour
     private void HandleOptionButtonPressed()
     {
         OpenOptionsPanel();
+    }
+
+    private void HandleExitButtonPressed()
+    {
+        ResumeSceneActivity();
+
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
+    }
+
+    private void TogglePauseMenu()
+    {
+        if (menuButtonsContainer != null && menuButtonsContainer.activeSelf)
+        {
+            HidePauseMenu();
+            return;
+        }
+
+        ShowPauseMenu();
+    }
+
+    private void ShowPauseMenu()
+    {
+        if (!isPauseMenu)
+        {
+            return;
+        }
+
+        shouldLoadSceneAfterConfirm = false;
+        RefreshMenuButtons();
+        SetKeyMappingPanelVisible(false);
+        SetOptionsPanelVisible(false);
+        SetMenuButtonsVisible(true);
+        SetMenuButtonsInteractable(true);
+        PauseSceneActivity();
+    }
+
+    private void HidePauseMenu()
+    {
+        if (!isPauseMenu)
+        {
+            return;
+        }
+
+        CancelPendingRebind();
+        shouldLoadSceneAfterConfirm = false;
+        SetKeyMappingPanelVisible(false);
+        SetOptionsPanelVisible(false);
+        SetMenuButtonsVisible(false);
+        ResumeSceneActivity();
+    }
+
+    private void PauseSceneActivity()
+    {
+        GamePauseState.SetPaused(true);
+        Time.timeScale = 0f;
+        AudioListener.pause = true;
+    }
+
+    private void ResumeSceneActivity()
+    {
+        GamePauseState.SetPaused(false);
+        Time.timeScale = 1f;
+        AudioListener.pause = false;
     }
 
     private void OpenKeyMappingPanel(bool loadSceneAfterConfirm)
@@ -1023,6 +1229,14 @@ public class StartSceneController : MonoBehaviour
         }
     }
 
+    private void SetMenuButtonsVisible(bool isVisible)
+    {
+        if (menuButtonsContainer != null)
+        {
+            menuButtonsContainer.SetActive(isVisible);
+        }
+    }
+
     private void ResetBindingScrollPosition()
     {
         if (bindingScrollRect == null)
@@ -1037,41 +1251,53 @@ public class StartSceneController : MonoBehaviour
     private void RefreshMenuButtons()
     {
         bool isConfigured = PlayerInputBindings.IsConfigured;
-
-        if (startButton != null)
-        {
-            RectTransform startButtonRect = startButton.GetComponent<RectTransform>();
-            if (startButtonRect != null)
-            {
-                startButtonRect.anchoredPosition = isConfigured
-                    ? StartButtonWithSettingsButtonsPosition
-                    : StartButtonWithOptionPosition;
-            }
-        }
-
         if (reconfigureButton != null)
         {
             reconfigureButton.gameObject.SetActive(isConfigured);
-
-            RectTransform reconfigureButtonRect = reconfigureButton.GetComponent<RectTransform>();
-            if (reconfigureButtonRect != null)
-            {
-                reconfigureButtonRect.anchoredPosition = ReconfigureButtonPosition;
-            }
         }
 
         if (optionButton != null)
         {
             optionButton.gameObject.SetActive(true);
-
-            RectTransform optionButtonRect = optionButton.GetComponent<RectTransform>();
-            if (optionButtonRect != null)
-            {
-                optionButtonRect.anchoredPosition = isConfigured
-                    ? OptionButtonWithThreeButtonsPosition
-                    : OptionButtonWithTwoButtonsPosition;
-            }
         }
+
+        if (exitButton != null)
+        {
+            exitButton.gameObject.SetActive(true);
+        }
+
+        List<Button> visibleButtons = new List<Button>();
+        AddVisibleMenuButton(visibleButtons, startButton);
+        AddVisibleMenuButton(visibleButtons, reconfigureButton);
+        AddVisibleMenuButton(visibleButtons, optionButton);
+        AddVisibleMenuButton(visibleButtons, exitButton);
+
+        if (visibleButtons.Count == 0)
+        {
+            return;
+        }
+
+        float topOffset = (visibleButtons.Count - 1) * MenuButtonVerticalSpacing * 0.5f;
+        for (int i = 0; i < visibleButtons.Count; i++)
+        {
+            RectTransform buttonRectTransform = visibleButtons[i].GetComponent<RectTransform>();
+            if (buttonRectTransform == null)
+            {
+                continue;
+            }
+
+            buttonRectTransform.anchoredPosition = new Vector2(0f, topOffset - (i * MenuButtonVerticalSpacing));
+        }
+    }
+
+    private void AddVisibleMenuButton(List<Button> buttons, Button button)
+    {
+        if (button == null || !button.gameObject.activeSelf)
+        {
+            return;
+        }
+
+        buttons.Add(button);
     }
 
     private void SetMenuButtonsInteractable(bool isInteractable)
@@ -1089,6 +1315,11 @@ public class StartSceneController : MonoBehaviour
         if (optionButton != null)
         {
             optionButton.interactable = isInteractable;
+        }
+
+        if (exitButton != null)
+        {
+            exitButton.interactable = isInteractable;
         }
     }
 
@@ -1141,6 +1372,11 @@ public class StartSceneController : MonoBehaviour
         {
             Debug.LogError($"Scene '{sceneToLoad}' is not available in Build Settings.", this);
             return;
+        }
+
+        if (isPauseMenu)
+        {
+            HidePauseMenu();
         }
 
         SceneManager.LoadScene(sceneToLoad);

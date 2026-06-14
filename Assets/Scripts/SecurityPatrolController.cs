@@ -33,6 +33,11 @@ public class SecurityPatrolController : MonoBehaviour
 
     private void Update()
     {
+        if (GamePauseState.IsPaused)
+        {
+            return;
+        }
+
         if (isChasing)
         {
             if (chaseTarget != null)

@@ -92,6 +92,11 @@ public class RoadCarSpawner : MonoBehaviour
 
     private void Update()
     {
+        if (GamePauseState.IsPaused)
+        {
+            return;
+        }
+
         if (Time.time < nextSpawnTime)
         {
             return;
@@ -542,6 +547,16 @@ public class RoadCar : MonoBehaviour
 
     private void Update()
     {
+        if (GamePauseState.IsPaused)
+        {
+            if (cachedBody != null)
+            {
+                cachedBody.linearVelocity = Vector2.zero;
+            }
+
+            return;
+        }
+
         UpdateRoadSpeed();
 
         if (movesRight)

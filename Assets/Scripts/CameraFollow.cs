@@ -33,6 +33,11 @@ public class CameraFollow : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (GamePauseState.IsPaused)
+        {
+            return;
+        }
+
         TryAssignReferences();
         CacheDepthOffset();
 
