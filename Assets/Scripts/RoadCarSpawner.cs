@@ -13,6 +13,10 @@ public class RoadCarSpawner : MonoBehaviour
     private const string GroundObjectName = "Ground";
     private const string PlayerObjectName = "Player";
     private const string CarResourcesPath = "RoadCars";
+    private const int SecondFromBottomLaneIndex = 1;
+    private const int SecondFromBottomLaneSortingOrderOffset = 2;
+    private const float LowerLaneYOffsetPercent = 0.25f;
+    private const float BottomLaneExtraYOffsetPercent = 0.10f;
     private const float UpperLaneYOffsetPercent = 0.20f;
 
 #if UNITY_EDITOR
@@ -240,7 +244,7 @@ public class RoadCarSpawner : MonoBehaviour
 
         SpriteRenderer spriteRenderer = carObject.AddComponent<SpriteRenderer>();
         spriteRenderer.sprite = sprite;
-        spriteRenderer.sortingOrder = sortingOrder;
+        spriteRenderer.sortingOrder = GetSortingOrderForLane(laneIndex);
         spriteRenderer.flipX = !movesRight;
 
         BoxCollider2D collider = carObject.AddComponent<BoxCollider2D>();
@@ -456,6 +460,17 @@ public class RoadCarSpawner : MonoBehaviour
         return laneIndex >= totalLanes / 2;
     }
 
+    private int GetSortingOrderForLane(int laneIndex)
+    {
+        int laneSortingOrder = sortingOrder;
+        if (laneIndex == SecondFromBottomLaneIndex)
+        {
+            laneSortingOrder += SecondFromBottomLaneSortingOrderOffset;
+        }
+
+        return laneSortingOrder;
+    }
+
     private float GetLaneCenterY(int laneIndex, float minY, float maxY)
     {
         if (minY >= maxY)
@@ -471,6 +486,15 @@ public class RoadCarSpawner : MonoBehaviour
         if (IsLaneRightMoving(clampedLaneIndex))
         {
             laneCenterY += (maxY - minY) * UpperLaneYOffsetPercent;
+        }
+        else
+        {
+            laneCenterY += (maxY - minY) * LowerLaneYOffsetPercent;
+
+            if (clampedLaneIndex == 0)
+            {
+                laneCenterY += (maxY - minY) * BottomLaneExtraYOffsetPercent;
+            }
         }
 
         return Mathf.Clamp(laneCenterY, minY, maxY);
