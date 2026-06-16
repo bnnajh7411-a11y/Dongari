@@ -50,6 +50,7 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody2D rb;
     private Collider2D playerCollider;
+    private PlayerStamina playerStamina;
     private float baseGravityScale;
     private float horizontalInput;
     private float verticalInput;
@@ -81,6 +82,7 @@ public class PlayerMovement : MonoBehaviour
 
         ConfigureMovementMode();
         EnsurePlayerHealthComponent();
+        EnsurePlayerStaminaComponent();
         EnsureWaterSceneSystems();
         EnsureArtificialRiverColliderSizing();
         StartSceneController.EnsurePauseMenuInstance();
@@ -105,7 +107,7 @@ public class PlayerMovement : MonoBehaviour
 
         horizontalInput = ReadHorizontalInput();
         verticalInput = ReadVerticalInput();
-        isRunning = IsRunPressed();
+        isRunning = IsRunPressed() && CanSprint();
         UpdateClimbingState();
 
         if (!isClimbing && !isTopDownScene && !IsWaterMovementActive() && WasJumpPressed() && isGrounded)
@@ -133,6 +135,7 @@ public class PlayerMovement : MonoBehaviour
         {
             jumpRequested = false;
             ApplyWaterMovement();
+            ConsumeRunStamina();
             return;
         }
 
@@ -140,6 +143,7 @@ public class PlayerMovement : MonoBehaviour
         {
             ApplyTopDownMovement();
             ClampPositionToGroundBounds();
+            ConsumeRunStamina();
             return;
         }
 
@@ -147,6 +151,7 @@ public class PlayerMovement : MonoBehaviour
         {
             jumpRequested = false;
             ApplyClimbMovement();
+            ConsumeRunStamina();
             return;
         }
 
@@ -168,6 +173,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         ApplyGravity();
+        ConsumeRunStamina();
     }
 
     private void UpdateFacingDirection()
@@ -195,6 +201,11 @@ public class PlayerMovement : MonoBehaviour
     private bool IsRunPressed()
     {
         return PlayerInputBindings.IsRunPressed();
+    }
+
+    private bool CanSprint()
+    {
+        return playerStamina == null || playerStamina.CanSprint;
     }
 
     private bool WasJumpPressed()
@@ -410,6 +421,17 @@ public class PlayerMovement : MonoBehaviour
         gameObject.AddComponent<PlayerHealth>();
     }
 
+    private void EnsurePlayerStaminaComponent()
+    {
+        playerStamina = GetComponent<PlayerStamina>();
+        if (playerStamina != null)
+        {
+            return;
+        }
+
+        playerStamina = gameObject.AddComponent<PlayerStamina>();
+    }
+
     private void EnsureWaterSceneSystems()
     {
         if (!isWaterScene || GetComponent<PlayerOxygen>() != null)
@@ -442,6 +464,21 @@ public class PlayerMovement : MonoBehaviour
         }
 
         SpriteColliderSizer.FitBoxCollidersToSpriteRenderers(sceneObject.transform);
+    }
+
+    private void ConsumeRunStamina()
+    {
+        if (playerStamina == null || !isRunning)
+        {
+            return;
+        }
+
+        playerStamina.ConsumeRunStamina(Time.fixedDeltaTime);
+
+        if (!playerStamina.CanSprint)
+        {
+            isRunning = false;
+        }
     }
 
     private static void SetTrackedContact(HashSet<Collider2D> contacts, Collider2D other, bool isContacting)

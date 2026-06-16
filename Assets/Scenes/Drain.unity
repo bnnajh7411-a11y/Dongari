@@ -3105,7 +3105,7 @@ Transform:
   m_GameObject: {fileID: 157821401}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -52, y: 5, z: 0}
+  m_LocalPosition: {x: -52.38, y: 4.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3121,8 +3121,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87e39f64b763480dadb9ce1a157c14e6, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MouseEnemyController
+  moveSpeed: 1.75
+  edgePadding: 0.08
+  startMovingRight: 1
+  rangeSearchDistance: 200
+  movementRangeOverride: {fileID: 0}
+  contactDamage: 1
 --- !u!50 &157821405
 Rigidbody2D:
   serializedVersion: 5
@@ -3138,7 +3144,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 0
+  m_GravityScale: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -22743,8 +22749,8 @@ Transform:
   m_GameObject: {fileID: 1036920476}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -61.99, y: -65.26, z: 0}
-  m_LocalScale: {x: 9.486339, y: 0.7916948, z: 1}
+  m_LocalPosition: {x: -62.1284, y: -65.26, z: 0}
+  m_LocalScale: {x: 7.7868133, y: 0.7916948, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 666571145}

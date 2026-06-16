@@ -4918,7 +4918,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d8bc11c15b84dbf826c8ac674c1e090, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
-  maxHealth: 3
+  maxHealth: 20
   damageCooldown: 0.75
   reloadSceneOnDeath: 1
 --- !u!1 &2056000100

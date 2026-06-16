@@ -10,8 +10,10 @@ public class SecurityPatrolController : MonoBehaviour
     [SerializeField, Min(0.01f)] private float patrolSpeed = 3f;
     [SerializeField, Min(0.01f)] private float chaseSpeed = 5f;
     [SerializeField, Range(8, 128)] private int nearestPointSamples = 48;
+    [SerializeField, Min(1)] private int contactDamage = 1;
 
     private SpriteRenderer securityRenderer;
+    private BoxCollider2D securityCollider;
     private SplineContainer routeContainer;
     private float routeLength;
     private float patrolT;
@@ -28,6 +30,7 @@ public class SecurityPatrolController : MonoBehaviour
         originalZ = transform.position.z;
 
         TryCacheRoute();
+        EnsureContactCollider();
         InitializePatrolPosition();
     }
 
@@ -69,6 +72,11 @@ public class SecurityPatrolController : MonoBehaviour
         {
             securityRenderer.flipX = defaultFlipX;
         }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        TryDamagePlayer(other);
     }
 
     public void BeginChase(Transform target)
@@ -255,6 +263,38 @@ public class SecurityPatrolController : MonoBehaviour
         }
 
         securityRenderer.flipX = delta.x < 0f ? !defaultFlipX : defaultFlipX;
+    }
+
+    private void EnsureContactCollider()
+    {
+        securityCollider = GetComponent<BoxCollider2D>();
+        if (securityCollider == null)
+        {
+            securityCollider = gameObject.AddComponent<BoxCollider2D>();
+        }
+
+        securityCollider.isTrigger = true;
+
+        if (securityRenderer != null && securityRenderer.sprite != null)
+        {
+            SpriteColliderSizer.FitBoxCollidersToSpriteRenderers(transform);
+        }
+    }
+
+    private void TryDamagePlayer(Collider2D other)
+    {
+        if (other == null)
+        {
+            return;
+        }
+
+        PlayerHealth playerHealth = other.GetComponentInParent<PlayerHealth>();
+        if (playerHealth == null)
+        {
+            return;
+        }
+
+        playerHealth.TakeDamage(contactDamage);
     }
 
     private bool IsRouteAvailable()

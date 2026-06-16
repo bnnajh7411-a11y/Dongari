@@ -7,8 +7,16 @@ public class PlayerHealth : MonoBehaviour
 {
     private const string HealthCanvasObjectName = "HealthCanvas";
     private const string HealthGaugeObjectName = "HealthGauge";
+    private static int savedCurrentHealth;
+    private static bool hasSavedCurrentHealth;
 
-    [SerializeField, Min(1)] private int maxHealth = 3;
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStaticState()
+    {
+        ResetPersistentHealth();
+    }
+
+    [SerializeField, Min(1)] private int maxHealth = 20;
     [SerializeField, Min(0f)] private float damageCooldown = 0.75f;
     [SerializeField, Min(0f)] private float damageFlashDuration = 0.3f;
     [SerializeField] private Color damageFlashColor = Color.red;
@@ -35,16 +43,32 @@ public class PlayerHealth : MonoBehaviour
 
     private void Awake()
     {
-        CurrentHealth = maxHealth;
+        CurrentHealth = hasSavedCurrentHealth
+            ? Mathf.Clamp(savedCurrentHealth, 0, maxHealth)
+            : maxHealth;
+
         spriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
         EnsureHealthHud();
         RefreshHud();
+        SaveCurrentHealth();
     }
 
     private void OnDisable()
     {
+        SaveCurrentHealthIfAlive();
         RestoreSpriteColors();
         damageFlashRoutine = null;
+    }
+
+    private void OnDestroy()
+    {
+        SaveCurrentHealthIfAlive();
+    }
+
+    public static void ResetPersistentHealth()
+    {
+        savedCurrentHealth = 0;
+        hasSavedCurrentHealth = false;
     }
 
     public bool TakeDamage(int damageAmount)
@@ -55,6 +79,7 @@ public class PlayerHealth : MonoBehaviour
         }
 
         CurrentHealth = Mathf.Max(0, CurrentHealth - damageAmount);
+        SaveCurrentHealth();
         nextDamageTime = Time.time + damageCooldown;
         TriggerDamageFlash();
         RefreshHud();
@@ -70,6 +95,8 @@ public class PlayerHealth : MonoBehaviour
     private void HandleDeath()
     {
         isDead = true;
+        PlayerStamina.ResetPersistentStamina();
+        ResetPersistentHealth();
 
         if (TryGetComponent(out Rigidbody2D rb))
         {
@@ -227,6 +254,20 @@ public class PlayerHealth : MonoBehaviour
         fillImage.type = Image.Type.Simple;
         fillImage.color = healthFillColor;
         fillImage.raycastTarget = false;
+    }
+
+    private void SaveCurrentHealth()
+    {
+        savedCurrentHealth = CurrentHealth;
+        hasSavedCurrentHealth = true;
+    }
+
+    private void SaveCurrentHealthIfAlive()
+    {
+        if (!isDead)
+        {
+            SaveCurrentHealth();
+        }
     }
 
     private void RefreshHud()

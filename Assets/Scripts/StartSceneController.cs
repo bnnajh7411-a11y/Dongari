@@ -102,6 +102,13 @@ public class StartSceneController : MonoBehaviour
     private void Awake()
     {
         isPauseMenu = isCreatingPauseMenuInstance;
+
+        if (!isPauseMenu && SceneManager.GetActiveScene().name == StartSceneName)
+        {
+            PlayerHealth.ResetPersistentHealth();
+            PlayerStamina.ResetPersistentStamina();
+        }
+
         EnsureEventSystem();
         rootCanvas = EnsureCanvas();
         menuButtonsContainer = EnsureMenuButtonsContainer(rootCanvas.transform);
