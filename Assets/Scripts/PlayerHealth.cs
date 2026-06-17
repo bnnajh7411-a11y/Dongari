@@ -92,6 +92,19 @@ public class PlayerHealth : MonoBehaviour
         return true;
     }
 
+    public bool RestoreHealth(int healAmount)
+    {
+        if (isDead || healAmount <= 0 || CurrentHealth >= maxHealth)
+        {
+            return false;
+        }
+
+        CurrentHealth = Mathf.Min(maxHealth, CurrentHealth + healAmount);
+        SaveCurrentHealth();
+        RefreshHud();
+        return true;
+    }
+
     private void HandleDeath()
     {
         isDead = true;
