@@ -14,6 +14,7 @@ public class StartSceneController : MonoBehaviour
     private const string PauseMenuObjectName = "PauseMenuController";
     private const string MenuButtonsContainerObjectName = "MenuButtonsContainer";
     private const string ButtonObjectName = "StartButton";
+    private const string PauseResumeButtonLabel = "RESUME";
     private const string ReconfigureButtonObjectName = "ReconfigureButton";
     private const string OptionButtonObjectName = "OptionButton";
     private const string ExitButtonObjectName = "ExitButton";
@@ -113,6 +114,7 @@ public class StartSceneController : MonoBehaviour
         rootCanvas = EnsureCanvas();
         menuButtonsContainer = EnsureMenuButtonsContainer(rootCanvas.transform);
         EnsureStartButton(menuButtonsContainer.transform);
+        UpdatePrimaryButtonLabel();
         EnsureReconfigureButton(menuButtonsContainer.transform);
         EnsureOptionButton(menuButtonsContainer.transform);
         EnsureExitButton(menuButtonsContainer.transform);
@@ -982,6 +984,12 @@ public class StartSceneController : MonoBehaviour
 
     private void HandleStartButtonPressed()
     {
+        if (isPauseMenu)
+        {
+            HidePauseMenu();
+            return;
+        }
+
         if (PlayerInputBindings.IsConfigured)
         {
             LoadScene();
@@ -1241,6 +1249,30 @@ public class StartSceneController : MonoBehaviour
         if (menuButtonsContainer != null)
         {
             menuButtonsContainer.SetActive(isVisible);
+        }
+    }
+
+    private void UpdatePrimaryButtonLabel()
+    {
+        if (startButton == null)
+        {
+            return;
+        }
+
+        SetButtonLabel(startButton, isPauseMenu ? PauseResumeButtonLabel : buttonLabel);
+    }
+
+    private void SetButtonLabel(Button button, string labelText)
+    {
+        if (button == null)
+        {
+            return;
+        }
+
+        Text label = button.GetComponentInChildren<Text>();
+        if (label != null)
+        {
+            label.text = labelText;
         }
     }
 
