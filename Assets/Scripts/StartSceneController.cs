@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -8,6 +9,7 @@ using UnityEngine.UI;
 public class StartSceneController : MonoBehaviour
 {
     private const string StartSceneName = "Start";
+    private const string IntroCutsceneSceneName = "IntroCutscene";
     private const string EventSystemObjectName = "EventSystem";
     private const string CanvasObjectName = "StartCanvas";
     private const string PauseCanvasObjectName = "PauseMenuCanvas";
@@ -55,6 +57,8 @@ public class StartSceneController : MonoBehaviour
     };
 
     [SerializeField] private string sceneToLoad = "Zoo";
+    [SerializeField] private bool playIntroCutsceneBeforeFirstScene = true;
+    [SerializeField] private string cutsceneSceneToLoad = IntroCutsceneSceneName;
     [SerializeField] private string buttonLabel = "START";
     [SerializeField] private string reconfigureButtonLabel = "KEY SETUP";
     [SerializeField] private string optionButtonLabel = "OPTION";
@@ -88,7 +92,7 @@ public class StartSceneController : MonoBehaviour
 
     public static void EnsurePauseMenuInstance()
     {
-        if (pauseMenuInstance != null || SceneManager.GetActiveScene().name == StartSceneName)
+        if (pauseMenuInstance != null || IsPauseMenuBlockedScene(SceneManager.GetActiveScene().name))
         {
             return;
         }
@@ -151,7 +155,7 @@ public class StartSceneController : MonoBehaviour
     {
         if (isPauseMenu)
         {
-            if (SceneManager.GetActiveScene().name == StartSceneName)
+            if (IsPauseMenuBlockedScene(SceneManager.GetActiveScene().name))
             {
                 return;
             }
@@ -1401,15 +1405,8 @@ public class StartSceneController : MonoBehaviour
 
     private void LoadScene()
     {
-        if (string.IsNullOrWhiteSpace(sceneToLoad))
+        if (!TryResolveSceneTransitionTarget(out string targetSceneName))
         {
-            Debug.LogError("StartSceneController does not have a destination scene configured.", this);
-            return;
-        }
-
-        if (!Application.CanStreamedLevelBeLoaded(sceneToLoad))
-        {
-            Debug.LogError($"Scene '{sceneToLoad}' is not available in Build Settings.", this);
             return;
         }
 
@@ -1418,6 +1415,58 @@ public class StartSceneController : MonoBehaviour
             HidePauseMenu();
         }
 
-        SceneManager.LoadScene(sceneToLoad);
+        SceneManager.LoadScene(targetSceneName);
+    }
+
+    private bool TryResolveSceneTransitionTarget(out string targetSceneName)
+    {
+        targetSceneName = sceneToLoad;
+
+        if (!ValidateSceneAvailability(sceneToLoad, "destination scene"))
+        {
+            return false;
+        }
+
+        if (isPauseMenu || !playIntroCutsceneBeforeFirstScene || string.IsNullOrWhiteSpace(cutsceneSceneToLoad))
+        {
+            return true;
+        }
+
+        if (string.Equals(cutsceneSceneToLoad, sceneToLoad, StringComparison.Ordinal))
+        {
+            Debug.LogWarning("The intro cutscene scene matches the destination scene, so the cutscene transition will be skipped.", this);
+            return true;
+        }
+
+        if (!ValidateSceneAvailability(cutsceneSceneToLoad, "intro cutscene scene"))
+        {
+            return false;
+        }
+
+        IntroCutsceneController.SetPendingNextScene(sceneToLoad);
+        targetSceneName = cutsceneSceneToLoad;
+        return true;
+    }
+
+    private bool ValidateSceneAvailability(string sceneName, string sceneDescription)
+    {
+        if (string.IsNullOrWhiteSpace(sceneName))
+        {
+            Debug.LogError($"StartSceneController does not have a {sceneDescription} configured.", this);
+            return false;
+        }
+
+        if (!Application.CanStreamedLevelBeLoaded(sceneName))
+        {
+            Debug.LogError($"Scene '{sceneName}' ({sceneDescription}) is not available in Build Settings.", this);
+            return false;
+        }
+
+        return true;
+    }
+
+    private static bool IsPauseMenuBlockedScene(string sceneName)
+    {
+        return sceneName == StartSceneName || sceneName == IntroCutsceneSceneName;
     }
 }
