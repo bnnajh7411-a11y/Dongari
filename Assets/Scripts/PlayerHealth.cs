@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
+    private const string StartSceneName = "Start";
     private const string HealthCanvasObjectName = "HealthCanvas";
     private const string HealthGaugeObjectName = "HealthGauge";
     private static int savedCurrentHealth;
@@ -20,8 +21,6 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField, Min(0f)] private float damageCooldown = 0.75f;
     [SerializeField, Min(0f)] private float damageFlashDuration = 0.3f;
     [SerializeField] private Color damageFlashColor = Color.red;
-    [SerializeField] private bool reloadSceneOnDeath = true;
-
     [Header("UI")]
     [SerializeField] private Vector2 gaugeSize = new Vector2(320f, 24f);
     [SerializeField] private Vector2 gaugeAnchoredPosition = new Vector2(24f, -24f);
@@ -92,6 +91,19 @@ public class PlayerHealth : MonoBehaviour
         return true;
     }
 
+    public void SetHealthToZero()
+    {
+        if (isDead)
+        {
+            return;
+        }
+
+        CurrentHealth = 0;
+        SaveCurrentHealth();
+        RefreshHud();
+        HandleDeath();
+    }
+
     public bool RestoreHealth(int healAmount)
     {
         if (isDead || healAmount <= 0 || CurrentHealth >= maxHealth)
@@ -116,13 +128,7 @@ public class PlayerHealth : MonoBehaviour
             rb.linearVelocity = Vector2.zero;
         }
 
-        if (reloadSceneOnDeath)
-        {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-            return;
-        }
-
-        gameObject.SetActive(false);
+        SceneManager.LoadScene(StartSceneName);
     }
 
     private void TriggerDamageFlash()

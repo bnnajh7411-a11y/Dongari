@@ -36,6 +36,8 @@ public class BuildingCollapseController : MonoBehaviour
     private float collapseStartY;
     private float collapseEndY;
     private int nextCollapseIndex;
+    private Collider2D firstPlatformCollider;
+    private PlayerHealth playerHealth;
     private bool isInitialized;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -116,6 +118,8 @@ public class BuildingCollapseController : MonoBehaviour
         CollectCollapseBlocks();
         CacheWalls();
         RefreshPlayerColliders();
+        CachePlayerHealth();
+        CacheFirstPlatformCollider();
 
         if (collapseBlocks.Count == 0)
         {
@@ -175,6 +179,16 @@ public class BuildingCollapseController : MonoBehaviour
         playerColliders.AddRange(playerObject.GetComponentsInChildren<Collider2D>(true));
     }
 
+    private void CachePlayerHealth()
+    {
+        playerHealth = FindPlayerHealth();
+    }
+
+    private void CacheFirstPlatformCollider()
+    {
+        firstPlatformCollider = FindFirstPlatformCollider();
+    }
+
     private WallState CreateWallState(string wallObjectName)
     {
         GameObject wallObject = GameObject.Find(wallObjectName);
@@ -227,6 +241,38 @@ public class BuildingCollapseController : MonoBehaviour
 
         SpawnShards(block);
         block.GameObject.SetActive(false);
+    }
+
+    private PlayerHealth FindPlayerHealth()
+    {
+        GameObject playerObject = GameObject.Find(PlayerObjectName);
+        if (playerObject != null)
+        {
+            PlayerHealth playerHealth = playerObject.GetComponentInChildren<PlayerHealth>(true);
+            if (playerHealth != null)
+            {
+                return playerHealth;
+            }
+        }
+
+        return Object.FindAnyObjectByType<PlayerHealth>();
+    }
+
+    private Collider2D FindFirstPlatformCollider()
+    {
+        Transform firstPlatformTransform = transform.Find(BaseBlockObjectName);
+        if (firstPlatformTransform != null && firstPlatformTransform.TryGetComponent(out Collider2D collider))
+        {
+            return collider;
+        }
+
+        GameObject firstPlatformObject = GameObject.Find(BaseBlockObjectName);
+        if (firstPlatformObject != null && firstPlatformObject.TryGetComponent(out Collider2D fallbackCollider))
+        {
+            return fallbackCollider;
+        }
+
+        return null;
     }
 
     private void SpawnShards(CollapseBlock block)
@@ -296,6 +342,9 @@ public class BuildingCollapseController : MonoBehaviour
             }
         }
 
+        ShardFirstPlatformImpact shardImpact = shardObject.AddComponent<ShardFirstPlatformImpact>();
+        shardImpact.Initialize(firstPlatformCollider, playerHealth, BaseBlockObjectName);
+
         Destroy(shardObject, shardLifetime);
     }
 
@@ -336,5 +385,57 @@ public class BuildingCollapseController : MonoBehaviour
         public SpriteRenderer Renderer { get; }
         public Collider2D Collider { get; }
         public float TopY { get; }
+    }
+}
+
+[RequireComponent(typeof(Collider2D), typeof(Rigidbody2D))]
+public class ShardFirstPlatformImpact : MonoBehaviour
+{
+    private Collider2D firstPlatformCollider;
+    private PlayerHealth playerHealth;
+    private string targetObjectName;
+    private bool hasTriggered;
+
+    public void Initialize(Collider2D platformCollider, PlayerHealth playerHealth, string targetObjectName)
+    {
+        firstPlatformCollider = platformCollider;
+        this.playerHealth = playerHealth;
+        this.targetObjectName = targetObjectName;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (hasTriggered || !IsTargetCollision(collision))
+        {
+            return;
+        }
+
+        if (playerHealth == null)
+        {
+            playerHealth = Object.FindAnyObjectByType<PlayerHealth>();
+        }
+
+        if (playerHealth == null)
+        {
+            return;
+        }
+
+        hasTriggered = true;
+        playerHealth.SetHealthToZero();
+    }
+
+    private bool IsTargetCollision(Collision2D collision)
+    {
+        if (collision.collider == null)
+        {
+            return false;
+        }
+
+        if (firstPlatformCollider != null)
+        {
+            return collision.collider == firstPlatformCollider;
+        }
+
+        return !string.IsNullOrEmpty(targetObjectName) && collision.collider.gameObject.name == targetObjectName;
     }
 }
