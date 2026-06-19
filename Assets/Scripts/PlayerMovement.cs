@@ -109,7 +109,7 @@ public class PlayerMovement : MonoBehaviour
 
         horizontalInput = ReadHorizontalInput();
         verticalInput = ReadVerticalInput();
-        isRunning = IsRunPressed() && CanSprint();
+        isRunning = IsRunPressed() && CanSprint() && HasMovementInput();
         UpdateClimbingState();
 
         if (!isClimbing && !isTopDownScene && !IsWaterMovementActive() && WasJumpPressed() && isGrounded)
@@ -218,6 +218,12 @@ public class PlayerMovement : MonoBehaviour
     private bool WasInteractPressed()
     {
         return PlayerInputBindings.WasInteractPressedThisFrame();
+    }
+
+    private bool HasMovementInput()
+    {
+        return Mathf.Abs(horizontalInput) > VerticalVelocityThreshold
+            || Mathf.Abs(verticalInput) > VerticalVelocityThreshold;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
