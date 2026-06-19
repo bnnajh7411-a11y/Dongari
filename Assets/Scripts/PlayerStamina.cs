@@ -17,6 +17,9 @@ public class PlayerStamina : MonoBehaviour
 
     [SerializeField, Min(1f)] private float maxStamina = 50f;
     [SerializeField, Min(0f)] private float runDrainPerSecond = 10f;
+    [SerializeField, Min(0f)] private float staminaRegenPerSecond = 6f;
+    [SerializeField, Min(0f)] private float staminaRegenDelay = 0.4f;
+    [SerializeField, Min(0f)] private float stationaryVelocityThreshold = 0.05f;
 
     [Header("UI")]
     [SerializeField] private Vector2 gaugeSize = new Vector2(320f, 24f);
@@ -32,9 +35,12 @@ public class PlayerStamina : MonoBehaviour
     private RectTransform staminaFillRectTransform;
     private float staminaFillBaseWidth;
     private float staminaFillHeight;
+    private Rigidbody2D playerRigidbody;
+    private float stationaryTimer;
 
     private void Awake()
     {
+        playerRigidbody = GetComponent<Rigidbody2D>();
         CurrentStamina = hasSavedCurrentStamina
             ? Mathf.Clamp(savedCurrentStamina, 0f, maxStamina)
             : maxStamina;
@@ -42,6 +48,34 @@ public class PlayerStamina : MonoBehaviour
         EnsureStaminaHud();
         RefreshHud();
         SaveCurrentStamina();
+    }
+
+    private void Update()
+    {
+        if (GamePauseState.IsPaused)
+        {
+            return;
+        }
+
+        if (CurrentStamina >= maxStamina)
+        {
+            stationaryTimer = 0f;
+            return;
+        }
+
+        if (!IsStationary())
+        {
+            stationaryTimer = 0f;
+            return;
+        }
+
+        stationaryTimer += Time.deltaTime;
+        if (stationaryTimer < staminaRegenDelay)
+        {
+            return;
+        }
+
+        RestoreStamina(staminaRegenPerSecond * Time.deltaTime);
     }
 
     public static void ResetPersistentStamina()
@@ -68,6 +102,21 @@ public class PlayerStamina : MonoBehaviour
         }
 
         return AdjustStamina(amount);
+    }
+
+    private bool IsStationary()
+    {
+        if (playerRigidbody == null)
+        {
+            playerRigidbody = GetComponent<Rigidbody2D>();
+        }
+
+        if (playerRigidbody == null)
+        {
+            return false;
+        }
+
+        return playerRigidbody.linearVelocity.sqrMagnitude <= stationaryVelocityThreshold * stationaryVelocityThreshold;
     }
 
     private float AdjustStamina(float amount)
