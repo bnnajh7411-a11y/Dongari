@@ -72,14 +72,22 @@ public class PlayerHealth : MonoBehaviour
 
     public bool TakeDamage(int damageAmount)
     {
-        if (isDead || damageAmount <= 0 || Time.time < nextDamageTime)
+        return TakeDamage(damageAmount, false);
+    }
+
+    public bool TakeDamage(int damageAmount, bool ignoreCooldown)
+    {
+        if (isDead || damageAmount <= 0 || (!ignoreCooldown && Time.time < nextDamageTime))
         {
             return false;
         }
 
         CurrentHealth = Mathf.Max(0, CurrentHealth - damageAmount);
         SaveCurrentHealth();
-        nextDamageTime = Time.time + damageCooldown;
+        if (!ignoreCooldown)
+        {
+            nextDamageTime = Time.time + damageCooldown;
+        }
         TriggerDamageFlash();
         RefreshHud();
 

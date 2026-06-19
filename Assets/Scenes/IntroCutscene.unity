@@ -119,7 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &1797321799
+--- !u!1 &437598016
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,8 +127,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1797321801}
-  - component: {fileID: 1797321800}
+  - component: {fileID: 437598018}
+  - component: {fileID: 437598017}
   m_Layer: 0
   m_Name: Intro Cutscene Controller
   m_TagString: Untagged
@@ -136,13 +136,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1797321800
+--- !u!114 &437598017
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1797321799}
+  m_GameObject: {fileID: 437598016}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 129543c9aa464530b7d6505878da6ca1, type: 3}
@@ -162,13 +162,13 @@ MonoBehaviour:
   - {fileID: -6470460504253458178, guid: a1be878fd3f656344a7b9521924d0e0d, type: 3}
   - {fileID: -4178046375966092550, guid: e0e98ea4753ffd8479fc64ea88c731cb, type: 3}
   - {fileID: 4130640169021434097, guid: ce04658fbe4ba894093db794787cef2e, type: 3}
---- !u!4 &1797321801
+--- !u!4 &437598018
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1797321799}
+  m_GameObject: {fileID: 437598016}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -181,4 +181,4 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1797321801}
+  - {fileID: 437598018}

@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     private const string StartSceneName = "Start";
     private const string RoadSceneName = "Road";
     private const string ZooSceneName = "Zoo";
+    private const string MountainSceneName = "Mountain";
     private const string ArtificialRiverSceneName = "ArtificialRiver";
     private const string GreenAlgaeObjectName = "GreenAlgae";
     private const string NextObjectName = "Next";
@@ -82,6 +83,7 @@ public class PlayerMovement : MonoBehaviour
 
         ConfigureMovementMode();
         EnsurePlayerHealthComponent();
+        EnsureMountainFallDamageComponent();
         EnsurePlayerStaminaComponent();
         EnsureWaterSceneSystems();
         EnsureArtificialRiverColliderSizing();
@@ -430,6 +432,16 @@ public class PlayerMovement : MonoBehaviour
         }
 
         playerStamina = gameObject.AddComponent<PlayerStamina>();
+    }
+
+    private void EnsureMountainFallDamageComponent()
+    {
+        if (SceneManager.GetActiveScene().name != MountainSceneName || GetComponent<MountainFallDamageController>() != null)
+        {
+            return;
+        }
+
+        gameObject.AddComponent<MountainFallDamageController>();
     }
 
     private void EnsureWaterSceneSystems()

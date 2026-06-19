@@ -7,7 +7,7 @@ public class MountainDesPlatformController : MonoBehaviour
     private const string TargetSceneName = "Mountain";
     private const string TargetObjectName = "Des";
 
-    [SerializeField, Min(0f)] private float collapseDelay = 3f;
+    [SerializeField, Min(0f)] private float collapseDelay = 1f;
     [SerializeField, Min(0f)] private float respawnDelay = 2f;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -60,16 +60,15 @@ public class MountainDesPlatformController : MonoBehaviour
 [DisallowMultipleComponent]
 public class RespawningCollapsePlatform : MonoBehaviour
 {
-    private const float SupportedContactGraceSeconds = 0.12f;
     private const float MinimumTopContactTolerance = 0.08f;
     private const float RelativeTopContactTolerance = 0.2f;
 
     private float collapseDelay = 3f;
     private float respawnDelay = 2f;
-    private float standingTimer;
+    private float collapseTimer;
     private float hiddenTimer;
-    private float lastSupportedTime = float.NegativeInfinity;
     private bool isHidden;
+    private bool isCollapseTimerRunning;
 
     private Collider2D[] platformColliders;
     private SpriteRenderer[] platformRenderers;
@@ -104,28 +103,26 @@ public class RespawningCollapsePlatform : MonoBehaviour
             return;
         }
 
-        bool isPlayerSupported = Time.time - lastSupportedTime <= SupportedContactGraceSeconds;
-        if (!isPlayerSupported)
+        if (!isCollapseTimerRunning)
         {
-            standingTimer = 0f;
             return;
         }
 
-        standingTimer += Time.deltaTime;
-        if (standingTimer >= collapseDelay)
+        collapseTimer += Time.deltaTime;
+        if (collapseTimer >= collapseDelay)
         {
             HidePlatform();
         }
     }
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        TryStartCollapseTimer(collision);
+    }
+
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if (isHidden || !IsPlayerStandingOnTop(collision))
-        {
-            return;
-        }
-
-        lastSupportedTime = Time.time;
+        TryStartCollapseTimer(collision);
     }
 
     private void CacheComponents()
@@ -169,13 +166,24 @@ public class RespawningCollapsePlatform : MonoBehaviour
         return false;
     }
 
+    private void TryStartCollapseTimer(Collision2D collision)
+    {
+        if (isHidden || isCollapseTimerRunning || !IsPlayerStandingOnTop(collision))
+        {
+            return;
+        }
+
+        isCollapseTimerRunning = true;
+        collapseTimer = 0f;
+    }
+
     private void HidePlatform()
     {
         SetPlatformVisible(false);
         isHidden = true;
         hiddenTimer = 0f;
-        standingTimer = 0f;
-        lastSupportedTime = float.NegativeInfinity;
+        collapseTimer = 0f;
+        isCollapseTimerRunning = false;
     }
 
     private void ShowPlatform()
@@ -183,8 +191,8 @@ public class RespawningCollapsePlatform : MonoBehaviour
         SetPlatformVisible(true);
         isHidden = false;
         hiddenTimer = 0f;
-        standingTimer = 0f;
-        lastSupportedTime = float.NegativeInfinity;
+        collapseTimer = 0f;
+        isCollapseTimerRunning = false;
     }
 
     private void SetPlatformVisible(bool isVisible)
