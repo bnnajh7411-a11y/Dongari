@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Splines;
+using System.Collections.Generic;
 
 [DisallowMultipleComponent]
 public class SecurityPatrolController : MonoBehaviour
@@ -11,6 +12,7 @@ public class SecurityPatrolController : MonoBehaviour
     [SerializeField, Min(0.01f)] private float chaseSpeed = 5f;
     [SerializeField, Range(8, 128)] private int nearestPointSamples = 48;
     [SerializeField, Min(1)] private int contactDamage = 1;
+    [SerializeField, Min(0.1f)] private float continuousDamageInterval = 5f;
 
     private SpriteRenderer securityRenderer;
     private BoxCollider2D securityCollider;
@@ -22,6 +24,7 @@ public class SecurityPatrolController : MonoBehaviour
     private Transform chaseTarget;
     private bool defaultFlipX;
     private float originalZ;
+    private readonly Dictionary<PlayerHealth, ContactDamageState> contactDamageStates = new();
 
     private void Awake()
     {
@@ -67,6 +70,7 @@ public class SecurityPatrolController : MonoBehaviour
     {
         isChasing = false;
         chaseTarget = null;
+        contactDamageStates.Clear();
 
         if (securityRenderer != null)
         {
@@ -76,7 +80,37 @@ public class SecurityPatrolController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        TryDamagePlayer(other);
+        UpdatePlayerContact(other, 1);
+    }
+
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        if (other == null)
+        {
+            return;
+        }
+
+        PlayerHealth playerHealth = other.GetComponentInParent<PlayerHealth>();
+        if (playerHealth == null || !contactDamageStates.TryGetValue(playerHealth, out ContactDamageState contactState))
+        {
+            return;
+        }
+
+        if (Time.time < contactState.NextDamageTime)
+        {
+            return;
+        }
+
+        if (TryDamagePlayer(playerHealth))
+        {
+            contactState.NextDamageTime = Time.time + continuousDamageInterval;
+            contactDamageStates[playerHealth] = contactState;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        UpdatePlayerContact(other, -1);
     }
 
     public void BeginChase(Transform target)
@@ -281,7 +315,7 @@ public class SecurityPatrolController : MonoBehaviour
         }
     }
 
-    private void TryDamagePlayer(Collider2D other)
+    private void UpdatePlayerContact(Collider2D other, int overlapDelta)
     {
         if (other == null)
         {
@@ -294,11 +328,53 @@ public class SecurityPatrolController : MonoBehaviour
             return;
         }
 
-        playerHealth.TakeDamage(contactDamage);
+        if (!contactDamageStates.TryGetValue(playerHealth, out ContactDamageState contactState))
+        {
+            contactState = new ContactDamageState();
+        }
+
+        contactState.OverlapCount = Mathf.Max(0, contactState.OverlapCount + overlapDelta);
+
+        if (contactState.OverlapCount <= 0)
+        {
+            contactDamageStates.Remove(playerHealth);
+            return;
+        }
+
+        bool isFirstContact = contactState.OverlapCount == 1 && overlapDelta > 0;
+        if (isFirstContact)
+        {
+            if (TryDamagePlayer(playerHealth))
+            {
+                contactState.NextDamageTime = Time.time + continuousDamageInterval;
+            }
+            else
+            {
+                contactState.NextDamageTime = Time.time;
+            }
+        }
+
+        contactDamageStates[playerHealth] = contactState;
+    }
+
+    private bool TryDamagePlayer(PlayerHealth playerHealth)
+    {
+        if (playerHealth == null)
+        {
+            return false;
+        }
+
+        return playerHealth.TakeDamage(contactDamage);
     }
 
     private bool IsRouteAvailable()
     {
         return hasRoute && routeContainer != null && routeLength > 0f;
+    }
+
+    private struct ContactDamageState
+    {
+        public int OverlapCount;
+        public float NextDamageTime;
     }
 }

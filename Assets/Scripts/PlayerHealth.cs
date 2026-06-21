@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -11,9 +12,12 @@ public class PlayerHealth : MonoBehaviour
     private static int savedCurrentHealth;
     private static bool hasSavedCurrentHealth;
 
+    public static event Action<PlayerHealth, int, int> DamageTaken;
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetStaticState()
     {
+        DamageTaken = null;
         ResetPersistentHealth();
     }
 
@@ -90,6 +94,7 @@ public class PlayerHealth : MonoBehaviour
         }
         TriggerDamageFlash();
         RefreshHud();
+        DamageTaken?.Invoke(this, damageAmount, CurrentHealth);
 
         if (CurrentHealth == 0)
         {
@@ -106,9 +111,16 @@ public class PlayerHealth : MonoBehaviour
             return;
         }
 
+        int lostHealth = CurrentHealth;
         CurrentHealth = 0;
         SaveCurrentHealth();
         RefreshHud();
+
+        if (lostHealth > 0)
+        {
+            DamageTaken?.Invoke(this, lostHealth, CurrentHealth);
+        }
+
         HandleDeath();
     }
 

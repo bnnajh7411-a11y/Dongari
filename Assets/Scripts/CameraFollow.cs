@@ -10,6 +10,10 @@ public class CameraFollow : MonoBehaviour
     [SerializeField] private Collider2D groundBounds;
     [SerializeField] private Collider2D cameraBounds;
     [SerializeField, Min(0f)] private float smoothTime = 0.15f;
+    [Header("Damage Shake")]
+    [SerializeField, Min(0f)] private float damageShakeDuration = 0.18f;
+    [SerializeField, Min(0f)] private float damageShakeMagnitude = 0.18f;
+    [SerializeField, Min(0f)] private float damageShakeFrequency = 24f;
 
     private const string PlayerObjectName = "Player";
     private const string LeftWallObjectName = "LWall";
@@ -23,12 +27,25 @@ public class CameraFollow : MonoBehaviour
     private float xVelocity;
     private float yVelocity;
     private bool hasDepthOffset;
+    private float damageShakeTimeRemaining;
+    private float damageShakeSeed;
 
     private void Awake()
     {
         attachedCamera = GetComponent<Camera>();
         TryAssignReferences();
         CacheDepthOffset();
+    }
+
+    private void OnEnable()
+    {
+        PlayerHealth.DamageTaken += HandlePlayerDamageTaken;
+    }
+
+    private void OnDisable()
+    {
+        PlayerHealth.DamageTaken -= HandlePlayerDamageTaken;
+        damageShakeTimeRemaining = 0f;
     }
 
     private void LateUpdate()
@@ -51,15 +68,18 @@ public class CameraFollow : MonoBehaviour
             target.position.y,
             target.position.z + depthOffset);
 
+        Vector3 clampedPosition;
+
         if (smoothTime <= 0f)
         {
-            transform.position = GetClampedCameraPosition(desiredPosition);
+            clampedPosition = GetClampedCameraPosition(desiredPosition);
+            transform.position = GetDamageShakenPosition(clampedPosition);
             return;
         }
 
         float nextX = Mathf.SmoothDamp(transform.position.x, desiredPosition.x, ref xVelocity, smoothTime);
         float nextY = Mathf.SmoothDamp(transform.position.y, desiredPosition.y, ref yVelocity, smoothTime);
-        Vector3 clampedPosition = GetClampedCameraPosition(new Vector3(nextX, nextY, desiredPosition.z));
+        clampedPosition = GetClampedCameraPosition(new Vector3(nextX, nextY, desiredPosition.z));
 
         if (!Mathf.Approximately(clampedPosition.x, nextX))
         {
@@ -71,7 +91,7 @@ public class CameraFollow : MonoBehaviour
             yVelocity = 0f;
         }
 
-        transform.position = clampedPosition;
+        transform.position = GetDamageShakenPosition(clampedPosition);
     }
 
     private void TryAssignReferences()
@@ -243,5 +263,48 @@ public class CameraFollow : MonoBehaviour
         }
 
         return Mathf.Clamp(desiredValue, minValue, maxValue);
+    }
+
+    private void HandlePlayerDamageTaken(PlayerHealth damagedHealth, int damageAmount, int remainingHealth)
+    {
+        if (damagedHealth == null || damageAmount <= 0 || damageShakeDuration <= 0f || damageShakeMagnitude <= 0f)
+        {
+            return;
+        }
+
+        if (target != null)
+        {
+            Transform damagedTransform = damagedHealth.transform;
+            bool isTargetRelated =
+                damagedTransform == target ||
+                damagedTransform.IsChildOf(target) ||
+                target.IsChildOf(damagedTransform);
+
+            if (!isTargetRelated)
+            {
+                return;
+            }
+        }
+
+        damageShakeTimeRemaining = Mathf.Max(damageShakeTimeRemaining, damageShakeDuration);
+        damageShakeSeed = Random.Range(0f, 1000f);
+    }
+
+    private Vector3 GetDamageShakenPosition(Vector3 basePosition)
+    {
+        if (damageShakeTimeRemaining <= 0f || damageShakeDuration <= 0f || damageShakeMagnitude <= 0f)
+        {
+            return basePosition;
+        }
+
+        float normalizedShakeStrength = damageShakeTimeRemaining / damageShakeDuration;
+        float currentMagnitude = damageShakeMagnitude * normalizedShakeStrength;
+        float noiseTime = Time.time * Mathf.Max(0f, damageShakeFrequency);
+        float offsetX = (Mathf.PerlinNoise(damageShakeSeed, noiseTime) - 0.5f) * 2f * currentMagnitude;
+        float offsetY = (Mathf.PerlinNoise(damageShakeSeed + 31.7f, noiseTime) - 0.5f) * 2f * currentMagnitude;
+
+        damageShakeTimeRemaining = Mathf.Max(0f, damageShakeTimeRemaining - Time.deltaTime);
+
+        return GetClampedCameraPosition(basePosition + new Vector3(offsetX, offsetY, 0f));
     }
 }
