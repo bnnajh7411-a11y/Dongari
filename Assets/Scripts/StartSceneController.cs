@@ -8,6 +8,13 @@ using UnityEngine.UI;
 [DisallowMultipleComponent]
 public class StartSceneController : MonoBehaviour
 {
+    private enum OptionsCategory
+    {
+        Audio,
+        Resolution,
+        KeySetup
+    }
+
     private const string StartSceneName = "Start";
     private const string IntroCutsceneSceneName = "IntroCutscene";
     private const string EventSystemObjectName = "EventSystem";
@@ -16,7 +23,7 @@ public class StartSceneController : MonoBehaviour
     private const string PauseMenuObjectName = "PauseMenuController";
     private const string MenuButtonsContainerObjectName = "MenuButtonsContainer";
     private const string ButtonObjectName = "StartButton";
-    private const string PauseResumeButtonLabel = "RESUME";
+    private const string PauseResumeButtonLabel = "계속하기";
     private const string ReconfigureButtonObjectName = "ReconfigureButton";
     private const string OptionButtonObjectName = "OptionButton";
     private const string ExitButtonObjectName = "ExitButton";
@@ -28,6 +35,9 @@ public class StartSceneController : MonoBehaviour
     private const string KeyBindingScrollAreaObjectName = "KeyBindingScrollArea";
     private const string KeyBindingViewportObjectName = "KeyBindingViewport";
     private const string KeyBindingContentObjectName = "KeyBindingContent";
+    private const string DisplayFullscreenPrefKey = "DisplaySettings.Fullscreen";
+    private const string DisplayWidthPrefKey = "DisplaySettings.Width";
+    private const string DisplayHeightPrefKey = "DisplaySettings.Height";
     private const string DefaultStatusText = "";
     private const float MenuButtonVerticalSpacing = 92f;
     private static readonly Vector2 KeyBindingScrollAreaSize = new Vector2(760f, 340f);
@@ -35,12 +45,30 @@ public class StartSceneController : MonoBehaviour
     private static readonly Vector2 KeyBindingStatusPosition = new Vector2(0f, 28f);
     private static readonly Vector2 CancelButtonPosition = new Vector2(-150f, 96f);
     private static readonly Vector2 ConfirmButtonPosition = new Vector2(150f, 96f);
-    private static readonly Vector2 OptionsWindowSize = new Vector2(760f, 420f);
+    private static readonly Vector2 OptionsWindowSize = new Vector2(980f, 880f);
     private static readonly Vector2 OptionsCloseButtonPosition = new Vector2(0f, 58f);
+    private static readonly Vector2Int[] CommonResolutionOptions =
+    {
+        new Vector2Int(3840, 2160),
+        new Vector2Int(2560, 1440),
+        new Vector2Int(1920, 1200),
+        new Vector2Int(1920, 1080),
+        new Vector2Int(1680, 1050),
+        new Vector2Int(1600, 900),
+        new Vector2Int(1440, 900),
+        new Vector2Int(1366, 768),
+        new Vector2Int(1360, 768),
+        new Vector2Int(1280, 800),
+        new Vector2Int(1280, 720)
+    };
     private const float KeyBindingRowSpacing = 68f;
     private const float KeyBindingTopPadding = 24f;
     private const float KeyBindingBottomPadding = 24f;
     private const float KeyBindingMinimumContentHeight = 340f;
+    private const float ResolutionRowSpacing = 58f;
+    private const float ResolutionTopPadding = 20f;
+    private const float ResolutionBottomPadding = 20f;
+    private const float ResolutionMinimumContentHeight = 220f;
 
     private static readonly KeyCode[] RebindableKeys =
     {
@@ -59,12 +87,15 @@ public class StartSceneController : MonoBehaviour
     [SerializeField] private string sceneToLoad = "Zoo";
     [SerializeField] private bool playIntroCutsceneBeforeFirstScene = true;
     [SerializeField] private string cutsceneSceneToLoad = IntroCutsceneSceneName;
-    [SerializeField] private string buttonLabel = "START";
-    [SerializeField] private string reconfigureButtonLabel = "KEY SETUP";
-    [SerializeField] private string optionButtonLabel = "OPTION";
-    [SerializeField] private string exitButtonLabel = "EXIT";
+    [SerializeField] private string buttonLabel = "시작";
+    [SerializeField] private string reconfigureButtonLabel = "키 설정";
+    [SerializeField] private string optionButtonLabel = "옵션";
+    [SerializeField] private string exitButtonLabel = "종료";
 
-    private readonly Dictionary<InputActionType, Text> bindingValueTexts = new Dictionary<InputActionType, Text>();
+    private readonly Dictionary<InputActionType, List<Text>> bindingValueTexts = new Dictionary<InputActionType, List<Text>>();
+    private readonly List<Text> statusTexts = new List<Text>();
+    private readonly List<Vector2Int> availableResolutionOptions = new List<Vector2Int>();
+    private readonly List<Button> resolutionButtons = new List<Button>();
 
     private static bool isCreatingPauseMenuInstance;
     private static StartSceneController pauseMenuInstance;
@@ -78,17 +109,32 @@ public class StartSceneController : MonoBehaviour
     private GameObject menuButtonsContainer;
     private GameObject keyMappingPanel;
     private GameObject optionsPanel;
+    private GameObject optionsAudioContent;
+    private GameObject optionsResolutionContent;
+    private GameObject optionsKeySetupContent;
     private ScrollRect bindingScrollRect;
+    private ScrollRect resolutionOptionsScrollRect;
+    private ScrollRect optionsBindingScrollRect;
     private Slider backgroundMusicSlider;
     private Slider soundEffectSlider;
     private Text backgroundMusicValueText;
     private Text soundEffectValueText;
-    private Text statusText;
+    private Button optionsAudioTabButton;
+    private Button optionsResolutionTabButton;
+    private Button optionsKeySetupTabButton;
+    private Button fullscreenModeButton;
+    private Button windowedModeButton;
+    private Button resolutionToggleButton;
+    private Text resolutionToggleButtonText;
+    private GameObject resolutionOptionsContainer;
     private bool isWaitingForBinding;
     private bool isRefreshingAudioControls;
     private bool shouldLoadSceneAfterConfirm;
     private bool isPauseMenu;
+    private bool isResolutionListExpanded;
     private InputActionType pendingBindingAction;
+    private OptionsCategory activeOptionsCategory = OptionsCategory.Audio;
+    private int selectedResolutionIndex = -1;
 
     public static void EnsurePauseMenuInstance()
     {
@@ -107,6 +153,7 @@ public class StartSceneController : MonoBehaviour
     private void Awake()
     {
         isPauseMenu = isCreatingPauseMenuInstance;
+        NormalizeMenuLabels();
 
         if (!isPauseMenu && SceneManager.GetActiveScene().name == StartSceneName)
         {
@@ -114,6 +161,8 @@ public class StartSceneController : MonoBehaviour
             PlayerStamina.ResetPersistentStamina();
         }
 
+        BuildAvailableResolutionOptions();
+        ApplySavedDisplaySettings();
         EnsureEventSystem();
         rootCanvas = EnsureCanvas();
         menuButtonsContainer = EnsureMenuButtonsContainer(rootCanvas.transform);
@@ -203,14 +252,26 @@ public class StartSceneController : MonoBehaviour
 
         if (TryFindActionUsingKey(pressedKey, pendingBindingAction, out InputActionType duplicateAction))
         {
-            UpdateStatusText($"{PlayerInputBindings.GetKeyDisplayName(pressedKey)} is already used for {PlayerInputBindings.GetActionLabel(duplicateAction)}.");
+            UpdateStatusText($"{PlayerInputBindings.GetKeyDisplayName(pressedKey)} 키는 이미 {PlayerInputBindings.GetActionLabel(duplicateAction)}에 사용 중입니다.");
             return;
         }
 
         PlayerInputBindings.SetKey(pendingBindingAction, pressedKey);
+        bool shouldAutoSaveOptionBindings = IsOptionsKeySetupVisible();
+        if (shouldAutoSaveOptionBindings)
+        {
+            PlayerInputBindings.SaveAndMarkConfigured();
+        }
+
         isWaitingForBinding = false;
         RefreshBindingValueTexts();
-        UpdateStatusText($"{PlayerInputBindings.GetActionLabel(pendingBindingAction)} is now set to {PlayerInputBindings.GetKeyDisplayName(pressedKey)}.");
+        string updateMessage = $"{PlayerInputBindings.GetActionLabel(pendingBindingAction)} 키가 {PlayerInputBindings.GetKeyDisplayName(pressedKey)}(으)로 설정되었습니다.";
+        if (shouldAutoSaveOptionBindings)
+        {
+            updateMessage += " 변경 사항이 저장되었습니다.";
+        }
+
+        UpdateStatusText(updateMessage);
     }
 
     private void EnsureEventSystem()
@@ -307,6 +368,7 @@ public class StartSceneController : MonoBehaviour
             {
                 reconfigureButton.onClick.RemoveListener(HandleReconfigureButtonPressed);
                 reconfigureButton.onClick.AddListener(HandleReconfigureButtonPressed);
+                SetButtonLabel(reconfigureButton, reconfigureButtonLabel);
             }
 
             return;
@@ -338,6 +400,7 @@ public class StartSceneController : MonoBehaviour
             {
                 optionButton.onClick.RemoveListener(HandleOptionButtonPressed);
                 optionButton.onClick.AddListener(HandleOptionButtonPressed);
+                SetButtonLabel(optionButton, optionButtonLabel);
             }
 
             return;
@@ -369,6 +432,7 @@ public class StartSceneController : MonoBehaviour
             {
                 exitButton.onClick.RemoveListener(HandleExitButtonPressed);
                 exitButton.onClick.AddListener(HandleExitButtonPressed);
+                SetButtonLabel(exitButton, exitButtonLabel);
             }
 
             return;
@@ -427,8 +491,8 @@ public class StartSceneController : MonoBehaviour
         CreateTextElement(
             windowObject.transform,
             "OptionsTitle",
-            "Audio Settings",
-            38,
+            "옵션",
+            42,
             FontStyle.Bold,
             TextAnchor.MiddleCenter,
             new Vector2(0.5f, 1f),
@@ -437,54 +501,52 @@ public class StartSceneController : MonoBehaviour
             new Vector2(620f, 60f),
             new Color(0.13f, 0.2f, 0.14f, 1f));
 
-        CreateTextElement(
+        optionsAudioTabButton = CreateOptionsTabButton(
             windowObject.transform,
-            "OptionsSubtitle",
-            "Adjust the volume levels for background music and sound effects.",
-            21,
-            FontStyle.Normal,
-            TextAnchor.MiddleCenter,
-            new Vector2(0.5f, 1f),
-            new Vector2(0.5f, 1f),
-            new Vector2(0f, -112f),
-            new Vector2(640f, 56f),
-            new Color(0.26f, 0.32f, 0.27f, 1f));
+            "OptionsAudioTabButton",
+            "오디오",
+            new Vector2(-250f, -132f));
+        optionsAudioTabButton.onClick.AddListener(() => SetActiveOptionsCategory(OptionsCategory.Audio));
 
-        CreateAudioSliderRow(
+        optionsResolutionTabButton = CreateOptionsTabButton(
             windowObject.transform,
-            "BackgroundMusic",
-            "Background Music",
-            28f,
-            out backgroundMusicSlider,
-            out backgroundMusicValueText);
+            "OptionsResolutionTabButton",
+            "해상도",
+            new Vector2(0f, -132f));
+        optionsResolutionTabButton.onClick.AddListener(() => SetActiveOptionsCategory(OptionsCategory.Resolution));
 
-        CreateAudioSliderRow(
+        optionsKeySetupTabButton = CreateOptionsTabButton(
             windowObject.transform,
-            "SoundEffect",
-            "Sound Effects",
-            -54f,
-            out soundEffectSlider,
-            out soundEffectValueText);
+            "OptionsKeySetupTabButton",
+            reconfigureButtonLabel,
+            new Vector2(250f, -132f));
+        optionsKeySetupTabButton.onClick.AddListener(() => SetActiveOptionsCategory(OptionsCategory.KeySetup));
 
-        if (backgroundMusicSlider != null)
-        {
-            backgroundMusicSlider.onValueChanged.AddListener(HandleBackgroundMusicSliderChanged);
-        }
+        GameObject contentRootObject = new GameObject("OptionsContentRoot", typeof(RectTransform));
+        contentRootObject.transform.SetParent(windowObject.transform, false);
 
-        if (soundEffectSlider != null)
-        {
-            soundEffectSlider.onValueChanged.AddListener(HandleSoundEffectSliderChanged);
-        }
+        RectTransform contentRootRectTransform = contentRootObject.GetComponent<RectTransform>();
+        contentRootRectTransform.anchorMin = Vector2.zero;
+        contentRootRectTransform.anchorMax = Vector2.one;
+        contentRootRectTransform.offsetMin = new Vector2(36f, 126f);
+        contentRootRectTransform.offsetMax = new Vector2(-36f, -186f);
+
+        optionsAudioContent = CreateOptionsAudioContent(contentRootObject.transform);
+        optionsResolutionContent = CreateOptionsResolutionContent(contentRootObject.transform);
+        optionsKeySetupContent = CreateOptionsKeySetupContent(contentRootObject.transform);
 
         Button closeButton = CreateButton(
             windowObject.transform,
             "OptionsCloseButton",
-            "Close",
+            "닫기",
             OptionsCloseButtonPosition,
             new Vector2(240f, 64f),
             new Color(0.16f, 0.44f, 0.25f, 1f));
         SetBottomAnchoredRect(closeButton.GetComponent<RectTransform>());
         closeButton.onClick.AddListener(CloseOptionsPanel);
+        contentRootObject.transform.SetAsLastSibling();
+
+        SetActiveOptionsCategory(OptionsCategory.Audio);
     }
 
     private void EnsureKeyMappingPanel(Transform parent)
@@ -530,7 +592,7 @@ public class StartSceneController : MonoBehaviour
         CreateTextElement(
             windowObject.transform,
             "Title",
-            "Set Your Controls",
+            "키 설정",
             38,
             FontStyle.Bold,
             TextAnchor.MiddleCenter,
@@ -540,19 +602,6 @@ public class StartSceneController : MonoBehaviour
             new Vector2(760f, 60f),
             new Color(0.13f, 0.2f, 0.14f, 1f));
 
-        CreateTextElement(
-            windowObject.transform,
-            "Subtitle",
-            "Press each button to change a key. Press Escape to cancel a key selection.",
-            22,
-            FontStyle.Normal,
-            TextAnchor.MiddleCenter,
-            new Vector2(0.5f, 1f),
-            new Vector2(0.5f, 1f),
-            new Vector2(0f, -118f),
-            new Vector2(760f, 56f),
-            new Color(0.26f, 0.32f, 0.27f, 1f));
-
         IReadOnlyList<InputActionType> actions = PlayerInputBindings.Actions;
         RectTransform bindingContentTransform = CreateBindingScrollArea(windowObject.transform);
         for (int i = 0; i < actions.Count; i++)
@@ -561,7 +610,7 @@ public class StartSceneController : MonoBehaviour
         }
         ConfigureBindingScrollContent(bindingContentTransform, actions.Count);
 
-        statusText = CreateTextElement(
+        Text keyMappingStatusText = CreateTextElement(
             windowObject.transform,
             "StatusText",
             DefaultStatusText,
@@ -573,11 +622,12 @@ public class StartSceneController : MonoBehaviour
             KeyBindingStatusPosition,
             new Vector2(760f, 60f),
             new Color(0.2f, 0.28f, 0.23f, 1f));
+        statusTexts.Add(keyMappingStatusText);
 
         Button cancelButton = CreateButton(
             windowObject.transform,
             "CancelButton",
-            "Cancel",
+            "취소",
             CancelButtonPosition,
             new Vector2(220f, 64f),
             new Color(0.52f, 0.57f, 0.52f, 1f));
@@ -587,7 +637,7 @@ public class StartSceneController : MonoBehaviour
         Button confirmButton = CreateButton(
             windowObject.transform,
             "ConfirmButton",
-            "Confirm",
+            "확인",
             ConfirmButtonPosition,
             new Vector2(220f, 64f),
             new Color(0.16f, 0.44f, 0.25f, 1f));
@@ -646,10 +696,338 @@ public class StartSceneController : MonoBehaviour
             new Color(0.14f, 0.22f, 0.16f, 1f));
     }
 
+    private Button CreateOptionsTabButton(
+        Transform parent,
+        string objectName,
+        string labelText,
+        Vector2 anchoredPosition)
+    {
+        Button tabButton = CreateButton(
+            parent,
+            objectName,
+            labelText,
+            anchoredPosition,
+            new Vector2(240f, 62f),
+            new Color(0.72f, 0.77f, 0.68f, 1f));
+
+        SetTopAnchoredRect(tabButton.GetComponent<RectTransform>());
+
+        Text label = tabButton.GetComponentInChildren<Text>();
+        if (label != null)
+        {
+            label.fontSize = 24;
+        }
+
+        return tabButton;
+    }
+
+    private GameObject CreateOptionsAudioContent(Transform parent)
+    {
+        GameObject contentObject = new GameObject("OptionsAudioContent", typeof(RectTransform));
+        contentObject.transform.SetParent(parent, false);
+
+        RectTransform contentRectTransform = contentObject.GetComponent<RectTransform>();
+        contentRectTransform.anchorMin = Vector2.zero;
+        contentRectTransform.anchorMax = Vector2.one;
+        contentRectTransform.offsetMin = Vector2.zero;
+        contentRectTransform.offsetMax = Vector2.zero;
+
+        CreateTextElement(
+            contentObject.transform,
+            "OptionsAudioHeading",
+            "오디오 설정",
+            34,
+            FontStyle.Bold,
+            TextAnchor.MiddleCenter,
+            new Vector2(0.5f, 1f),
+            new Vector2(0.5f, 1f),
+            new Vector2(0f, -38f),
+            new Vector2(620f, 52f),
+            new Color(0.13f, 0.2f, 0.14f, 1f));
+
+        CreateAudioSliderRow(
+            contentObject.transform,
+            "OptionsBackgroundMusic",
+            "배경 음악",
+            46f,
+            out backgroundMusicSlider,
+            out backgroundMusicValueText);
+
+        CreateAudioSliderRow(
+            contentObject.transform,
+            "OptionsSoundEffect",
+            "효과음",
+            -36f,
+            out soundEffectSlider,
+            out soundEffectValueText);
+
+        if (backgroundMusicSlider != null)
+        {
+            backgroundMusicSlider.onValueChanged.AddListener(HandleBackgroundMusicSliderChanged);
+        }
+
+        if (soundEffectSlider != null)
+        {
+            soundEffectSlider.onValueChanged.AddListener(HandleSoundEffectSliderChanged);
+        }
+
+        return contentObject;
+    }
+
+    private GameObject CreateOptionsResolutionContent(Transform parent)
+    {
+        GameObject contentObject = new GameObject("OptionsResolutionContent", typeof(RectTransform));
+        contentObject.transform.SetParent(parent, false);
+
+        RectTransform contentRectTransform = contentObject.GetComponent<RectTransform>();
+        contentRectTransform.anchorMin = Vector2.zero;
+        contentRectTransform.anchorMax = Vector2.one;
+        contentRectTransform.offsetMin = Vector2.zero;
+        contentRectTransform.offsetMax = Vector2.zero;
+
+        CreateTextElement(
+            contentObject.transform,
+            "OptionsResolutionHeading",
+            "해상도",
+            34,
+            FontStyle.Bold,
+            TextAnchor.MiddleCenter,
+            new Vector2(0.5f, 1f),
+            new Vector2(0.5f, 1f),
+            new Vector2(0f, -38f),
+            new Vector2(620f, 52f),
+            new Color(0.13f, 0.2f, 0.14f, 1f));
+
+        CreateTextElement(
+            contentObject.transform,
+            "OptionsDisplayModeLabel",
+            "화면 모드",
+            24,
+            FontStyle.Bold,
+            TextAnchor.MiddleCenter,
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0f, 96f),
+            new Vector2(320f, 40f),
+            new Color(0.14f, 0.22f, 0.16f, 1f));
+
+        fullscreenModeButton = CreateButton(
+            contentObject.transform,
+            "FullscreenModeButton",
+            "전체화면",
+            new Vector2(-140f, 42f),
+            new Vector2(240f, 56f),
+            new Color(0.74f, 0.81f, 0.72f, 1f));
+        fullscreenModeButton.onClick.AddListener(() => HandleDisplayModeButtonPressed(true));
+        ConfigureDisplayModeCheckboxButton(fullscreenModeButton);
+
+        windowedModeButton = CreateButton(
+            contentObject.transform,
+            "WindowedModeButton",
+            "창모드",
+            new Vector2(140f, 42f),
+            new Vector2(240f, 56f),
+            new Color(0.74f, 0.81f, 0.72f, 1f));
+        windowedModeButton.onClick.AddListener(() => HandleDisplayModeButtonPressed(false));
+        ConfigureDisplayModeCheckboxButton(windowedModeButton);
+
+        CreateTextElement(
+            contentObject.transform,
+            "OptionsResolutionListLabel",
+            "해상도 선택",
+            24,
+            FontStyle.Bold,
+            TextAnchor.MiddleCenter,
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0f, -26f),
+            new Vector2(420f, 40f),
+            new Color(0.14f, 0.22f, 0.16f, 1f));
+
+        resolutionToggleButton = CreateButton(
+            contentObject.transform,
+            "ResolutionToggleButton",
+            string.Empty,
+            new Vector2(0f, -84f),
+            new Vector2(340f, 52f),
+            new Color(0.72f, 0.82f, 0.72f, 1f));
+        resolutionToggleButton.onClick.AddListener(ToggleResolutionOptionsList);
+        resolutionToggleButtonText = resolutionToggleButton.GetComponentInChildren<Text>();
+
+        resolutionOptionsContainer = new GameObject("ResolutionOptionsContainer", typeof(RectTransform));
+        resolutionOptionsContainer.transform.SetParent(contentObject.transform, false);
+
+        RectTransform resolutionContainerRectTransform = resolutionOptionsContainer.GetComponent<RectTransform>();
+        resolutionContainerRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        resolutionContainerRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        resolutionContainerRectTransform.pivot = new Vector2(0.5f, 0.5f);
+        resolutionContainerRectTransform.anchoredPosition = new Vector2(0f, -206f);
+        resolutionContainerRectTransform.sizeDelta = new Vector2(560f, 240f);
+
+        RectTransform resolutionContentTransform = CreateBindingScrollArea(
+            resolutionOptionsContainer.transform,
+            "ResolutionOptions",
+            Vector2.zero,
+            new Vector2(520f, 220f),
+            out resolutionOptionsScrollRect);
+
+        resolutionButtons.Clear();
+        for (int i = 0; i < availableResolutionOptions.Count; i++)
+        {
+            CreateResolutionOptionRow(
+                resolutionContentTransform,
+                i,
+                availableResolutionOptions[i],
+                ResolutionTopPadding + (ResolutionRowSpacing * i));
+        }
+
+        ConfigureResolutionOptionsContent(resolutionContentTransform, availableResolutionOptions.Count);
+        SetResolutionOptionsExpanded(false);
+        return contentObject;
+    }
+
+    private GameObject CreateOptionsKeySetupContent(Transform parent)
+    {
+        GameObject contentObject = new GameObject("OptionsKeySetupContent", typeof(RectTransform));
+        contentObject.transform.SetParent(parent, false);
+
+        RectTransform contentRectTransform = contentObject.GetComponent<RectTransform>();
+        contentRectTransform.anchorMin = Vector2.zero;
+        contentRectTransform.anchorMax = Vector2.one;
+        contentRectTransform.offsetMin = Vector2.zero;
+        contentRectTransform.offsetMax = Vector2.zero;
+
+        CreateTextElement(
+            contentObject.transform,
+            "OptionsKeySetupHeading",
+            "키 설정",
+            34,
+            FontStyle.Bold,
+            TextAnchor.MiddleCenter,
+            new Vector2(0.5f, 1f),
+            new Vector2(0.5f, 1f),
+            new Vector2(0f, -38f),
+            new Vector2(620f, 52f),
+            new Color(0.13f, 0.2f, 0.14f, 1f));
+
+        IReadOnlyList<InputActionType> actions = PlayerInputBindings.Actions;
+        RectTransform bindingContentTransform = CreateBindingScrollArea(
+            contentObject.transform,
+            "OptionsKeyBinding",
+            new Vector2(0f, -10f),
+            new Vector2(780f, 380f),
+            out optionsBindingScrollRect);
+
+        for (int i = 0; i < actions.Count; i++)
+        {
+            CreateBindingRow(bindingContentTransform, actions[i], KeyBindingTopPadding + (KeyBindingRowSpacing * i));
+        }
+
+        ConfigureBindingScrollContent(bindingContentTransform, actions.Count);
+
+        Text optionsStatusText = CreateTextElement(
+            contentObject.transform,
+            "OptionsStatusText",
+            DefaultStatusText,
+            18,
+            FontStyle.Italic,
+            TextAnchor.MiddleCenter,
+            new Vector2(0.5f, 0f),
+            new Vector2(0.5f, 0f),
+            new Vector2(0f, 28f),
+            new Vector2(720f, 48f),
+            new Color(0.2f, 0.28f, 0.23f, 1f));
+        statusTexts.Add(optionsStatusText);
+
+        return contentObject;
+    }
+
+    private void CreateResolutionOptionRow(Transform parent, int optionIndex, Vector2Int resolution, float topOffset)
+    {
+        GameObject rowObject = new GameObject($"ResolutionRow{optionIndex}", typeof(RectTransform));
+        rowObject.transform.SetParent(parent, false);
+
+        RectTransform rowRectTransform = rowObject.GetComponent<RectTransform>();
+        rowRectTransform.anchorMin = new Vector2(0.5f, 1f);
+        rowRectTransform.anchorMax = new Vector2(0.5f, 1f);
+        rowRectTransform.pivot = new Vector2(0.5f, 1f);
+        rowRectTransform.anchoredPosition = new Vector2(0f, -topOffset);
+        rowRectTransform.sizeDelta = new Vector2(420f, 48f);
+
+        Button resolutionButton = CreateButton(
+            rowObject.transform,
+            $"ResolutionButton{optionIndex}",
+            GetResolutionLabel(resolution),
+            Vector2.zero,
+            new Vector2(360f, 44f),
+            new Color(0.72f, 0.82f, 0.72f, 1f));
+        resolutionButtons.Add(resolutionButton);
+
+        int capturedIndex = optionIndex;
+        resolutionButton.onClick.AddListener(() => HandleResolutionOptionPressed(capturedIndex));
+    }
+
+    private void ConfigureResolutionOptionsContent(RectTransform contentTransform, int rowCount)
+    {
+        if (contentTransform == null)
+        {
+            return;
+        }
+
+        float contentHeight = ResolutionTopPadding
+            + ResolutionBottomPadding
+            + ((rowCount - 1) * ResolutionRowSpacing)
+            + 48f;
+
+        contentTransform.sizeDelta = new Vector2(
+            contentTransform.sizeDelta.x,
+            Mathf.Max(ResolutionMinimumContentHeight, contentHeight));
+    }
+
     private RectTransform CreateBindingScrollArea(Transform parent)
     {
-        GameObject scrollAreaObject = new GameObject(
+        return CreateBindingScrollArea(
+            parent,
             KeyBindingScrollAreaObjectName,
+            KeyBindingViewportObjectName,
+            KeyBindingContentObjectName,
+            KeyBindingScrollAreaPosition,
+            KeyBindingScrollAreaSize,
+            out bindingScrollRect);
+    }
+
+    private RectTransform CreateBindingScrollArea(
+        Transform parent,
+        string objectPrefix,
+        Vector2 anchoredPosition,
+        Vector2 sizeDelta,
+        out ScrollRect createdScrollRect)
+    {
+        return CreateBindingScrollArea(
+            parent,
+            $"{objectPrefix}ScrollArea",
+            $"{objectPrefix}Viewport",
+            $"{objectPrefix}Content",
+            anchoredPosition,
+            sizeDelta,
+            out createdScrollRect);
+    }
+
+    private RectTransform CreateBindingScrollArea(
+        Transform parent,
+        string scrollAreaObjectName,
+        string viewportObjectName,
+        string contentObjectName,
+        Vector2 anchoredPosition,
+        Vector2 sizeDelta,
+        out ScrollRect createdScrollRect)
+    {
+        const float viewportPadding = 18f;
+        const float scrollbarWidth = 18f;
+        const float scrollbarSpacing = 10f;
+
+        GameObject scrollAreaObject = new GameObject(
+            scrollAreaObjectName,
             typeof(RectTransform),
             typeof(Image),
             typeof(ScrollRect));
@@ -660,14 +1038,14 @@ public class StartSceneController : MonoBehaviour
         scrollAreaRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
         scrollAreaRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
         scrollAreaRectTransform.pivot = new Vector2(0.5f, 0.5f);
-        scrollAreaRectTransform.anchoredPosition = KeyBindingScrollAreaPosition;
-        scrollAreaRectTransform.sizeDelta = KeyBindingScrollAreaSize;
+        scrollAreaRectTransform.anchoredPosition = anchoredPosition;
+        scrollAreaRectTransform.sizeDelta = sizeDelta;
 
         Image scrollAreaImage = scrollAreaObject.GetComponent<Image>();
         scrollAreaImage.color = new Color(0.86f, 0.89f, 0.82f, 0.7f);
 
         GameObject viewportObject = new GameObject(
-            KeyBindingViewportObjectName,
+            viewportObjectName,
             typeof(RectTransform),
             typeof(Image),
             typeof(RectMask2D));
@@ -677,13 +1055,15 @@ public class StartSceneController : MonoBehaviour
         RectTransform viewportRectTransform = viewportObject.GetComponent<RectTransform>();
         viewportRectTransform.anchorMin = Vector2.zero;
         viewportRectTransform.anchorMax = Vector2.one;
-        viewportRectTransform.offsetMin = new Vector2(18f, 18f);
-        viewportRectTransform.offsetMax = new Vector2(-18f, -18f);
+        viewportRectTransform.offsetMin = new Vector2(viewportPadding, viewportPadding);
+        viewportRectTransform.offsetMax = new Vector2(
+            -(viewportPadding + scrollbarWidth + scrollbarSpacing),
+            -viewportPadding);
 
         Image viewportImage = viewportObject.GetComponent<Image>();
         viewportImage.color = new Color(1f, 1f, 1f, 0.02f);
 
-        GameObject contentObject = new GameObject(KeyBindingContentObjectName, typeof(RectTransform));
+        GameObject contentObject = new GameObject(contentObjectName, typeof(RectTransform));
         contentObject.transform.SetParent(viewportObject.transform, false);
 
         RectTransform contentRectTransform = contentObject.GetComponent<RectTransform>();
@@ -691,15 +1071,60 @@ public class StartSceneController : MonoBehaviour
         contentRectTransform.anchorMax = new Vector2(0.5f, 1f);
         contentRectTransform.pivot = new Vector2(0.5f, 1f);
         contentRectTransform.anchoredPosition = Vector2.zero;
-        contentRectTransform.sizeDelta = new Vector2(680f, KeyBindingMinimumContentHeight);
+        contentRectTransform.sizeDelta = new Vector2(
+            Mathf.Max(360f, sizeDelta.x - 72f),
+            KeyBindingMinimumContentHeight);
 
-        bindingScrollRect = scrollAreaObject.GetComponent<ScrollRect>();
-        bindingScrollRect.viewport = viewportRectTransform;
-        bindingScrollRect.content = contentRectTransform;
-        bindingScrollRect.horizontal = false;
-        bindingScrollRect.vertical = true;
-        bindingScrollRect.movementType = ScrollRect.MovementType.Clamped;
-        bindingScrollRect.scrollSensitivity = 28f;
+        GameObject scrollbarObject = new GameObject(
+            $"{scrollAreaObjectName}Scrollbar",
+            typeof(RectTransform),
+            typeof(Image),
+            typeof(Scrollbar));
+        scrollbarObject.transform.SetParent(scrollAreaObject.transform, false);
+
+        RectTransform scrollbarRectTransform = scrollbarObject.GetComponent<RectTransform>();
+        scrollbarRectTransform.anchorMin = new Vector2(1f, 0f);
+        scrollbarRectTransform.anchorMax = new Vector2(1f, 1f);
+        scrollbarRectTransform.offsetMin = new Vector2(-(scrollbarWidth + scrollbarSpacing), viewportPadding);
+        scrollbarRectTransform.offsetMax = new Vector2(-scrollbarSpacing, -viewportPadding);
+
+        Image scrollbarImage = scrollbarObject.GetComponent<Image>();
+        scrollbarImage.color = new Color(0.28f, 0.36f, 0.28f, 0.32f);
+
+        GameObject slidingAreaObject = new GameObject("SlidingArea", typeof(RectTransform));
+        slidingAreaObject.transform.SetParent(scrollbarObject.transform, false);
+
+        RectTransform slidingAreaRectTransform = slidingAreaObject.GetComponent<RectTransform>();
+        slidingAreaRectTransform.anchorMin = Vector2.zero;
+        slidingAreaRectTransform.anchorMax = Vector2.one;
+        slidingAreaRectTransform.offsetMin = new Vector2(3f, 3f);
+        slidingAreaRectTransform.offsetMax = new Vector2(-3f, -3f);
+
+        GameObject handleObject = new GameObject("Handle", typeof(RectTransform), typeof(Image));
+        handleObject.transform.SetParent(slidingAreaObject.transform, false);
+
+        RectTransform handleRectTransform = handleObject.GetComponent<RectTransform>();
+        handleRectTransform.anchorMin = Vector2.zero;
+        handleRectTransform.anchorMax = new Vector2(1f, 0f);
+        handleRectTransform.pivot = new Vector2(0.5f, 0.5f);
+        handleRectTransform.sizeDelta = new Vector2(0f, 64f);
+
+        Image handleImage = handleObject.GetComponent<Image>();
+        handleImage.color = new Color(0.5f, 0.66f, 0.49f, 0.98f);
+
+        createdScrollRect = scrollAreaObject.GetComponent<ScrollRect>();
+        createdScrollRect.viewport = viewportRectTransform;
+        createdScrollRect.content = contentRectTransform;
+        createdScrollRect.horizontal = false;
+        createdScrollRect.vertical = true;
+        createdScrollRect.movementType = ScrollRect.MovementType.Clamped;
+        createdScrollRect.scrollSensitivity = 28f;
+        createdScrollRect.verticalScrollbar = scrollbarObject.GetComponent<Scrollbar>();
+        createdScrollRect.verticalScrollbar.handleRect = handleRectTransform;
+        createdScrollRect.verticalScrollbar.targetGraphic = handleImage;
+        createdScrollRect.verticalScrollbar.direction = Scrollbar.Direction.BottomToTop;
+        createdScrollRect.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.Permanent;
+        createdScrollRect.verticalScrollbarSpacing = scrollbarSpacing;
 
         return contentRectTransform;
     }
@@ -727,11 +1152,14 @@ public class StartSceneController : MonoBehaviour
         rowObject.transform.SetParent(parent, false);
 
         RectTransform rowRectTransform = rowObject.GetComponent<RectTransform>();
+        float rowWidth = parent is RectTransform parentRectTransform
+            ? Mathf.Max(600f, parentRectTransform.sizeDelta.x)
+            : 680f;
         rowRectTransform.anchorMin = new Vector2(0.5f, 1f);
         rowRectTransform.anchorMax = new Vector2(0.5f, 1f);
         rowRectTransform.pivot = new Vector2(0.5f, 1f);
         rowRectTransform.anchoredPosition = new Vector2(0f, -topOffset);
-        rowRectTransform.sizeDelta = new Vector2(680f, 56f);
+        rowRectTransform.sizeDelta = new Vector2(rowWidth, 56f);
 
         CreateTextElement(
             rowObject.transform,
@@ -757,7 +1185,13 @@ public class StartSceneController : MonoBehaviour
         Text bindingButtonText = bindingButton.GetComponentInChildren<Text>();
         if (bindingButtonText != null)
         {
-            bindingValueTexts[action] = bindingButtonText;
+            if (!bindingValueTexts.TryGetValue(action, out List<Text> texts))
+            {
+                texts = new List<Text>();
+                bindingValueTexts[action] = texts;
+            }
+
+            texts.Add(bindingButtonText);
         }
 
         InputActionType capturedAction = action;
@@ -945,6 +1379,18 @@ public class StartSceneController : MonoBehaviour
         rectTransform.pivot = new Vector2(0.5f, 0.5f);
     }
 
+    private void SetTopAnchoredRect(RectTransform rectTransform)
+    {
+        if (rectTransform == null)
+        {
+            return;
+        }
+
+        rectTransform.anchorMin = new Vector2(0.5f, 1f);
+        rectTransform.anchorMax = new Vector2(0.5f, 1f);
+        rectTransform.pivot = new Vector2(0.5f, 0.5f);
+    }
+
     private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (!isPauseMenu)
@@ -1094,6 +1540,8 @@ public class StartSceneController : MonoBehaviour
     private void OpenOptionsPanel()
     {
         RefreshAudioControls();
+        RefreshBindingValueTexts();
+        SetActiveOptionsCategory(activeOptionsCategory);
         SetOptionsPanelVisible(true);
         SetMenuButtonsInteractable(false);
     }
@@ -1109,6 +1557,7 @@ public class StartSceneController : MonoBehaviour
 
     private void CloseOptionsPanel()
     {
+        CancelPendingRebind();
         SetOptionsPanelVisible(false);
         RefreshMenuButtons();
         SetMenuButtonsInteractable(true);
@@ -1120,12 +1569,21 @@ public class StartSceneController : MonoBehaviour
         isWaitingForBinding = true;
         RefreshBindingValueTexts();
 
-        if (bindingValueTexts.TryGetValue(action, out Text bindingValueText))
+        if (bindingValueTexts.TryGetValue(action, out List<Text> bindingValueTextList))
         {
-            bindingValueText.text = "Press key...";
+            for (int i = 0; i < bindingValueTextList.Count; i++)
+            {
+                Text bindingValueText = bindingValueTextList[i];
+                if (bindingValueText == null)
+                {
+                    continue;
+                }
+
+                bindingValueText.text = "키 입력...";
+            }
         }
 
-        UpdateStatusText($"Press a key for {PlayerInputBindings.GetActionLabel(action)}.");
+        UpdateStatusText($"{PlayerInputBindings.GetActionLabel(action)}에 사용할 키를 눌러주세요.");
     }
 
     private void CancelPendingRebind()
@@ -1144,7 +1602,7 @@ public class StartSceneController : MonoBehaviour
     {
         if (isWaitingForBinding)
         {
-            UpdateStatusText("Finish the current key selection before continuing.");
+            UpdateStatusText("현재 키 선택을 먼저 완료해 주세요.");
             return;
         }
 
@@ -1182,14 +1640,24 @@ public class StartSceneController : MonoBehaviour
 
     private void RefreshBindingValueTexts()
     {
-        foreach (KeyValuePair<InputActionType, Text> entry in bindingValueTexts)
+        foreach (KeyValuePair<InputActionType, List<Text>> entry in bindingValueTexts)
         {
             if (entry.Value == null)
             {
                 continue;
             }
 
-            entry.Value.text = PlayerInputBindings.GetKeyDisplayName(entry.Key);
+            string bindingDisplayName = PlayerInputBindings.GetKeyDisplayName(entry.Key);
+            for (int i = 0; i < entry.Value.Count; i++)
+            {
+                Text bindingValueText = entry.Value[i];
+                if (bindingValueText == null)
+                {
+                    continue;
+                }
+
+                bindingValueText.text = bindingDisplayName;
+            }
         }
     }
 
@@ -1213,6 +1681,185 @@ public class StartSceneController : MonoBehaviour
         isRefreshingAudioControls = false;
     }
 
+    private void RefreshResolutionControls()
+    {
+        selectedResolutionIndex = FindClosestResolutionOptionIndex(Screen.width, Screen.height);
+        UpdateDisplayModeButtonAppearance(fullscreenModeButton, Screen.fullScreen, "전체화면");
+        UpdateDisplayModeButtonAppearance(windowedModeButton, !Screen.fullScreen, "창모드");
+
+        for (int i = 0; i < resolutionButtons.Count; i++)
+        {
+            UpdateResolutionButtonAppearance(resolutionButtons[i], i == selectedResolutionIndex);
+        }
+
+        if (resolutionToggleButtonText != null)
+        {
+            string selectedResolutionLabel = selectedResolutionIndex >= 0 && selectedResolutionIndex < availableResolutionOptions.Count
+                ? GetResolutionLabel(availableResolutionOptions[selectedResolutionIndex])
+                : GetResolutionLabel(new Vector2Int(Screen.width, Screen.height));
+            string toggleIndicator = isResolutionListExpanded ? "▲" : "▼";
+            resolutionToggleButtonText.text = $"{selectedResolutionLabel} {toggleIndicator}";
+        }
+    }
+
+    private void BuildAvailableResolutionOptions()
+    {
+        availableResolutionOptions.Clear();
+        HashSet<string> systemResolutionKeys = new HashSet<string>();
+
+        Resolution[] systemResolutions = Screen.resolutions;
+        for (int i = 0; i < systemResolutions.Length; i++)
+        {
+            systemResolutionKeys.Add(GetResolutionKey(systemResolutions[i].width, systemResolutions[i].height));
+        }
+
+        systemResolutionKeys.Add(GetResolutionKey(Screen.width, Screen.height));
+
+        HashSet<string> seenResolutionKeys = new HashSet<string>();
+        for (int i = 0; i < CommonResolutionOptions.Length; i++)
+        {
+            Vector2Int resolution = CommonResolutionOptions[i];
+            if (!systemResolutionKeys.Contains(GetResolutionKey(resolution.x, resolution.y)))
+            {
+                continue;
+            }
+
+            AddResolutionOption(resolution.x, resolution.y, seenResolutionKeys);
+        }
+
+        AddResolutionOption(Screen.width, Screen.height, seenResolutionKeys);
+
+        availableResolutionOptions.Sort((left, right) =>
+        {
+            int heightComparison = right.y.CompareTo(left.y);
+            if (heightComparison != 0)
+            {
+                return heightComparison;
+            }
+
+            return right.x.CompareTo(left.x);
+        });
+
+        if (availableResolutionOptions.Count == 0)
+        {
+            availableResolutionOptions.Add(new Vector2Int(1280, 720));
+        }
+    }
+
+    private void ApplySavedDisplaySettings()
+    {
+        bool shouldUseFullscreen = PlayerPrefs.GetInt(DisplayFullscreenPrefKey, Screen.fullScreen ? 1 : 0) == 1;
+        int savedWidth = PlayerPrefs.GetInt(DisplayWidthPrefKey, Screen.width);
+        int savedHeight = PlayerPrefs.GetInt(DisplayHeightPrefKey, Screen.height);
+        int savedResolutionIndex = FindClosestResolutionOptionIndex(savedWidth, savedHeight);
+        Vector2Int targetResolution = savedResolutionIndex >= 0
+            ? availableResolutionOptions[savedResolutionIndex]
+            : new Vector2Int(Screen.width, Screen.height);
+
+        ApplyDisplaySettings(targetResolution.x, targetResolution.y, shouldUseFullscreen, false);
+    }
+
+    private void AddResolutionOption(int width, int height, HashSet<string> seenResolutionKeys)
+    {
+        if (width <= 0 || height <= 0 || seenResolutionKeys == null)
+        {
+            return;
+        }
+
+        string resolutionKey = GetResolutionKey(width, height);
+        if (!seenResolutionKeys.Add(resolutionKey))
+        {
+            return;
+        }
+
+        availableResolutionOptions.Add(new Vector2Int(width, height));
+    }
+
+    private string GetResolutionKey(int width, int height)
+    {
+        return $"{width}x{height}";
+    }
+
+    private int FindClosestResolutionOptionIndex(int width, int height)
+    {
+        if (availableResolutionOptions.Count == 0)
+        {
+            return -1;
+        }
+
+        int bestIndex = 0;
+        int bestDistance = int.MaxValue;
+
+        for (int i = 0; i < availableResolutionOptions.Count; i++)
+        {
+            Vector2Int option = availableResolutionOptions[i];
+            int distance = Mathf.Abs(option.x - width) + Mathf.Abs(option.y - height);
+            if (distance < bestDistance)
+            {
+                bestDistance = distance;
+                bestIndex = i;
+            }
+
+            if (distance == 0)
+            {
+                return i;
+            }
+        }
+
+        return bestIndex;
+    }
+
+    private void ApplyDisplaySettings(int width, int height, bool useFullscreen, bool savePreference)
+    {
+        int resolutionIndex = FindClosestResolutionOptionIndex(width, height);
+        Vector2Int targetResolution = resolutionIndex >= 0
+            ? availableResolutionOptions[resolutionIndex]
+            : new Vector2Int(width, height);
+
+        selectedResolutionIndex = resolutionIndex;
+        Screen.SetResolution(targetResolution.x, targetResolution.y, useFullscreen);
+
+        if (savePreference)
+        {
+            PlayerPrefs.SetInt(DisplayFullscreenPrefKey, useFullscreen ? 1 : 0);
+            PlayerPrefs.SetInt(DisplayWidthPrefKey, targetResolution.x);
+            PlayerPrefs.SetInt(DisplayHeightPrefKey, targetResolution.y);
+            PlayerPrefs.Save();
+        }
+
+        UpdateDisplayModeButtonAppearance(fullscreenModeButton, useFullscreen, "전체화면");
+        UpdateDisplayModeButtonAppearance(windowedModeButton, !useFullscreen, "창모드");
+        for (int i = 0; i < resolutionButtons.Count; i++)
+        {
+            UpdateResolutionButtonAppearance(resolutionButtons[i], i == selectedResolutionIndex);
+        }
+    }
+
+    private void HandleDisplayModeButtonPressed(bool useFullscreen)
+    {
+        Vector2Int resolutionToApply = selectedResolutionIndex >= 0 && selectedResolutionIndex < availableResolutionOptions.Count
+            ? availableResolutionOptions[selectedResolutionIndex]
+            : new Vector2Int(Screen.width, Screen.height);
+        ApplyDisplaySettings(resolutionToApply.x, resolutionToApply.y, useFullscreen, true);
+    }
+
+    private void HandleResolutionOptionPressed(int optionIndex)
+    {
+        if (optionIndex < 0 || optionIndex >= availableResolutionOptions.Count)
+        {
+            return;
+        }
+
+        Vector2Int selectedResolution = availableResolutionOptions[optionIndex];
+        ApplyDisplaySettings(selectedResolution.x, selectedResolution.y, Screen.fullScreen, true);
+        SetResolutionOptionsExpanded(false);
+    }
+
+    private void ToggleResolutionOptionsList()
+    {
+        SetResolutionOptionsExpanded(!isResolutionListExpanded);
+    }
+
     private void UpdateAudioValueText(Text valueText, float value)
     {
         if (valueText == null)
@@ -1225,8 +1872,14 @@ public class StartSceneController : MonoBehaviour
 
     private void UpdateStatusText(string message)
     {
-        if (statusText != null)
+        for (int i = 0; i < statusTexts.Count; i++)
         {
+            Text statusText = statusTexts[i];
+            if (statusText == null)
+            {
+                continue;
+            }
+
             statusText.text = message;
             statusText.gameObject.SetActive(!string.IsNullOrWhiteSpace(message));
         }
@@ -1246,6 +1899,59 @@ public class StartSceneController : MonoBehaviour
         {
             optionsPanel.SetActive(isVisible);
         }
+
+        if (!isVisible)
+        {
+            SetResolutionOptionsExpanded(false);
+        }
+    }
+
+    private void SetActiveOptionsCategory(OptionsCategory category)
+    {
+        if (activeOptionsCategory != category && isWaitingForBinding)
+        {
+            CancelPendingRebind();
+        }
+
+        activeOptionsCategory = category;
+
+        if (optionsAudioContent != null)
+        {
+            optionsAudioContent.SetActive(category == OptionsCategory.Audio);
+        }
+
+        if (optionsResolutionContent != null)
+        {
+            optionsResolutionContent.SetActive(category == OptionsCategory.Resolution);
+        }
+
+        if (optionsKeySetupContent != null)
+        {
+            optionsKeySetupContent.SetActive(category == OptionsCategory.KeySetup);
+        }
+
+        UpdateOptionsTabAppearance(optionsAudioTabButton, category == OptionsCategory.Audio);
+        UpdateOptionsTabAppearance(optionsResolutionTabButton, category == OptionsCategory.Resolution);
+        UpdateOptionsTabAppearance(optionsKeySetupTabButton, category == OptionsCategory.KeySetup);
+
+        if (category == OptionsCategory.Audio)
+        {
+            RefreshAudioControls();
+            SetResolutionOptionsExpanded(false);
+        }
+        else if (category == OptionsCategory.Resolution)
+        {
+            RefreshResolutionControls();
+            ResetBindingScrollPosition(resolutionOptionsScrollRect);
+        }
+        else
+        {
+            RefreshBindingValueTexts();
+            ResetBindingScrollPosition(optionsBindingScrollRect);
+            SetResolutionOptionsExpanded(false);
+        }
+
+        UpdateStatusText(DefaultStatusText);
     }
 
     private void SetMenuButtonsVisible(bool isVisible)
@@ -1282,21 +1988,25 @@ public class StartSceneController : MonoBehaviour
 
     private void ResetBindingScrollPosition()
     {
-        if (bindingScrollRect == null)
+        ResetBindingScrollPosition(bindingScrollRect);
+    }
+
+    private void ResetBindingScrollPosition(ScrollRect scrollRect)
+    {
+        if (scrollRect == null)
         {
             return;
         }
 
         Canvas.ForceUpdateCanvases();
-        bindingScrollRect.verticalNormalizedPosition = 1f;
+        scrollRect.verticalNormalizedPosition = 1f;
     }
 
     private void RefreshMenuButtons()
     {
-        bool isConfigured = PlayerInputBindings.IsConfigured;
         if (reconfigureButton != null)
         {
-            reconfigureButton.gameObject.SetActive(isConfigured);
+            reconfigureButton.gameObject.SetActive(false);
         }
 
         if (optionButton != null)
@@ -1364,6 +2074,167 @@ public class StartSceneController : MonoBehaviour
         {
             exitButton.interactable = isInteractable;
         }
+    }
+
+    private void UpdateOptionsTabAppearance(Button button, bool isActive)
+    {
+        if (button == null)
+        {
+            return;
+        }
+
+        Color backgroundColor = isActive
+            ? new Color(0.9f, 0.94f, 0.86f, 1f)
+            : new Color(0.72f, 0.77f, 0.68f, 1f);
+        Color labelColor = isActive
+            ? new Color(0.11f, 0.18f, 0.13f, 1f)
+            : new Color(0.25f, 0.31f, 0.26f, 1f);
+
+        if (button.TryGetComponent(out Image buttonImage))
+        {
+            buttonImage.color = backgroundColor;
+        }
+
+        button.colors = CreateButtonColors(backgroundColor);
+
+        Text label = button.GetComponentInChildren<Text>();
+        if (label != null)
+        {
+            label.color = labelColor;
+        }
+    }
+
+    private void ConfigureDisplayModeCheckboxButton(Button button)
+    {
+        if (button == null)
+        {
+            return;
+        }
+
+        Text label = button.GetComponentInChildren<Text>();
+        if (label == null)
+        {
+            return;
+        }
+
+        label.alignment = TextAnchor.MiddleLeft;
+        label.fontSize = 24;
+
+        RectTransform labelRectTransform = label.GetComponent<RectTransform>();
+        if (labelRectTransform != null)
+        {
+            labelRectTransform.offsetMin = new Vector2(24f, 0f);
+            labelRectTransform.offsetMax = new Vector2(-12f, 0f);
+        }
+    }
+
+    private void UpdateDisplayModeButtonAppearance(Button button, bool isActive, string labelText)
+    {
+        if (button == null)
+        {
+            return;
+        }
+
+        Color backgroundColor = isActive
+            ? new Color(0.16f, 0.44f, 0.25f, 1f)
+            : new Color(0.74f, 0.81f, 0.72f, 1f);
+        Color labelColor = isActive
+            ? Color.white
+            : new Color(0.12f, 0.22f, 0.16f, 1f);
+
+        if (button.TryGetComponent(out Image buttonImage))
+        {
+            buttonImage.color = backgroundColor;
+        }
+
+        button.colors = CreateButtonColors(backgroundColor);
+
+        Text label = button.GetComponentInChildren<Text>();
+        if (label != null)
+        {
+            label.text = isActive ? $"[X] {labelText}" : $"[ ] {labelText}";
+            label.color = labelColor;
+        }
+    }
+
+    private void UpdateResolutionButtonAppearance(Button button, bool isSelected)
+    {
+        if (button == null)
+        {
+            return;
+        }
+
+        Color backgroundColor = isSelected
+            ? new Color(0.16f, 0.44f, 0.25f, 1f)
+            : new Color(0.72f, 0.82f, 0.72f, 1f);
+        Color labelColor = isSelected
+            ? Color.white
+            : new Color(0.12f, 0.22f, 0.16f, 1f);
+
+        if (button.TryGetComponent(out Image buttonImage))
+        {
+            buttonImage.color = backgroundColor;
+        }
+
+        button.colors = CreateButtonColors(backgroundColor);
+
+        Text label = button.GetComponentInChildren<Text>();
+        if (label != null)
+        {
+            label.color = labelColor;
+        }
+    }
+
+    private void SetResolutionOptionsExpanded(bool isExpanded)
+    {
+        isResolutionListExpanded = isExpanded;
+
+        if (resolutionOptionsContainer != null)
+        {
+            resolutionOptionsContainer.SetActive(isExpanded);
+
+            if (isExpanded)
+            {
+                resolutionOptionsContainer.transform.SetAsLastSibling();
+            }
+        }
+
+        if (isExpanded)
+        {
+            ResetBindingScrollPosition(resolutionOptionsScrollRect);
+        }
+
+        RefreshResolutionControls();
+    }
+
+    private void NormalizeMenuLabels()
+    {
+        buttonLabel = NormalizeLegacyLabel(buttonLabel, "START", "시작");
+        reconfigureButtonLabel = NormalizeLegacyLabel(reconfigureButtonLabel, "KEY SETUP", "키 설정");
+        optionButtonLabel = NormalizeLegacyLabel(optionButtonLabel, "OPTION", "옵션");
+        exitButtonLabel = NormalizeLegacyLabel(exitButtonLabel, "EXIT", "종료");
+    }
+
+    private string NormalizeLegacyLabel(string currentValue, string legacyEnglishValue, string localizedValue)
+    {
+        if (string.IsNullOrWhiteSpace(currentValue) || string.Equals(currentValue, legacyEnglishValue, StringComparison.OrdinalIgnoreCase))
+        {
+            return localizedValue;
+        }
+
+        return currentValue;
+    }
+
+    private bool IsOptionsKeySetupVisible()
+    {
+        return optionsPanel != null
+            && optionsPanel.activeSelf
+            && activeOptionsCategory == OptionsCategory.KeySetup;
+    }
+
+    private string GetResolutionLabel(Vector2Int resolution)
+    {
+        return $"{resolution.x} x {resolution.y}";
     }
 
     private bool TryGetPressedBindableKey(out KeyCode pressedKey)

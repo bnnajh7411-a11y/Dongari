@@ -151,8 +151,8 @@ MonoBehaviour:
   sceneToLoad: Zoo
   playIntroCutsceneBeforeFirstScene: 1
   cutsceneSceneToLoad: IntroCutscene
-  buttonLabel: START
-  reconfigureButtonLabel: KEY SETUP
+  buttonLabel: 시작
+  reconfigureButtonLabel: 키 설정
 --- !u!4 &1600000002
 Transform:
   m_ObjectHideFlags: 0

@@ -31,13 +31,13 @@ public static class PlayerInputBindings
 
     private static readonly Dictionary<InputActionType, string> ActionLabels = new Dictionary<InputActionType, string>
     {
-        { InputActionType.MoveUp, "Move Up" },
-        { InputActionType.MoveDown, "Move Down" },
-        { InputActionType.MoveLeft, "Move Left" },
-        { InputActionType.MoveRight, "Move Right" },
-        { InputActionType.Run, "Run" },
-        { InputActionType.Jump, "Jump" },
-        { InputActionType.Interact, "Interact" }
+        { InputActionType.MoveUp, "위로 이동" },
+        { InputActionType.MoveDown, "아래로 이동" },
+        { InputActionType.MoveLeft, "왼쪽 이동" },
+        { InputActionType.MoveRight, "오른쪽 이동" },
+        { InputActionType.Run, "달리기" },
+        { InputActionType.Jump, "점프" },
+        { InputActionType.Interact, "상호작용" }
     };
 
     private static readonly Dictionary<InputActionType, KeyCode> DefaultBindings = new Dictionary<InputActionType, KeyCode>
@@ -80,27 +80,27 @@ public static class PlayerInputBindings
         switch (key)
         {
             case KeyCode.LeftShift:
-                return "Left Shift";
+                return "왼쪽 시프트";
             case KeyCode.RightShift:
-                return "Right Shift";
+                return "오른쪽 시프트";
             case KeyCode.LeftControl:
-                return "Left Ctrl";
+                return "왼쪽 컨트롤";
             case KeyCode.RightControl:
-                return "Right Ctrl";
+                return "오른쪽 컨트롤";
             case KeyCode.LeftAlt:
-                return "Left Alt";
+                return "왼쪽 알트";
             case KeyCode.RightAlt:
-                return "Right Alt";
+                return "오른쪽 알트";
             case KeyCode.UpArrow:
-                return "Up Arrow";
+                return "위 방향키";
             case KeyCode.DownArrow:
-                return "Down Arrow";
+                return "아래 방향키";
             case KeyCode.LeftArrow:
-                return "Left Arrow";
+                return "왼쪽 방향키";
             case KeyCode.RightArrow:
-                return "Right Arrow";
+                return "오른쪽 방향키";
             case KeyCode.Return:
-                return "Enter";
+                return "엔터";
         }
 
         string keyName = key.ToString();
