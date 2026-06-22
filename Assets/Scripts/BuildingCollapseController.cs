@@ -17,9 +17,9 @@ public class BuildingCollapseController : MonoBehaviour
     [SerializeField, Min(1f)] private float collapseDuration = 42f;
     [SerializeField] private bool excludeBaseBlock = true;
     [SerializeField, Min(0f)] private float minimumShardBlockWidth = 0.25f;
-    [SerializeField, Min(0.25f)] private float targetShardWidth = 3f;
+    [SerializeField, Min(0.25f)] private float targetShardWidth = 1.5f;
     [SerializeField, Min(0.25f)] private float targetShardHeight = 1.5f;
-    [SerializeField, Min(1)] private int maxShardColumns = 5;
+    [SerializeField, Min(1)] private int maxShardColumns = 10;
     [SerializeField, Min(1)] private int maxShardRows = 2;
     [SerializeField, Min(0f)] private float shardHorizontalSpeed = 1.6f;
     [SerializeField, Min(0f)] private float shardUpwardSpeed = 1.2f;
@@ -285,15 +285,16 @@ public class BuildingCollapseController : MonoBehaviour
 
         int columns = Mathf.Clamp(Mathf.CeilToInt(bounds.size.x / targetShardWidth), 1, maxShardColumns);
         int rows = Mathf.Clamp(Mathf.CeilToInt(bounds.size.y / targetShardHeight), 1, maxShardRows);
-        float pieceWidth = bounds.size.x / columns;
+        float cellWidth = bounds.size.x / columns;
+        float pieceWidth = cellWidth * 0.5f;
         float pieceHeight = bounds.size.y / rows;
 
         for (int row = 0; row < rows; row++)
         {
-            for (int column = 0; column < columns; column++)
+            for (int column = 0; column < columns; column += 2)
             {
                 Vector3 shardPosition = new Vector3(
-                    bounds.min.x + ((column + 0.5f) * pieceWidth),
+                    bounds.min.x + ((column + 0.5f) * cellWidth),
                     bounds.min.y + ((row + 0.5f) * pieceHeight),
                     block.Transform.position.z);
 
