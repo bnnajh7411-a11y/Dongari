@@ -1,27 +1,36 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [DisallowMultipleComponent]
 public class SecurityGazeController : MonoBehaviour
 {
     private const int CircleTextureSize = 128;
     private const float CircleEdgeSoftness = 2f;
+    private const string TargetSceneName = "Zoo";
+    private const string ChaseStartAudioResourcesFolder = "Audios";
+    private const string ChaseStartAudioClipMarker = "(542)";
 
     [SerializeField, Min(0f)] private float alertDuration = 1f;
     [SerializeField] private Color alertColor = Color.red;
+    [SerializeField, Range(0f, 1f)] private float chaseStartSoundVolume = 1f;
 
     private SpriteRenderer gazeRenderer;
     private SpriteRenderer securityRenderer;
     private SecurityPatrolController securityPatrolController;
+    private AudioSource chaseStartAudioSource;
     private Color defaultSecurityColor;
     private Coroutine restoreColorRoutine;
     private static Sprite circleSprite;
+    private static AudioClip chaseStartAudioClip;
+    private static bool hasLoadedChaseStartAudioClip;
 
     private void Awake()
     {
         gazeRenderer = GetComponent<SpriteRenderer>();
         EnsureCircularVisual();
         EnsureTriggerCollider();
+        EnsureChaseAudioSource();
         securityRenderer = FindSecurityRenderer();
         securityPatrolController = FindSecurityPatrolController();
 
@@ -47,7 +56,12 @@ public class SecurityGazeController : MonoBehaviour
             return;
         }
 
-        securityPatrolController?.BeginChase(playerTransform);
+        bool chaseStarted = securityPatrolController != null && securityPatrolController.BeginChase(playerTransform);
+        if (chaseStarted)
+        {
+            PlayChaseStartSound();
+        }
+
         TriggerAlert();
     }
 
@@ -79,6 +93,28 @@ public class SecurityGazeController : MonoBehaviour
         trigger.isTrigger = true;
         trigger.radius = 0.5f;
         trigger.offset = Vector2.zero;
+    }
+
+    private void EnsureChaseAudioSource()
+    {
+        if (chaseStartAudioSource == null)
+        {
+            chaseStartAudioSource = GetComponent<AudioSource>();
+        }
+
+        if (chaseStartAudioSource == null)
+        {
+            chaseStartAudioSource = gameObject.AddComponent<AudioSource>();
+        }
+
+        if (chaseStartAudioSource == null)
+        {
+            return;
+        }
+
+        chaseStartAudioSource.playOnAwake = false;
+        chaseStartAudioSource.loop = false;
+        chaseStartAudioSource.spatialBlend = 0f;
     }
 
     private void EnsureCircularVisual()
@@ -133,6 +169,43 @@ public class SecurityGazeController : MonoBehaviour
         }
 
         restoreColorRoutine = StartCoroutine(RestoreSecurityColorAfterDelay());
+    }
+
+    private void PlayChaseStartSound()
+    {
+        if (SceneManager.GetActiveScene().name != TargetSceneName)
+        {
+            return;
+        }
+
+        if (chaseStartAudioSource == null)
+        {
+            EnsureChaseAudioSource();
+        }
+
+        if (!hasLoadedChaseStartAudioClip)
+        {
+            AudioClip[] audioClips = Resources.LoadAll<AudioClip>(ChaseStartAudioResourcesFolder);
+            for (int i = 0; i < audioClips.Length; i++)
+            {
+                AudioClip audioClip = audioClips[i];
+                if (audioClip != null && audioClip.name.Contains(ChaseStartAudioClipMarker))
+                {
+                    chaseStartAudioClip = audioClip;
+                    break;
+                }
+            }
+
+            hasLoadedChaseStartAudioClip = true;
+        }
+
+        if (chaseStartAudioSource == null || chaseStartAudioClip == null)
+        {
+            return;
+        }
+
+        float volumeScale = Mathf.Clamp01(chaseStartSoundVolume) * AudioSettingsStore.SoundEffectVolume;
+        chaseStartAudioSource.PlayOneShot(chaseStartAudioClip, volumeScale);
     }
 
     private IEnumerator RestoreSecurityColorAfterDelay()

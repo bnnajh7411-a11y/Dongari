@@ -21,6 +21,7 @@ public class StartSceneController : MonoBehaviour
     private const string CanvasObjectName = "StartCanvas";
     private const string PauseCanvasObjectName = "PauseMenuCanvas";
     private const string PauseMenuObjectName = "PauseMenuController";
+    private const string PauseBackgroundOverlayObjectName = "PauseBackgroundOverlay";
     private const string MenuButtonsContainerObjectName = "MenuButtonsContainer";
     private const string ButtonObjectName = "StartButton";
     private const string PauseResumeButtonLabel = "계속하기";
@@ -107,6 +108,7 @@ public class StartSceneController : MonoBehaviour
     private Canvas rootCanvas;
     private Font builtinFont;
     private GameObject menuButtonsContainer;
+    private GameObject pauseBackgroundOverlay;
     private GameObject keyMappingPanel;
     private GameObject optionsPanel;
     private GameObject optionsAudioContent;
@@ -123,7 +125,8 @@ public class StartSceneController : MonoBehaviour
     private Button optionsResolutionTabButton;
     private Button optionsKeySetupTabButton;
     private Button fullscreenModeButton;
-    private Button windowedModeButton;
+    private Image fullscreenModeCheckboxImage;
+    private Image fullscreenModeCheckboxFillImage;
     private Button resolutionToggleButton;
     private Text resolutionToggleButtonText;
     private GameObject resolutionOptionsContainer;
@@ -132,6 +135,7 @@ public class StartSceneController : MonoBehaviour
     private bool shouldLoadSceneAfterConfirm;
     private bool isPauseMenu;
     private bool isResolutionListExpanded;
+    private bool isFullscreenEnabled;
     private InputActionType pendingBindingAction;
     private OptionsCategory activeOptionsCategory = OptionsCategory.Audio;
     private int selectedResolutionIndex = -1;
@@ -165,6 +169,12 @@ public class StartSceneController : MonoBehaviour
         ApplySavedDisplaySettings();
         EnsureEventSystem();
         rootCanvas = EnsureCanvas();
+        if (isPauseMenu)
+        {
+            pauseBackgroundOverlay = EnsurePauseBackgroundOverlay(rootCanvas.transform);
+            SetPauseBackgroundVisible(false);
+        }
+
         menuButtonsContainer = EnsureMenuButtonsContainer(rootCanvas.transform);
         EnsureStartButton(menuButtonsContainer.transform);
         UpdatePrimaryButtonLabel();
@@ -310,6 +320,41 @@ public class StartSceneController : MonoBehaviour
         canvasScaler.matchWidthOrHeight = 0.5f;
 
         return canvas;
+    }
+
+    private GameObject EnsurePauseBackgroundOverlay(Transform parent)
+    {
+        if (parent == null)
+        {
+            return null;
+        }
+
+        Transform existingOverlayTransform = parent.Find(PauseBackgroundOverlayObjectName);
+        if (existingOverlayTransform != null)
+        {
+            existingOverlayTransform.SetAsFirstSibling();
+            return existingOverlayTransform.gameObject;
+        }
+
+        GameObject overlayObject = new GameObject(
+            PauseBackgroundOverlayObjectName,
+            typeof(RectTransform),
+            typeof(Image));
+        overlayObject.transform.SetParent(parent, false);
+        overlayObject.transform.SetAsFirstSibling();
+
+        RectTransform overlayRectTransform = overlayObject.GetComponent<RectTransform>();
+        overlayRectTransform.anchorMin = Vector2.zero;
+        overlayRectTransform.anchorMax = Vector2.one;
+        overlayRectTransform.offsetMin = Vector2.zero;
+        overlayRectTransform.offsetMax = Vector2.zero;
+
+        Image overlayImage = overlayObject.GetComponent<Image>();
+        overlayImage.color = new Color(1f, 1f, 1f, 0.52f);
+        overlayImage.raycastTarget = false;
+
+        overlayObject.SetActive(false);
+        return overlayObject;
     }
 
     private GameObject EnsureMenuButtonsContainer(Transform parent)
@@ -815,21 +860,14 @@ public class StartSceneController : MonoBehaviour
             contentObject.transform,
             "FullscreenModeButton",
             "전체화면",
-            new Vector2(-140f, 42f),
-            new Vector2(240f, 56f),
-            new Color(0.74f, 0.81f, 0.72f, 1f));
-        fullscreenModeButton.onClick.AddListener(() => HandleDisplayModeButtonPressed(true));
-        ConfigureDisplayModeCheckboxButton(fullscreenModeButton);
-
-        windowedModeButton = CreateButton(
-            contentObject.transform,
-            "WindowedModeButton",
-            "창모드",
-            new Vector2(140f, 42f),
-            new Vector2(240f, 56f),
-            new Color(0.74f, 0.81f, 0.72f, 1f));
-        windowedModeButton.onClick.AddListener(() => HandleDisplayModeButtonPressed(false));
-        ConfigureDisplayModeCheckboxButton(windowedModeButton);
+            new Vector2(0f, 42f),
+            new Vector2(280f, 56f),
+            new Color(1f, 1f, 1f, 0f));
+        fullscreenModeButton.onClick.AddListener(HandleDisplayModeButtonPressed);
+        ConfigureDisplayModeCheckboxButton(
+            fullscreenModeButton,
+            out fullscreenModeCheckboxImage,
+            out fullscreenModeCheckboxFillImage);
 
         CreateTextElement(
             contentObject.transform,
@@ -1401,6 +1439,7 @@ public class StartSceneController : MonoBehaviour
         EnsureEventSystem();
         SetKeyMappingPanelVisible(false);
         SetOptionsPanelVisible(false);
+        SetPauseBackgroundVisible(false);
         SetMenuButtonsVisible(false);
         ResumeSceneActivity();
     }
@@ -1492,6 +1531,7 @@ public class StartSceneController : MonoBehaviour
         RefreshMenuButtons();
         SetKeyMappingPanelVisible(false);
         SetOptionsPanelVisible(false);
+        SetPauseBackgroundVisible(true);
         SetMenuButtonsVisible(true);
         SetMenuButtonsInteractable(true);
         PauseSceneActivity();
@@ -1509,6 +1549,7 @@ public class StartSceneController : MonoBehaviour
         SetKeyMappingPanelVisible(false);
         SetOptionsPanelVisible(false);
         SetMenuButtonsVisible(false);
+        SetPauseBackgroundVisible(false);
         ResumeSceneActivity();
     }
 
@@ -1684,8 +1725,12 @@ public class StartSceneController : MonoBehaviour
     private void RefreshResolutionControls()
     {
         selectedResolutionIndex = FindClosestResolutionOptionIndex(Screen.width, Screen.height);
-        UpdateDisplayModeButtonAppearance(fullscreenModeButton, Screen.fullScreen, "전체화면");
-        UpdateDisplayModeButtonAppearance(windowedModeButton, !Screen.fullScreen, "창모드");
+        UpdateDisplayModeButtonAppearance(
+            fullscreenModeButton,
+            fullscreenModeCheckboxImage,
+            fullscreenModeCheckboxFillImage,
+            isFullscreenEnabled,
+            "전체화면");
 
         for (int i = 0; i < resolutionButtons.Count; i++)
         {
@@ -1748,7 +1793,9 @@ public class StartSceneController : MonoBehaviour
 
     private void ApplySavedDisplaySettings()
     {
-        bool shouldUseFullscreen = PlayerPrefs.GetInt(DisplayFullscreenPrefKey, Screen.fullScreen ? 1 : 0) == 1;
+        bool shouldUseFullscreen = PlayerPrefs.HasKey(DisplayFullscreenPrefKey)
+            ? PlayerPrefs.GetInt(DisplayFullscreenPrefKey) == 1
+            : Screen.fullScreen;
         int savedWidth = PlayerPrefs.GetInt(DisplayWidthPrefKey, Screen.width);
         int savedHeight = PlayerPrefs.GetInt(DisplayHeightPrefKey, Screen.height);
         int savedResolutionIndex = FindClosestResolutionOptionIndex(savedWidth, savedHeight);
@@ -1756,6 +1803,7 @@ public class StartSceneController : MonoBehaviour
             ? availableResolutionOptions[savedResolutionIndex]
             : new Vector2Int(Screen.width, Screen.height);
 
+        isFullscreenEnabled = shouldUseFullscreen;
         ApplyDisplaySettings(targetResolution.x, targetResolution.y, shouldUseFullscreen, false);
     }
 
@@ -1817,30 +1865,35 @@ public class StartSceneController : MonoBehaviour
             : new Vector2Int(width, height);
 
         selectedResolutionIndex = resolutionIndex;
-        Screen.SetResolution(targetResolution.x, targetResolution.y, useFullscreen);
+        isFullscreenEnabled = useFullscreen;
+        Screen.SetResolution(targetResolution.x, targetResolution.y, isFullscreenEnabled);
 
         if (savePreference)
         {
-            PlayerPrefs.SetInt(DisplayFullscreenPrefKey, useFullscreen ? 1 : 0);
+            PlayerPrefs.SetInt(DisplayFullscreenPrefKey, isFullscreenEnabled ? 1 : 0);
             PlayerPrefs.SetInt(DisplayWidthPrefKey, targetResolution.x);
             PlayerPrefs.SetInt(DisplayHeightPrefKey, targetResolution.y);
             PlayerPrefs.Save();
         }
 
-        UpdateDisplayModeButtonAppearance(fullscreenModeButton, useFullscreen, "전체화면");
-        UpdateDisplayModeButtonAppearance(windowedModeButton, !useFullscreen, "창모드");
+        UpdateDisplayModeButtonAppearance(
+            fullscreenModeButton,
+            fullscreenModeCheckboxImage,
+            fullscreenModeCheckboxFillImage,
+            isFullscreenEnabled,
+            "전체화면");
         for (int i = 0; i < resolutionButtons.Count; i++)
         {
             UpdateResolutionButtonAppearance(resolutionButtons[i], i == selectedResolutionIndex);
         }
     }
 
-    private void HandleDisplayModeButtonPressed(bool useFullscreen)
+    private void HandleDisplayModeButtonPressed()
     {
         Vector2Int resolutionToApply = selectedResolutionIndex >= 0 && selectedResolutionIndex < availableResolutionOptions.Count
             ? availableResolutionOptions[selectedResolutionIndex]
             : new Vector2Int(Screen.width, Screen.height);
-        ApplyDisplaySettings(resolutionToApply.x, resolutionToApply.y, useFullscreen, true);
+        ApplyDisplaySettings(resolutionToApply.x, resolutionToApply.y, !isFullscreenEnabled, true);
     }
 
     private void HandleResolutionOptionPressed(int optionIndex)
@@ -1851,7 +1904,7 @@ public class StartSceneController : MonoBehaviour
         }
 
         Vector2Int selectedResolution = availableResolutionOptions[optionIndex];
-        ApplyDisplaySettings(selectedResolution.x, selectedResolution.y, Screen.fullScreen, true);
+        ApplyDisplaySettings(selectedResolution.x, selectedResolution.y, isFullscreenEnabled, true);
         SetResolutionOptionsExpanded(false);
     }
 
@@ -1959,6 +2012,14 @@ public class StartSceneController : MonoBehaviour
         if (menuButtonsContainer != null)
         {
             menuButtonsContainer.SetActive(isVisible);
+        }
+    }
+
+    private void SetPauseBackgroundVisible(bool isVisible)
+    {
+        if (pauseBackgroundOverlay != null)
+        {
+            pauseBackgroundOverlay.SetActive(isVisible);
         }
     }
 
@@ -2104,12 +2165,25 @@ public class StartSceneController : MonoBehaviour
         }
     }
 
-    private void ConfigureDisplayModeCheckboxButton(Button button)
+    private void ConfigureDisplayModeCheckboxButton(
+        Button button,
+        out Image checkboxImage,
+        out Image checkboxFillImage)
     {
+        checkboxImage = null;
+        checkboxFillImage = null;
+
         if (button == null)
         {
             return;
         }
+
+        if (button.TryGetComponent(out Image buttonImage))
+        {
+            buttonImage.color = new Color(1f, 1f, 1f, 0f);
+        }
+
+        button.colors = CreateButtonColors(new Color(1f, 1f, 1f, 0f));
 
         Text label = button.GetComponentInChildren<Text>();
         if (label == null)
@@ -2123,23 +2197,62 @@ public class StartSceneController : MonoBehaviour
         RectTransform labelRectTransform = label.GetComponent<RectTransform>();
         if (labelRectTransform != null)
         {
-            labelRectTransform.offsetMin = new Vector2(24f, 0f);
+            labelRectTransform.offsetMin = new Vector2(84f, 0f);
             labelRectTransform.offsetMax = new Vector2(-12f, 0f);
         }
+
+        GameObject checkboxObject = new GameObject(
+            "Checkbox",
+            typeof(RectTransform),
+            typeof(Image),
+            typeof(Outline));
+        checkboxObject.transform.SetParent(button.transform, false);
+
+        RectTransform checkboxRectTransform = checkboxObject.GetComponent<RectTransform>();
+        checkboxRectTransform.anchorMin = new Vector2(0f, 0.5f);
+        checkboxRectTransform.anchorMax = new Vector2(0f, 0.5f);
+        checkboxRectTransform.pivot = new Vector2(0.5f, 0.5f);
+        checkboxRectTransform.anchoredPosition = new Vector2(34f, 0f);
+        checkboxRectTransform.sizeDelta = new Vector2(28f, 28f);
+
+        checkboxImage = checkboxObject.GetComponent<Image>();
+        checkboxImage.color = new Color(0.98f, 0.99f, 0.98f, 1f);
+        checkboxImage.raycastTarget = false;
+
+        Outline checkboxOutline = checkboxObject.GetComponent<Outline>();
+        checkboxOutline.effectColor = new Color(0.26f, 0.34f, 0.28f, 1f);
+        checkboxOutline.effectDistance = new Vector2(1.5f, -1.5f);
+
+        GameObject checkboxFillObject = new GameObject("Fill", typeof(RectTransform), typeof(Image));
+        checkboxFillObject.transform.SetParent(checkboxObject.transform, false);
+
+        RectTransform checkboxFillRectTransform = checkboxFillObject.GetComponent<RectTransform>();
+        checkboxFillRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        checkboxFillRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        checkboxFillRectTransform.pivot = new Vector2(0.5f, 0.5f);
+        checkboxFillRectTransform.anchoredPosition = Vector2.zero;
+        checkboxFillRectTransform.sizeDelta = new Vector2(16f, 16f);
+
+        checkboxFillImage = checkboxFillObject.GetComponent<Image>();
+        checkboxFillImage.color = new Color(0.16f, 0.44f, 0.25f, 1f);
+        checkboxFillImage.raycastTarget = false;
     }
 
-    private void UpdateDisplayModeButtonAppearance(Button button, bool isActive, string labelText)
+    private void UpdateDisplayModeButtonAppearance(
+        Button button,
+        Image checkboxImage,
+        Image checkboxFillImage,
+        bool isActive,
+        string labelText)
     {
         if (button == null)
         {
             return;
         }
 
-        Color backgroundColor = isActive
-            ? new Color(0.16f, 0.44f, 0.25f, 1f)
-            : new Color(0.74f, 0.81f, 0.72f, 1f);
+        Color backgroundColor = new Color(1f, 1f, 1f, 0f);
         Color labelColor = isActive
-            ? Color.white
+            ? new Color(0.1f, 0.33f, 0.18f, 1f)
             : new Color(0.12f, 0.22f, 0.16f, 1f);
 
         if (button.TryGetComponent(out Image buttonImage))
@@ -2149,10 +2262,29 @@ public class StartSceneController : MonoBehaviour
 
         button.colors = CreateButtonColors(backgroundColor);
 
+        if (checkboxImage != null)
+        {
+            checkboxImage.color = isActive
+                ? new Color(0.92f, 0.97f, 0.9f, 1f)
+                : new Color(0.98f, 0.99f, 0.98f, 1f);
+
+            if (checkboxImage.TryGetComponent(out Outline checkboxOutline))
+            {
+                checkboxOutline.effectColor = isActive
+                    ? new Color(0.16f, 0.44f, 0.25f, 1f)
+                    : new Color(0.26f, 0.34f, 0.28f, 1f);
+            }
+        }
+
+        if (checkboxFillImage != null)
+        {
+            checkboxFillImage.enabled = isActive;
+        }
+
         Text label = button.GetComponentInChildren<Text>();
         if (label != null)
         {
-            label.text = isActive ? $"[X] {labelText}" : $"[ ] {labelText}";
+            label.text = labelText;
             label.color = labelColor;
         }
     }

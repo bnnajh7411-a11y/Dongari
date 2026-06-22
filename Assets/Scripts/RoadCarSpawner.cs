@@ -13,6 +13,8 @@ public class RoadCarSpawner : MonoBehaviour
     private const string GroundObjectName = "Ground";
     private const string PlayerObjectName = "Player";
     private const string CarResourcesPath = "RoadCars";
+    private const string CollisionAudioResourcesPath = "Audios/K드라마 효과음 (1342)";
+    private const string CollisionAudioSourceObjectName = "RoadCarImpactAudioSource";
     private const int SecondFromBottomLaneIndex = 1;
     private const int SecondFromBottomLaneSortingOrderOffset = 2;
     private const float LowerLaneYOffsetPercent = 0.25f;
@@ -39,11 +41,14 @@ public class RoadCarSpawner : MonoBehaviour
     [SerializeField, Min(1)] private int carDamage = 1;
     [SerializeField] private int sortingOrder = 1;
     [SerializeField, Min(1f)] private float pixelsPerUnit = 100f;
+    [SerializeField, Range(0f, 1f)] private float collisionSoundVolume = 1f;
 
     private readonly List<Sprite> carSprites = new List<Sprite>();
     private readonly List<List<RoadCar>> carsByLane = new List<List<RoadCar>>();
 
     private Collider2D groundCollider;
+    private AudioClip collisionSoundClip;
+    private AudioSource collisionSoundSource;
     private float nextSpawnTime;
     private float carZPosition;
 
@@ -79,6 +84,8 @@ public class RoadCarSpawner : MonoBehaviour
         TryAssignGroundCollider();
         CacheCarZPosition();
         EnsurePlayerHealthOnPlayer();
+        LoadCollisionSound();
+        EnsureCollisionAudioSource();
         LoadCarSprites();
     }
 
@@ -140,6 +147,59 @@ public class RoadCarSpawner : MonoBehaviour
         }
 
         playerObject.AddComponent<PlayerHealth>();
+    }
+
+    private void LoadCollisionSound()
+    {
+        collisionSoundClip = Resources.Load<AudioClip>(CollisionAudioResourcesPath);
+        if (collisionSoundClip == null)
+        {
+            Debug.LogWarning($"Could not load road collision audio clip at Resources path '{CollisionAudioResourcesPath}'.", this);
+        }
+    }
+
+    private void EnsureCollisionAudioSource()
+    {
+        if (collisionSoundSource != null)
+        {
+            return;
+        }
+
+        Transform existingAudioSourceTransform = transform.Find(CollisionAudioSourceObjectName);
+        if (existingAudioSourceTransform != null && existingAudioSourceTransform.TryGetComponent(out AudioSource existingAudioSource))
+        {
+            collisionSoundSource = existingAudioSource;
+            ConfigureCollisionAudioSource(collisionSoundSource);
+            return;
+        }
+
+        GameObject audioSourceObject = new GameObject(CollisionAudioSourceObjectName, typeof(AudioSource));
+        audioSourceObject.transform.SetParent(transform, false);
+        collisionSoundSource = audioSourceObject.GetComponent<AudioSource>();
+        ConfigureCollisionAudioSource(collisionSoundSource);
+    }
+
+    private static void ConfigureCollisionAudioSource(AudioSource audioSource)
+    {
+        if (audioSource == null)
+        {
+            return;
+        }
+
+        audioSource.playOnAwake = false;
+        audioSource.loop = false;
+        audioSource.spatialBlend = 0f;
+    }
+
+    public void PlayCollisionSound()
+    {
+        if (collisionSoundClip == null || collisionSoundSource == null)
+        {
+            return;
+        }
+
+        float volumeScale = Mathf.Clamp01(collisionSoundVolume) * AudioSettingsStore.SoundEffectVolume;
+        collisionSoundSource.PlayOneShot(collisionSoundClip, volumeScale);
     }
 
     private void LoadCarSprites()
@@ -621,7 +681,10 @@ public class RoadCar : MonoBehaviour
 
         if (playerHealth != null)
         {
-            playerHealth.TakeDamage(damage);
+            if (playerHealth.TakeDamage(damage))
+            {
+                owner?.PlayCollisionSound();
+            }
         }
     }
 

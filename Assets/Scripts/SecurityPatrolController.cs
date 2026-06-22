@@ -113,15 +113,17 @@ public class SecurityPatrolController : MonoBehaviour
         UpdatePlayerContact(other, -1);
     }
 
-    public void BeginChase(Transform target)
+    public bool BeginChase(Transform target)
     {
         if (target == null)
         {
-            return;
+            return false;
         }
 
+        bool chaseStarted = !isChasing || chaseTarget == null || chaseTarget.root != target.root;
         chaseTarget = target;
         isChasing = true;
+        return chaseStarted;
     }
 
     public void StopChase(Transform target)

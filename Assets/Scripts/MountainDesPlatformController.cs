@@ -62,6 +62,9 @@ public class RespawningCollapsePlatform : MonoBehaviour
 {
     private const float MinimumTopContactTolerance = 0.08f;
     private const float RelativeTopContactTolerance = 0.2f;
+    private const string CollapseAudioResourcesPath = "Audios/바위부서지는23";
+
+    private static AudioClip cachedCollapseSoundClip;
 
     private float collapseDelay = 3f;
     private float respawnDelay = 2f;
@@ -73,6 +76,9 @@ public class RespawningCollapsePlatform : MonoBehaviour
     private Collider2D[] platformColliders;
     private SpriteRenderer[] platformRenderers;
     private Collider2D primaryCollider;
+    private AudioSource collapseAudioSource;
+
+    [SerializeField, Range(0f, 1f)] private float collapseSoundVolume = 1f;
 
     public void Configure(float collapseDelaySeconds, float respawnDelaySeconds)
     {
@@ -83,6 +89,7 @@ public class RespawningCollapsePlatform : MonoBehaviour
     private void Awake()
     {
         CacheComponents();
+        EnsureCollapseAudioSource();
     }
 
     private void Update()
@@ -179,6 +186,7 @@ public class RespawningCollapsePlatform : MonoBehaviour
 
     private void HidePlatform()
     {
+        PlayCollapseSound();
         SetPlatformVisible(false);
         isHidden = true;
         hiddenTimer = 0f;
@@ -217,5 +225,43 @@ public class RespawningCollapsePlatform : MonoBehaviour
                 platformRenderers[i].enabled = isVisible;
             }
         }
+    }
+
+    private void EnsureCollapseAudioSource()
+    {
+        if (collapseAudioSource == null)
+        {
+            collapseAudioSource = GetComponent<AudioSource>();
+        }
+
+        if (collapseAudioSource == null)
+        {
+            collapseAudioSource = gameObject.AddComponent<AudioSource>();
+        }
+
+        collapseAudioSource.playOnAwake = false;
+        collapseAudioSource.loop = false;
+        collapseAudioSource.spatialBlend = 0f;
+    }
+
+    private void PlayCollapseSound()
+    {
+        if (collapseAudioSource == null)
+        {
+            EnsureCollapseAudioSource();
+        }
+
+        if (cachedCollapseSoundClip == null)
+        {
+            cachedCollapseSoundClip = Resources.Load<AudioClip>(CollapseAudioResourcesPath);
+        }
+
+        if (collapseAudioSource == null || cachedCollapseSoundClip == null)
+        {
+            return;
+        }
+
+        float volumeScale = Mathf.Clamp01(collapseSoundVolume) * AudioSettingsStore.SoundEffectVolume;
+        collapseAudioSource.PlayOneShot(cachedCollapseSoundClip, volumeScale);
     }
 }
