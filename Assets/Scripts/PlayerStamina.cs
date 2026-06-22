@@ -6,6 +6,7 @@ public class PlayerStamina : MonoBehaviour
 {
     private const string StaminaCanvasObjectName = "StaminaCanvas";
     private const string StaminaGaugeObjectName = "StaminaGauge";
+    private const string StaminaLabelObjectName = "Label";
     private static float savedCurrentStamina;
     private static bool hasSavedCurrentStamina;
 
@@ -23,10 +24,15 @@ public class PlayerStamina : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] private Vector2 gaugeSize = new Vector2(320f, 24f);
-    [SerializeField] private Vector2 gaugeAnchoredPosition = new Vector2(24f, -88f);
+    [SerializeField] private Vector2 gaugeAnchoredPosition = new Vector2(24f, -56f);
     [SerializeField] private bool showBackgroundFrame = false;
     [SerializeField] private Color backgroundColor = new Color(0f, 0f, 0f, 0.55f);
     [SerializeField] private Color staminaFillColor = new Color(0.2f, 0.8f, 0.35f, 1f);
+    [SerializeField] private string gaugeLabel = "스태미나";
+    [SerializeField] private Vector2 gaugeLabelOffset = new Vector2(16f, 0f);
+    [SerializeField] private Vector2 gaugeLabelSize = new Vector2(180f, 28f);
+    [SerializeField] private int gaugeLabelFontSize = 20;
+    [SerializeField] private Color gaugeLabelColor = Color.white;
 
     public float CurrentStamina { get; private set; }
     public bool CanSprint => CurrentStamina > 0f;
@@ -223,6 +229,8 @@ public class PlayerStamina : MonoBehaviour
         fillImage.type = Image.Type.Simple;
         fillImage.color = staminaFillColor;
         fillImage.raycastTarget = false;
+
+        CreateGaugeLabel(gaugeObject.transform);
     }
 
     private void RefreshHud()
@@ -234,5 +242,28 @@ public class PlayerStamina : MonoBehaviour
 
         float staminaRatio = Mathf.Approximately(maxStamina, 0f) ? 0f : CurrentStamina / maxStamina;
         staminaFillRectTransform.sizeDelta = new Vector2(staminaFillBaseWidth * staminaRatio, staminaFillHeight);
+    }
+
+    private void CreateGaugeLabel(Transform parent)
+    {
+        GameObject labelObject = new GameObject(StaminaLabelObjectName, typeof(RectTransform), typeof(Text));
+        labelObject.transform.SetParent(parent, false);
+
+        RectTransform labelRectTransform = labelObject.GetComponent<RectTransform>();
+        labelRectTransform.anchorMin = new Vector2(1f, 0.5f);
+        labelRectTransform.anchorMax = new Vector2(1f, 0.5f);
+        labelRectTransform.pivot = new Vector2(0f, 0.5f);
+        labelRectTransform.anchoredPosition = gaugeLabelOffset;
+        labelRectTransform.sizeDelta = gaugeLabelSize;
+
+        Text labelText = labelObject.GetComponent<Text>();
+        labelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        labelText.fontSize = gaugeLabelFontSize;
+        labelText.color = gaugeLabelColor;
+        labelText.alignment = TextAnchor.MiddleLeft;
+        labelText.horizontalOverflow = HorizontalWrapMode.Overflow;
+        labelText.verticalOverflow = VerticalWrapMode.Overflow;
+        labelText.raycastTarget = false;
+        labelText.text = gaugeLabel;
     }
 }

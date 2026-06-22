@@ -9,6 +9,7 @@ public class PlayerOxygen : MonoBehaviour
     private const string HealthCanvasObjectName = "HealthCanvas";
     private const string OxygenCanvasObjectName = "OxygenCanvas";
     private const string OxygenGaugeObjectName = "OxygenGauge";
+    private const string OxygenLabelObjectName = "Label";
 
     [Header("Oxygen")]
     [SerializeField, Min(1f)] private float maxOxygen = 100f;
@@ -19,10 +20,15 @@ public class PlayerOxygen : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] private Vector2 gaugeSize = new Vector2(320f, 24f);
-    [SerializeField] private Vector2 gaugeAnchoredPosition = new Vector2(24f, -56f);
+    [SerializeField] private Vector2 gaugeAnchoredPosition = new Vector2(24f, -88f);
     [SerializeField] private bool showBackgroundFrame = false;
     [SerializeField] private Color backgroundColor = new Color(0f, 0f, 0f, 0.55f);
     [SerializeField] private Color oxygenFillColor = new Color(0.2f, 0.8f, 1f, 1f);
+    [SerializeField] private string gaugeLabel = "산소도";
+    [SerializeField] private Vector2 gaugeLabelOffset = new Vector2(16f, 0f);
+    [SerializeField] private Vector2 gaugeLabelSize = new Vector2(180f, 28f);
+    [SerializeField] private int gaugeLabelFontSize = 20;
+    [SerializeField] private Color gaugeLabelColor = Color.white;
 
     public float CurrentOxygen { get; private set; }
 
@@ -281,6 +287,8 @@ public class PlayerOxygen : MonoBehaviour
         oxygenFillImage.type = Image.Type.Simple;
         oxygenFillImage.color = oxygenFillColor;
         oxygenFillImage.raycastTarget = false;
+
+        CreateGaugeLabel(gaugeObject.transform);
     }
 
     private void OnDestroy()
@@ -300,5 +308,28 @@ public class PlayerOxygen : MonoBehaviour
 
         float oxygenRatio = Mathf.Approximately(maxOxygen, 0f) ? 0f : CurrentOxygen / maxOxygen;
         oxygenFillRectTransform.sizeDelta = new Vector2(oxygenFillBaseWidth * oxygenRatio, oxygenFillHeight);
+    }
+
+    private void CreateGaugeLabel(Transform parent)
+    {
+        GameObject labelObject = new GameObject(OxygenLabelObjectName, typeof(RectTransform), typeof(Text));
+        labelObject.transform.SetParent(parent, false);
+
+        RectTransform labelRectTransform = labelObject.GetComponent<RectTransform>();
+        labelRectTransform.anchorMin = new Vector2(1f, 0.5f);
+        labelRectTransform.anchorMax = new Vector2(1f, 0.5f);
+        labelRectTransform.pivot = new Vector2(0f, 0.5f);
+        labelRectTransform.anchoredPosition = gaugeLabelOffset;
+        labelRectTransform.sizeDelta = gaugeLabelSize;
+
+        Text labelText = labelObject.GetComponent<Text>();
+        labelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        labelText.fontSize = gaugeLabelFontSize;
+        labelText.color = gaugeLabelColor;
+        labelText.alignment = TextAnchor.MiddleLeft;
+        labelText.horizontalOverflow = HorizontalWrapMode.Overflow;
+        labelText.verticalOverflow = VerticalWrapMode.Overflow;
+        labelText.raycastTarget = false;
+        labelText.text = gaugeLabel;
     }
 }

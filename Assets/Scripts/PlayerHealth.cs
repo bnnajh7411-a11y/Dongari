@@ -9,6 +9,7 @@ public class PlayerHealth : MonoBehaviour
     private const string StartSceneName = "Start";
     private const string HealthCanvasObjectName = "HealthCanvas";
     private const string HealthGaugeObjectName = "HealthGauge";
+    private const string HealthLabelObjectName = "Label";
     private static int savedCurrentHealth;
     private static bool hasSavedCurrentHealth;
 
@@ -31,6 +32,11 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private bool showBackgroundFrame = false;
     [SerializeField] private Color backgroundColor = new Color(0f, 0f, 0f, 0.55f);
     [SerializeField] private Color healthFillColor = new Color(0.86f, 0.2f, 0.2f, 1f);
+    [SerializeField] private string gaugeLabel = "체력";
+    [SerializeField] private Vector2 gaugeLabelOffset = new Vector2(16f, 0f);
+    [SerializeField] private Vector2 gaugeLabelSize = new Vector2(180f, 28f);
+    [SerializeField] private int gaugeLabelFontSize = 20;
+    [SerializeField] private Color gaugeLabelColor = Color.white;
 
     public int CurrentHealth { get; private set; }
 
@@ -293,6 +299,8 @@ public class PlayerHealth : MonoBehaviour
         fillImage.type = Image.Type.Simple;
         fillImage.color = healthFillColor;
         fillImage.raycastTarget = false;
+
+        CreateGaugeLabel(gaugeObject.transform);
     }
 
     private void SaveCurrentHealth()
@@ -318,5 +326,28 @@ public class PlayerHealth : MonoBehaviour
 
         float healthRatio = maxHealth <= 0 ? 0f : (float)CurrentHealth / maxHealth;
         healthFillRectTransform.sizeDelta = new Vector2(healthFillBaseWidth * healthRatio, healthFillHeight);
+    }
+
+    private void CreateGaugeLabel(Transform parent)
+    {
+        GameObject labelObject = new GameObject(HealthLabelObjectName, typeof(RectTransform), typeof(Text));
+        labelObject.transform.SetParent(parent, false);
+
+        RectTransform labelRectTransform = labelObject.GetComponent<RectTransform>();
+        labelRectTransform.anchorMin = new Vector2(1f, 0.5f);
+        labelRectTransform.anchorMax = new Vector2(1f, 0.5f);
+        labelRectTransform.pivot = new Vector2(0f, 0.5f);
+        labelRectTransform.anchoredPosition = gaugeLabelOffset;
+        labelRectTransform.sizeDelta = gaugeLabelSize;
+
+        Text labelText = labelObject.GetComponent<Text>();
+        labelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        labelText.fontSize = gaugeLabelFontSize;
+        labelText.color = gaugeLabelColor;
+        labelText.alignment = TextAnchor.MiddleLeft;
+        labelText.horizontalOverflow = HorizontalWrapMode.Overflow;
+        labelText.verticalOverflow = VerticalWrapMode.Overflow;
+        labelText.raycastTarget = false;
+        labelText.text = gaugeLabel;
     }
 }

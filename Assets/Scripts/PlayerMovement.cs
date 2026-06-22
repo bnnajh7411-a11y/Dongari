@@ -12,6 +12,8 @@ public class PlayerMovement : MonoBehaviour
     private const string ZooSceneName = "Zoo";
     private const string MountainSceneName = "Mountain";
     private const string ArtificialRiverSceneName = "ArtificialRiver";
+    private const string UnderwaterMovementAudioSourceObjectName = "UnderwaterMovementAudioSource";
+    private const string UnderwaterMovementAudioResourcesPath = "Audios/물속에서 호흡하는(보글)2";
     private const string GreenAlgaeObjectName = "GreenAlgae";
     private const string NextObjectName = "Next";
     private const string GroundObjectName = "Ground";
@@ -44,6 +46,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField, Min(1f)] private float waterFastSinkMultiplier = 1.75f;
     [SerializeField, Min(0f)] private float waterRiseSpeed = 4f;
     [SerializeField, Min(1f)] private float waterFastRiseMultiplier = 1.3f;
+    [SerializeField, Range(0f, 1f)] private float underwaterMovementSoundVolume = 1f;
 
     private const float FacingThreshold = 0.01f;
     private const float GroundNormalThreshold = 0.5f;
@@ -66,11 +69,14 @@ public class PlayerMovement : MonoBehaviour
     private Bounds movementBounds;
     private float movementSpeedMultiplier = 1f;
     private Coroutine movementSpeedModifierRoutine;
+    private AudioSource underwaterMovementAudioSource;
     private readonly HashSet<Collider2D> groundColliders = new HashSet<Collider2D>();
     private readonly HashSet<Collider2D> nextColliders = new HashSet<Collider2D>();
     private readonly HashSet<Collider2D> ropeColliders = new HashSet<Collider2D>();
     private readonly HashSet<Collider2D> wallColliders = new HashSet<Collider2D>();
     private readonly HashSet<Collider2D> waterColliders = new HashSet<Collider2D>();
+
+    private static AudioClip underwaterMovementAudioClip;
 
     protected virtual void Awake()
     {
@@ -86,12 +92,21 @@ public class PlayerMovement : MonoBehaviour
         EnsureMountainFallDamageComponent();
         EnsurePlayerStaminaComponent();
         EnsureWaterSceneSystems();
+        EnsureUnderwaterMovementAudio();
         EnsureArtificialRiverColliderSizing();
         StartSceneController.EnsurePauseMenuInstance();
     }
 
+    protected virtual void OnEnable()
+    {
+        AudioSettingsStore.VolumesChanged += HandleVolumesChanged;
+        ApplyUnderwaterMovementSoundVolume();
+    }
+
     protected virtual void OnDisable()
     {
+        AudioSettingsStore.VolumesChanged -= HandleVolumesChanged;
+        StopUnderwaterMovementSound();
         ResetMovementSpeedModifier();
     }
 
@@ -104,6 +119,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (GamePauseState.IsPaused)
         {
+            StopUnderwaterMovementSound();
             return;
         }
 
@@ -123,6 +139,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         UpdateFacingDirection();
+        UpdateUnderwaterMovementSound();
     }
 
     protected virtual void FixedUpdate()
@@ -130,6 +147,7 @@ public class PlayerMovement : MonoBehaviour
         if (GamePauseState.IsPaused)
         {
             rb.linearVelocity = Vector2.zero;
+            StopUnderwaterMovementSound();
             return;
         }
 
@@ -460,6 +478,46 @@ public class PlayerMovement : MonoBehaviour
         gameObject.AddComponent<PlayerOxygen>();
     }
 
+    private void EnsureUnderwaterMovementAudio()
+    {
+        if (!isWaterScene)
+        {
+            return;
+        }
+
+        if (underwaterMovementAudioSource == null)
+        {
+            Transform existingAudioSourceTransform = transform.Find(UnderwaterMovementAudioSourceObjectName);
+            if (existingAudioSourceTransform != null)
+            {
+                underwaterMovementAudioSource = existingAudioSourceTransform.GetComponent<AudioSource>();
+            }
+        }
+
+        if (underwaterMovementAudioSource == null)
+        {
+            GameObject audioSourceObject = new GameObject(UnderwaterMovementAudioSourceObjectName, typeof(AudioSource));
+            audioSourceObject.transform.SetParent(transform, false);
+            underwaterMovementAudioSource = audioSourceObject.GetComponent<AudioSource>();
+        }
+
+        if (underwaterMovementAudioSource == null)
+        {
+            return;
+        }
+
+        if (underwaterMovementAudioClip == null)
+        {
+            underwaterMovementAudioClip = Resources.Load<AudioClip>(UnderwaterMovementAudioResourcesPath);
+        }
+
+        underwaterMovementAudioSource.playOnAwake = false;
+        underwaterMovementAudioSource.loop = true;
+        underwaterMovementAudioSource.spatialBlend = 0f;
+        underwaterMovementAudioSource.clip = underwaterMovementAudioClip;
+        ApplyUnderwaterMovementSoundVolume();
+    }
+
     private void EnsureArtificialRiverColliderSizing()
     {
         if (!isWaterScene)
@@ -687,6 +745,60 @@ public class PlayerMovement : MonoBehaviour
 
         rb.gravityScale = 0f;
         rb.linearVelocity = new Vector2(horizontalInput * currentSpeed, verticalSpeed);
+    }
+
+    private void UpdateUnderwaterMovementSound()
+    {
+        if (!ShouldPlayUnderwaterMovementSound())
+        {
+            StopUnderwaterMovementSound();
+            return;
+        }
+
+        if (underwaterMovementAudioSource == null || underwaterMovementAudioClip == null)
+        {
+            EnsureUnderwaterMovementAudio();
+        }
+
+        if (underwaterMovementAudioSource == null
+            || underwaterMovementAudioClip == null
+            || underwaterMovementAudioSource.isPlaying)
+        {
+            return;
+        }
+
+        underwaterMovementAudioSource.Play();
+    }
+
+    private bool ShouldPlayUnderwaterMovementSound()
+    {
+        return isWaterScene
+            && IsWaterMovementActive()
+            && HasMovementInput();
+    }
+
+    private void StopUnderwaterMovementSound()
+    {
+        if (underwaterMovementAudioSource != null && underwaterMovementAudioSource.isPlaying)
+        {
+            underwaterMovementAudioSource.Stop();
+        }
+    }
+
+    private void HandleVolumesChanged()
+    {
+        ApplyUnderwaterMovementSoundVolume();
+    }
+
+    private void ApplyUnderwaterMovementSoundVolume()
+    {
+        if (underwaterMovementAudioSource == null)
+        {
+            return;
+        }
+
+        underwaterMovementAudioSource.volume =
+            Mathf.Clamp01(underwaterMovementSoundVolume) * AudioSettingsStore.SoundEffectVolume;
     }
 
     private void ApplyGravity()
