@@ -148,7 +148,7 @@ public class PlayerHealth : MonoBehaviour
             rb.linearVelocity = Vector2.zero;
         }
 
-        SceneManager.LoadScene(StartSceneName);
+        SceneFadeTransition.LoadScene(StartSceneName);
     }
 
     private void TriggerDamageFlash()

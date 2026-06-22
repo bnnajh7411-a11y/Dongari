@@ -2418,7 +2418,7 @@ public class StartSceneController : MonoBehaviour
             HidePauseMenu();
         }
 
-        SceneManager.LoadScene(targetSceneName);
+        SceneFadeTransition.LoadScene(targetSceneName);
     }
 
     private bool TryResolveSceneTransitionTarget(out string targetSceneName)

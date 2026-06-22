@@ -408,7 +408,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (TryGetNextSceneName(SceneManager.GetActiveScene().name, out string nextSceneName))
         {
-            SceneManager.LoadScene(nextSceneName);
+            SceneFadeTransition.LoadScene(nextSceneName);
         }
     }
 

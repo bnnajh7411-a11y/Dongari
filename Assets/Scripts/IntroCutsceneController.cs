@@ -126,7 +126,7 @@ public class IntroCutsceneController : MonoBehaviour
         }
 
         isLoadingNextScene = true;
-        SceneManager.LoadScene(nextSceneName);
+        SceneFadeTransition.LoadScene(nextSceneName);
     }
 
     private void EnsureEventSystem()
