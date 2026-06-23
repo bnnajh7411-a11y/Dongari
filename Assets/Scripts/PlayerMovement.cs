@@ -69,6 +69,7 @@ public class PlayerMovement : MonoBehaviour
     private bool hasMovementBounds;
     private bool hadMovementInput;
     private int lastMovementAnimationDirection;
+    private bool hasParameterizedMovementAnimator;
     private bool jumpRequested;
     private Vector3 defaultScale;
     private Bounds movementBounds;
@@ -89,6 +90,7 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         playerCollider = GetComponent<Collider2D>();
         animator = GetComponent<Animator>();
+        hasParameterizedMovementAnimator = HasParameterizedMovementAnimator();
         baseGravityScale = rb.gravityScale;
 
         defaultScale = transform.localScale;
@@ -205,6 +207,11 @@ public class PlayerMovement : MonoBehaviour
     }
     private void UpdateAnimation()
     {
+        if (animator == null || !hasParameterizedMovementAnimator)
+        {
+            return;
+        }
+
         bool hasMovementInput = HasMovementInput();
         int movementAnimationDirection = GetMovementAnimationDirection();
 
@@ -220,6 +227,35 @@ public class PlayerMovement : MonoBehaviour
 
         hadMovementInput = hasMovementInput;
         lastMovementAnimationDirection = movementAnimationDirection;
+    }
+
+    private bool HasParameterizedMovementAnimator()
+    {
+        return HasAnimatorParameter("isRunning", AnimatorControllerParameterType.Bool)
+            && HasAnimatorParameter("isMove", AnimatorControllerParameterType.Bool)
+            && HasAnimatorParameter("horizontal", AnimatorControllerParameterType.Float)
+            && HasAnimatorParameter("vertical", AnimatorControllerParameterType.Float);
+    }
+
+    private bool HasAnimatorParameter(string parameterName, AnimatorControllerParameterType parameterType)
+    {
+        if (animator == null)
+        {
+            return false;
+        }
+
+        int parameterHash = Animator.StringToHash(parameterName);
+        AnimatorControllerParameter[] parameters = animator.parameters;
+        for (int i = 0; i < parameters.Length; i++)
+        {
+            AnimatorControllerParameter parameter = parameters[i];
+            if (parameter.nameHash == parameterHash && parameter.type == parameterType)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private int GetMovementAnimationDirection()
