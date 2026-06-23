@@ -11,6 +11,7 @@ public class BuildingCollapseController : MonoBehaviour
     private const string RightWallObjectName = "RWall";
     private const string PlayerObjectName = "Player";
     private const string BaseBlockObjectName = "1";
+    private const string CollapseAudioResourcePath = "Audios/K\uB4DC\uB77C\uB9C8 \uD6A8\uACFC\uC74C (441)";
     private const float CollapseEpsilon = 0.01f;
 
     [SerializeField, Min(0f)] private float collapseDelay = 6f;
@@ -26,6 +27,8 @@ public class BuildingCollapseController : MonoBehaviour
     [SerializeField, Min(0f)] private float shardGravityScale = 1.35f;
     [SerializeField, Min(0.1f)] private float shardLifetime = 3f;
     [SerializeField] private int collapseLayer = 3;
+    [SerializeField, Range(0f, 1f)] private float collapseSoundVolume = 1f;
+    [SerializeField, Min(0f)] private float collapseSoundCooldown = 0.12f;
 
     private readonly List<CollapseBlock> collapseBlocks = new List<CollapseBlock>();
     private readonly List<Collider2D> playerColliders = new List<Collider2D>();
@@ -38,7 +41,10 @@ public class BuildingCollapseController : MonoBehaviour
     private int nextCollapseIndex;
     private Collider2D firstPlatformCollider;
     private PlayerHealth playerHealth;
+    private AudioSource collapseAudioSource;
+    private AudioClip collapseAudioClip;
     private bool isInitialized;
+    private float nextCollapseSoundTime;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void RegisterSceneHook()
@@ -120,6 +126,7 @@ public class BuildingCollapseController : MonoBehaviour
         RefreshPlayerColliders();
         CachePlayerHealth();
         CacheFirstPlatformCollider();
+        EnsureCollapseAudioSource();
 
         if (collapseBlocks.Count == 0)
         {
@@ -239,6 +246,7 @@ public class BuildingCollapseController : MonoBehaviour
             return;
         }
 
+        PlayCollapseSound();
         SpawnShards(block);
         block.GameObject.SetActive(false);
     }
@@ -347,6 +355,55 @@ public class BuildingCollapseController : MonoBehaviour
         shardImpact.Initialize(firstPlatformCollider, playerHealth, BaseBlockObjectName);
 
         Destroy(shardObject, shardLifetime);
+    }
+
+    private void EnsureCollapseAudioSource()
+    {
+        if (collapseAudioSource == null)
+        {
+            collapseAudioSource = GetComponent<AudioSource>();
+        }
+
+        if (collapseAudioSource == null)
+        {
+            collapseAudioSource = gameObject.AddComponent<AudioSource>();
+        }
+
+        if (collapseAudioSource == null)
+        {
+            return;
+        }
+
+        collapseAudioSource.playOnAwake = false;
+        collapseAudioSource.loop = false;
+        collapseAudioSource.spatialBlend = 0f;
+    }
+
+    private void PlayCollapseSound()
+    {
+        if (Time.time < nextCollapseSoundTime)
+        {
+            return;
+        }
+
+        if (collapseAudioSource == null)
+        {
+            EnsureCollapseAudioSource();
+        }
+
+        if (collapseAudioClip == null)
+        {
+            collapseAudioClip = Resources.Load<AudioClip>(CollapseAudioResourcePath);
+        }
+
+        if (collapseAudioSource == null || collapseAudioClip == null)
+        {
+            return;
+        }
+
+        float volumeScale = Mathf.Clamp01(collapseSoundVolume) * AudioSettingsStore.SoundEffectVolume;
+        collapseAudioSource.PlayOneShot(collapseAudioClip, volumeScale);
+        nextCollapseSoundTime = Time.time + collapseSoundCooldown;
     }
 
     private readonly struct WallState

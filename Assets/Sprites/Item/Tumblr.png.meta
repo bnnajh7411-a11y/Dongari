@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 0437bedcfaddeed4cbfb822d6c02b1f0
+guid: 868f19d53616c5b49af9d54c8cf29fe5
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8834771761299498989
-    second: Mul 1_0
+      213: -120768736546857995
+    second: Tumblr_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,12 +46,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 40
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Mul 1_0
+      name: Tumblr_0
       rect:
         serializedVersion: 2
-        x: 4
-        y: 6
-        width: 58
-        height: 40
+        x: 14
+        y: 0
+        width: 44
+        height: 63
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 318571844e5946580800000000000000
-      internalID: -8834771761299498989
+      spriteID: 5fbd6265971f25ef0800000000000000
+      internalID: -120768736546857995
       vertices: []
       indices: 
       edges: []
@@ -138,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Mul 1_0: -8834771761299498989
+      Tumblr_0: -120768736546857995
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

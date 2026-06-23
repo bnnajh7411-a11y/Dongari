@@ -7,11 +7,19 @@ using UnityEngine.UI;
 public class PlayerHealth : MonoBehaviour
 {
     private const string StartSceneName = "Start";
+    private const string MountainSceneName = "Mountain";
+    private const string BuildingSceneName = "Building";
     private const string HealthCanvasObjectName = "HealthCanvas";
     private const string HealthGaugeObjectName = "HealthGauge";
     private const string HealthLabelObjectName = "Label";
+    private const string DamageAudioSourceObjectName = "PlayerDamageAudioSource";
+    private const string MountainDamageAudioResourcePath = "Audios/foley-fighting-thud-05";
+    private const string BuildingDamageAudioResourcePath = "Audios/foley-carpet drop-03";
     private static int savedCurrentHealth;
     private static bool hasSavedCurrentHealth;
+    private static AudioSource damageAudioSource;
+    private static AudioClip mountainDamageAudioClip;
+    private static AudioClip buildingDamageAudioClip;
 
     public static event Action<PlayerHealth, int, int> DamageTaken;
 
@@ -19,6 +27,9 @@ public class PlayerHealth : MonoBehaviour
     private static void ResetStaticState()
     {
         DamageTaken = null;
+        damageAudioSource = null;
+        mountainDamageAudioClip = null;
+        buildingDamageAudioClip = null;
         ResetPersistentHealth();
     }
 
@@ -100,6 +111,7 @@ public class PlayerHealth : MonoBehaviour
         }
         TriggerDamageFlash();
         RefreshHud();
+        PlaySceneDamageSound();
         DamageTaken?.Invoke(this, damageAmount, CurrentHealth);
 
         if (CurrentHealth == 0)
@@ -124,6 +136,7 @@ public class PlayerHealth : MonoBehaviour
 
         if (lostHealth > 0)
         {
+            PlaySceneDamageSound();
             DamageTaken?.Invoke(this, lostHealth, CurrentHealth);
         }
 
@@ -213,6 +226,80 @@ public class PlayerHealth : MonoBehaviour
 
             spriteRenderer.color = cachedSpriteColors[i];
         }
+    }
+
+    private void PlaySceneDamageSound()
+    {
+        AudioClip damageClip = GetDamageClipForActiveScene();
+        if (damageClip == null)
+        {
+            return;
+        }
+
+        AudioSource audioSource = EnsureDamageAudioSource();
+        if (audioSource == null)
+        {
+            return;
+        }
+
+        audioSource.PlayOneShot(damageClip, AudioSettingsStore.SoundEffectVolume);
+    }
+
+    private static AudioClip GetDamageClipForActiveScene()
+    {
+        string sceneName = SceneManager.GetActiveScene().name;
+        if (sceneName == MountainSceneName)
+        {
+            if (mountainDamageAudioClip == null)
+            {
+                mountainDamageAudioClip = Resources.Load<AudioClip>(MountainDamageAudioResourcePath);
+            }
+
+            return mountainDamageAudioClip;
+        }
+
+        if (sceneName == BuildingSceneName)
+        {
+            if (buildingDamageAudioClip == null)
+            {
+                buildingDamageAudioClip = Resources.Load<AudioClip>(BuildingDamageAudioResourcePath);
+            }
+
+            return buildingDamageAudioClip;
+        }
+
+        return null;
+    }
+
+    private static AudioSource EnsureDamageAudioSource()
+    {
+        if (damageAudioSource != null)
+        {
+            return damageAudioSource;
+        }
+
+        GameObject existingAudioObject = GameObject.Find(DamageAudioSourceObjectName);
+        if (existingAudioObject != null)
+        {
+            damageAudioSource = existingAudioObject.GetComponent<AudioSource>();
+        }
+
+        if (damageAudioSource == null)
+        {
+            GameObject audioObject = new GameObject(DamageAudioSourceObjectName, typeof(AudioSource));
+            DontDestroyOnLoad(audioObject);
+            damageAudioSource = audioObject.GetComponent<AudioSource>();
+        }
+
+        if (damageAudioSource == null)
+        {
+            return null;
+        }
+
+        damageAudioSource.playOnAwake = false;
+        damageAudioSource.loop = false;
+        damageAudioSource.spatialBlend = 0f;
+        return damageAudioSource;
     }
 
     private void EnsureHealthHud()

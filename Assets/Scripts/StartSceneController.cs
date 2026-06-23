@@ -70,6 +70,7 @@ public class StartSceneController : MonoBehaviour
     private const float ResolutionTopPadding = 20f;
     private const float ResolutionBottomPadding = 20f;
     private const float ResolutionMinimumContentHeight = 220f;
+    private const float OptionsCategoryContentLift = 64f;
 
     private static readonly KeyCode[] RebindableKeys =
     {
@@ -789,12 +790,13 @@ public class StartSceneController : MonoBehaviour
             new Vector2(0f, -38f),
             new Vector2(620f, 52f),
             new Color(0.13f, 0.2f, 0.14f, 1f));
+        HideOptionsCategoryHeading(contentObject.transform, "OptionsAudioHeading");
 
         CreateAudioSliderRow(
             contentObject.transform,
             "OptionsBackgroundMusic",
             "배경 음악",
-            46f,
+            46f + OptionsCategoryContentLift,
             out backgroundMusicSlider,
             out backgroundMusicValueText);
 
@@ -802,7 +804,7 @@ public class StartSceneController : MonoBehaviour
             contentObject.transform,
             "OptionsSoundEffect",
             "효과음",
-            -36f,
+            -36f + OptionsCategoryContentLift,
             out soundEffectSlider,
             out soundEffectValueText);
 
@@ -842,6 +844,7 @@ public class StartSceneController : MonoBehaviour
             new Vector2(0f, -38f),
             new Vector2(620f, 52f),
             new Color(0.13f, 0.2f, 0.14f, 1f));
+        HideOptionsCategoryHeading(contentObject.transform, "OptionsResolutionHeading");
 
         CreateTextElement(
             contentObject.transform,
@@ -852,7 +855,7 @@ public class StartSceneController : MonoBehaviour
             TextAnchor.MiddleCenter,
             new Vector2(0.5f, 0.5f),
             new Vector2(0.5f, 0.5f),
-            new Vector2(0f, 96f),
+            new Vector2(0f, 96f + OptionsCategoryContentLift),
             new Vector2(320f, 40f),
             new Color(0.14f, 0.22f, 0.16f, 1f));
 
@@ -860,7 +863,7 @@ public class StartSceneController : MonoBehaviour
             contentObject.transform,
             "FullscreenModeButton",
             "전체화면",
-            new Vector2(0f, 42f),
+            new Vector2(0f, 42f + OptionsCategoryContentLift),
             new Vector2(280f, 56f),
             new Color(1f, 1f, 1f, 0f));
         fullscreenModeButton.onClick.AddListener(HandleDisplayModeButtonPressed);
@@ -878,7 +881,7 @@ public class StartSceneController : MonoBehaviour
             TextAnchor.MiddleCenter,
             new Vector2(0.5f, 0.5f),
             new Vector2(0.5f, 0.5f),
-            new Vector2(0f, -26f),
+            new Vector2(0f, -26f + OptionsCategoryContentLift),
             new Vector2(420f, 40f),
             new Color(0.14f, 0.22f, 0.16f, 1f));
 
@@ -886,7 +889,7 @@ public class StartSceneController : MonoBehaviour
             contentObject.transform,
             "ResolutionToggleButton",
             string.Empty,
-            new Vector2(0f, -84f),
+            new Vector2(0f, -84f + OptionsCategoryContentLift),
             new Vector2(340f, 52f),
             new Color(0.72f, 0.82f, 0.72f, 1f));
         resolutionToggleButton.onClick.AddListener(ToggleResolutionOptionsList);
@@ -899,7 +902,7 @@ public class StartSceneController : MonoBehaviour
         resolutionContainerRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
         resolutionContainerRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
         resolutionContainerRectTransform.pivot = new Vector2(0.5f, 0.5f);
-        resolutionContainerRectTransform.anchoredPosition = new Vector2(0f, -206f);
+        resolutionContainerRectTransform.anchoredPosition = new Vector2(0f, -206f + OptionsCategoryContentLift);
         resolutionContainerRectTransform.sizeDelta = new Vector2(560f, 240f);
 
         RectTransform resolutionContentTransform = CreateBindingScrollArea(
@@ -947,12 +950,13 @@ public class StartSceneController : MonoBehaviour
             new Vector2(0f, -38f),
             new Vector2(620f, 52f),
             new Color(0.13f, 0.2f, 0.14f, 1f));
+        HideOptionsCategoryHeading(contentObject.transform, "OptionsKeySetupHeading");
 
         IReadOnlyList<InputActionType> actions = PlayerInputBindings.Actions;
         RectTransform bindingContentTransform = CreateBindingScrollArea(
             contentObject.transform,
             "OptionsKeyBinding",
-            new Vector2(0f, -10f),
+            new Vector2(0f, -10f + OptionsCategoryContentLift),
             new Vector2(780f, 380f),
             out optionsBindingScrollRect);
 
@@ -972,12 +976,21 @@ public class StartSceneController : MonoBehaviour
             TextAnchor.MiddleCenter,
             new Vector2(0.5f, 0f),
             new Vector2(0.5f, 0f),
-            new Vector2(0f, 28f),
+            new Vector2(0f, 28f + OptionsCategoryContentLift),
             new Vector2(720f, 48f),
             new Color(0.2f, 0.28f, 0.23f, 1f));
         statusTexts.Add(optionsStatusText);
 
         return contentObject;
+    }
+
+    private static void HideOptionsCategoryHeading(Transform parent, string headingObjectName)
+    {
+        Transform headingTransform = parent.Find(headingObjectName);
+        if (headingTransform != null)
+        {
+            headingTransform.gameObject.SetActive(false);
+        }
     }
 
     private void CreateResolutionOptionRow(Transform parent, int optionIndex, Vector2Int resolution, float topOffset)
@@ -1123,8 +1136,12 @@ public class StartSceneController : MonoBehaviour
         RectTransform scrollbarRectTransform = scrollbarObject.GetComponent<RectTransform>();
         scrollbarRectTransform.anchorMin = new Vector2(1f, 0f);
         scrollbarRectTransform.anchorMax = new Vector2(1f, 1f);
-        scrollbarRectTransform.offsetMin = new Vector2(-(scrollbarWidth + scrollbarSpacing), viewportPadding);
-        scrollbarRectTransform.offsetMax = new Vector2(-scrollbarSpacing, -viewportPadding);
+        scrollbarRectTransform.offsetMin = new Vector2(
+            -(scrollbarWidth + scrollbarSpacing),
+            viewportPadding);
+        scrollbarRectTransform.offsetMax = new Vector2(
+            -scrollbarSpacing,
+            -viewportPadding);
 
         Image scrollbarImage = scrollbarObject.GetComponent<Image>();
         scrollbarImage.color = new Color(0.28f, 0.36f, 0.28f, 0.32f);
@@ -1143,9 +1160,9 @@ public class StartSceneController : MonoBehaviour
 
         RectTransform handleRectTransform = handleObject.GetComponent<RectTransform>();
         handleRectTransform.anchorMin = Vector2.zero;
-        handleRectTransform.anchorMax = new Vector2(1f, 0f);
-        handleRectTransform.pivot = new Vector2(0.5f, 0.5f);
-        handleRectTransform.sizeDelta = new Vector2(0f, 64f);
+        handleRectTransform.anchorMax = Vector2.one;
+        handleRectTransform.offsetMin = Vector2.zero;
+        handleRectTransform.offsetMax = Vector2.zero;
 
         Image handleImage = handleObject.GetComponent<Image>();
         handleImage.color = new Color(0.5f, 0.66f, 0.49f, 0.98f);
