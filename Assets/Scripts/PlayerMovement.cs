@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -19,6 +20,8 @@ public class PlayerMovement : MonoBehaviour
     private const string GroundObjectName = "Ground";
     private const string RopeObjectName = "Rope";
     private const string WaterObjectName = "Water";
+    private const string FirstStepAnimationStateName = "FirstStep";
+    private const int BaseAnimationLayerIndex = 0;
     private static readonly string[] ArtificialRiverColliderObjectNames =
     {
         GreenAlgaeObjectName,
@@ -64,12 +67,15 @@ public class PlayerMovement : MonoBehaviour
     private bool isTopDownScene;
     private bool isWaterScene;
     private bool hasMovementBounds;
+    private bool hadMovementInput;
+    private int lastMovementAnimationDirection;
     private bool jumpRequested;
     private Vector3 defaultScale;
     private Bounds movementBounds;
     private float movementSpeedMultiplier = 1f;
     private Coroutine movementSpeedModifierRoutine;
     private AudioSource underwaterMovementAudioSource;
+    private Animator animator;
     private readonly HashSet<Collider2D> groundColliders = new HashSet<Collider2D>();
     private readonly HashSet<Collider2D> nextColliders = new HashSet<Collider2D>();
     private readonly HashSet<Collider2D> ropeColliders = new HashSet<Collider2D>();
@@ -82,6 +88,7 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         playerCollider = GetComponent<Collider2D>();
+        animator = GetComponent<Animator>();
         baseGravityScale = rb.gravityScale;
 
         defaultScale = transform.localScale;
@@ -140,6 +147,7 @@ public class PlayerMovement : MonoBehaviour
 
         UpdateFacingDirection();
         UpdateUnderwaterMovementSound();
+        UpdateAnimation();
     }
 
     protected virtual void FixedUpdate()
@@ -194,6 +202,43 @@ public class PlayerMovement : MonoBehaviour
 
         ApplyGravity();
         ConsumeRunStamina();
+    }
+    private void UpdateAnimation()
+    {
+        bool hasMovementInput = HasMovementInput();
+        int movementAnimationDirection = GetMovementAnimationDirection();
+
+        animator.SetBool("isRunning", isRunning);
+        animator.SetBool("isMove", hasMovementInput);
+        animator.SetFloat("horizontal", Mathf.Abs(horizontalInput));
+        animator.SetFloat("vertical", verticalInput);
+
+        if (hasMovementInput && (!hadMovementInput || movementAnimationDirection != lastMovementAnimationDirection))
+        {
+            animator.Play(FirstStepAnimationStateName, BaseAnimationLayerIndex, 0f);
+        }
+
+        hadMovementInput = hasMovementInput;
+        lastMovementAnimationDirection = movementAnimationDirection;
+    }
+
+    private int GetMovementAnimationDirection()
+    {
+        bool hasHorizontalInput = Mathf.Abs(horizontalInput) > VerticalVelocityThreshold;
+        bool hasUpInput = verticalInput > VerticalVelocityThreshold;
+        bool hasDownInput = verticalInput < -VerticalVelocityThreshold;
+
+        if (hasUpInput)
+        {
+            return hasHorizontalInput ? 2 : 1;
+        }
+
+        if (hasDownInput)
+        {
+            return hasHorizontalInput ? 5 : 4;
+        }
+
+        return hasHorizontalInput ? 3 : 0;
     }
 
     private void UpdateFacingDirection()
