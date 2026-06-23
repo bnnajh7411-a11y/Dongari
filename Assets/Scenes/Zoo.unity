@@ -598,7 +598,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SecurityPatrolController
   patrolSpeed: 1
-  chaseSpeed: 4
+  chaseSpeed: 2
   nearestPointSamples: 48
   contactDamage: 1
   continuousDamageInterval: 5
@@ -1447,7 +1447,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8dc287f96f1a433d86843038db9dd3ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  moveSpeed: 1.8
+  moveSpeed: 2.2
   runSpeed: 3
   jumpForce: 13
   climbSpeed: 4.5
