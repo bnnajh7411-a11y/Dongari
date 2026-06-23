@@ -13,6 +13,7 @@ public class PlayerMovement : MonoBehaviour
     private const string ZooSceneName = "Zoo";
     private const string MountainSceneName = "Mountain";
     private const string ArtificialRiverSceneName = "ArtificialRiver";
+    private const string ArtificialRiverEntryCircleObjectName = "Circle";
     private const string UnderwaterMovementAudioSourceObjectName = "UnderwaterMovementAudioSource";
     private const string UnderwaterMovementAudioResourcesPath = "Audios/물속에서 호흡하는(보글)2";
     private const string GreenAlgaeObjectName = "GreenAlgae";
@@ -22,6 +23,17 @@ public class PlayerMovement : MonoBehaviour
     private const string WaterObjectName = "Water";
     private const string FirstStepAnimationStateName = "FirstStep";
     private const int BaseAnimationLayerIndex = 0;
+    private const float ArtificialRiverEntryArcRatio = 0.7f;
+    private const float ArtificialRiverEntryWaterInset = 1.1f;
+    private const float ArtificialRiverBubbleLifetime = 0.5f;
+    private const float ArtificialRiverBubbleSpawnInterval = 0.08f;
+    private const float ArtificialRiverBubbleSpawnOffset = 0.42f;
+    private const float ArtificialRiverBubbleDriftSpeed = 0.9f;
+    private const float ArtificialRiverBubbleSideScatter = 0.18f;
+    private const float ArtificialRiverBubbleForwardScatter = 0.12f;
+    private const float ArtificialRiverBubbleVerticalScatter = 0.1f;
+    private const int ArtificialRiverBubbleSpriteTextureSize = 48;
+    private const float ArtificialRiverBubbleSpriteEdgeSoftness = 2f;
     private static readonly string[] ArtificialRiverColliderObjectNames =
     {
         GreenAlgaeObjectName,
@@ -50,6 +62,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField, Min(0f)] private float waterRiseSpeed = 4f;
     [SerializeField, Min(1f)] private float waterFastRiseMultiplier = 1.3f;
     [SerializeField, Range(0f, 1f)] private float underwaterMovementSoundVolume = 1f;
+    [SerializeField, Min(0f)] private float artificialRiverEntryDuration = 1.5f;
 
     private const float FacingThreshold = 0.01f;
     private const float GroundNormalThreshold = 0.5f;
@@ -77,6 +90,11 @@ public class PlayerMovement : MonoBehaviour
     private Coroutine movementSpeedModifierRoutine;
     private AudioSource underwaterMovementAudioSource;
     private Animator animator;
+    private SpriteRenderer primarySpriteRenderer;
+    private Vector2 artificialRiverEntryCircleCenter;
+    private Vector2 artificialRiverEntryCircleExtents;
+    private Vector2 artificialRiverEntryWaterTargetPosition;
+    private Vector2 artificialRiverEntryPreviousPosition;
     private readonly HashSet<Collider2D> groundColliders = new HashSet<Collider2D>();
     private readonly HashSet<Collider2D> nextColliders = new HashSet<Collider2D>();
     private readonly HashSet<Collider2D> ropeColliders = new HashSet<Collider2D>();
@@ -84,12 +102,17 @@ public class PlayerMovement : MonoBehaviour
     private readonly HashSet<Collider2D> waterColliders = new HashSet<Collider2D>();
 
     private static AudioClip underwaterMovementAudioClip;
+    private static Sprite artificialRiverBubbleSprite;
+    private bool isArtificialRiverEntrySequenceActive;
+    private float artificialRiverEntryElapsed;
+    private float nextArtificialRiverBubbleSpawnTime;
 
     protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         playerCollider = GetComponent<Collider2D>();
         animator = GetComponent<Animator>();
+        primarySpriteRenderer = GetComponent<SpriteRenderer>();
         hasParameterizedMovementAnimator = HasParameterizedMovementAnimator();
         baseGravityScale = rb.gravityScale;
 
@@ -117,11 +140,13 @@ public class PlayerMovement : MonoBehaviour
         AudioSettingsStore.VolumesChanged -= HandleVolumesChanged;
         StopUnderwaterMovementSound();
         ResetMovementSpeedModifier();
+        nextArtificialRiverBubbleSpawnTime = 0f;
     }
 
     protected virtual void Start()
     {
         CacheMovementBounds();
+        TryStartArtificialRiverEntrySequence();
     }
 
     protected virtual void Update()
@@ -129,6 +154,14 @@ public class PlayerMovement : MonoBehaviour
         if (GamePauseState.IsPaused)
         {
             StopUnderwaterMovementSound();
+            return;
+        }
+
+        if (isArtificialRiverEntrySequenceActive)
+        {
+            UpdateFacingDirection();
+            UpdateUnderwaterMovementSound();
+            UpdateAnimation();
             return;
         }
 
@@ -161,10 +194,17 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
+        if (isArtificialRiverEntrySequenceActive)
+        {
+            UpdateArtificialRiverEntrySequence();
+            return;
+        }
+
         if (IsWaterMovementActive())
         {
             jumpRequested = false;
             ApplyWaterMovement();
+            UpdateArtificialRiverBubbleTrail(HasMovementInput() ? rb.linearVelocity : Vector2.zero);
             ConsumeRunStamina();
             return;
         }
@@ -621,6 +661,280 @@ public class PlayerMovement : MonoBehaviour
         }
 
         SpriteColliderSizer.FitBoxCollidersToSpriteRenderers(sceneObject.transform);
+    }
+
+    private void TryStartArtificialRiverEntrySequence()
+    {
+        if (!isWaterScene || artificialRiverEntryDuration <= 0f || playerCollider == null)
+        {
+            return;
+        }
+
+        GameObject circleObject = GameObject.Find(ArtificialRiverEntryCircleObjectName);
+        GameObject waterObject = GameObject.Find(WaterObjectName);
+        if (circleObject == null || waterObject == null)
+        {
+            return;
+        }
+
+        SpriteRenderer circleRenderer = circleObject.GetComponent<SpriteRenderer>();
+        Collider2D waterCollider = waterObject.GetComponent<Collider2D>();
+        if (circleRenderer == null || waterCollider == null)
+        {
+            return;
+        }
+
+        Bounds circleBounds = circleRenderer.bounds;
+        artificialRiverEntryCircleCenter = circleBounds.center;
+        artificialRiverEntryCircleExtents = circleBounds.extents;
+
+        Vector2 rightEdgePosition = GetArtificialRiverCirclePoint(1f);
+        Vector2 waterSurfacePosition = waterCollider.ClosestPoint(
+            rightEdgePosition + Vector2.right * Mathf.Max(0.5f, playerCollider.bounds.extents.x));
+        Vector2 toWaterInterior = (Vector2)waterCollider.bounds.center - waterSurfacePosition;
+        if (toWaterInterior.sqrMagnitude <= Mathf.Epsilon)
+        {
+            toWaterInterior = Vector2.right;
+        }
+
+        artificialRiverEntryWaterTargetPosition =
+            waterSurfacePosition + (toWaterInterior.normalized * ArtificialRiverEntryWaterInset);
+
+        Vector2 startPosition = GetArtificialRiverCirclePoint(0f);
+        rb.position = startPosition;
+        rb.linearVelocity = Vector2.zero;
+        rb.gravityScale = 0f;
+        horizontalInput = 0f;
+        verticalInput = -1f;
+        isRunning = false;
+        hadMovementInput = false;
+        artificialRiverEntryPreviousPosition = startPosition;
+        artificialRiverEntryElapsed = 0f;
+        isArtificialRiverEntrySequenceActive = true;
+    }
+
+    private void UpdateArtificialRiverEntrySequence()
+    {
+        artificialRiverEntryElapsed = Mathf.Min(
+            artificialRiverEntryDuration,
+            artificialRiverEntryElapsed + Time.fixedDeltaTime);
+
+        float normalizedTime = artificialRiverEntryDuration <= 0f
+            ? 1f
+            : artificialRiverEntryElapsed / artificialRiverEntryDuration;
+        Vector2 nextPosition = EvaluateArtificialRiverEntryPosition(normalizedTime);
+        Vector2 movementDelta = nextPosition - artificialRiverEntryPreviousPosition;
+
+        horizontalInput = GetDirectionalInputValue(movementDelta.x);
+        verticalInput = GetDirectionalInputValue(movementDelta.y);
+        isRunning = false;
+
+        rb.linearVelocity = Vector2.zero;
+        rb.MovePosition(nextPosition);
+        artificialRiverEntryPreviousPosition = nextPosition;
+        UpdateArtificialRiverBubbleTrail(IsWaterMovementActive() ? movementDelta : Vector2.zero);
+
+        if (normalizedTime >= 1f)
+        {
+            FinishArtificialRiverEntrySequence();
+        }
+    }
+
+    private Vector2 EvaluateArtificialRiverEntryPosition(float normalizedTime)
+    {
+        float clampedTime = Mathf.Clamp01(normalizedTime);
+        if (clampedTime <= ArtificialRiverEntryArcRatio)
+        {
+            float arcProgress = ArtificialRiverEntryArcRatio <= 0f
+                ? 1f
+                : Mathf.Clamp01(clampedTime / ArtificialRiverEntryArcRatio);
+            return GetArtificialRiverCirclePoint(Mathf.SmoothStep(0f, 1f, arcProgress));
+        }
+
+        float lineProgress = ArtificialRiverEntryArcRatio >= 1f
+            ? 1f
+            : Mathf.Clamp01((clampedTime - ArtificialRiverEntryArcRatio) / (1f - ArtificialRiverEntryArcRatio));
+        return Vector2.Lerp(
+            GetArtificialRiverCirclePoint(1f),
+            artificialRiverEntryWaterTargetPosition,
+            Mathf.SmoothStep(0f, 1f, lineProgress));
+    }
+
+    private Vector2 GetArtificialRiverCirclePoint(float normalizedArcProgress)
+    {
+        float angleRadians = Mathf.Lerp(Mathf.PI * 0.5f, 0f, Mathf.Clamp01(normalizedArcProgress));
+        return artificialRiverEntryCircleCenter + new Vector2(
+            Mathf.Cos(angleRadians) * artificialRiverEntryCircleExtents.x,
+            Mathf.Sin(angleRadians) * artificialRiverEntryCircleExtents.y);
+    }
+
+    private void FinishArtificialRiverEntrySequence()
+    {
+        isArtificialRiverEntrySequenceActive = false;
+        artificialRiverEntryElapsed = 0f;
+        horizontalInput = 0f;
+        verticalInput = 0f;
+        isRunning = false;
+        rb.linearVelocity = Vector2.zero;
+        rb.gravityScale = IsWaterMovementActive() ? 0f : baseGravityScale;
+    }
+
+    private static float GetDirectionalInputValue(float value)
+    {
+        if (value > VerticalVelocityThreshold)
+        {
+            return 1f;
+        }
+
+        if (value < -VerticalVelocityThreshold)
+        {
+            return -1f;
+        }
+
+        return 0f;
+    }
+
+    private void UpdateArtificialRiverBubbleTrail(Vector2 movementVector)
+    {
+        if (!isWaterScene
+            || !IsWaterMovementActive()
+            || movementVector.sqrMagnitude <= VerticalVelocityThreshold * VerticalVelocityThreshold
+            || Time.time < nextArtificialRiverBubbleSpawnTime)
+        {
+            return;
+        }
+
+        SpawnArtificialRiverBubble(movementVector.normalized);
+        nextArtificialRiverBubbleSpawnTime = Time.time + ArtificialRiverBubbleSpawnInterval;
+    }
+
+    private void SpawnArtificialRiverBubble(Vector2 movementDirection)
+    {
+        Sprite bubbleSprite = GetArtificialRiverBubbleSprite();
+        if (bubbleSprite == null)
+        {
+            return;
+        }
+
+        Vector2 backwardsDirection = movementDirection.sqrMagnitude > Mathf.Epsilon
+            ? -movementDirection.normalized
+            : Vector2.left;
+        Vector2 lateralDirection = new Vector2(-backwardsDirection.y, backwardsDirection.x);
+        Vector2 scatterOffset =
+            (lateralDirection * Random.Range(-ArtificialRiverBubbleSideScatter, ArtificialRiverBubbleSideScatter))
+            + (movementDirection * Random.Range(-ArtificialRiverBubbleForwardScatter, ArtificialRiverBubbleForwardScatter))
+            + (Vector2.up * Random.Range(-ArtificialRiverBubbleVerticalScatter, ArtificialRiverBubbleVerticalScatter));
+        Vector2 spawnPosition = rb.position + (backwardsDirection * ArtificialRiverBubbleSpawnOffset) + scatterOffset;
+        float bubbleScale = Random.Range(0.14f, 0.26f);
+
+        GameObject bubbleObject = new GameObject("ArtificialRiverBubble", typeof(Transform), typeof(SpriteRenderer));
+        bubbleObject.transform.position = new Vector3(spawnPosition.x, spawnPosition.y, transform.position.z + 0.01f);
+        bubbleObject.transform.localScale = Vector3.one * bubbleScale;
+
+        SpriteRenderer bubbleRenderer = bubbleObject.GetComponent<SpriteRenderer>();
+        bubbleRenderer.sprite = bubbleSprite;
+        bubbleRenderer.color = new Color(0.86f, 0.97f, 1f, Random.Range(0.45f, 0.72f));
+        bubbleRenderer.sortingLayerID = primarySpriteRenderer != null ? primarySpriteRenderer.sortingLayerID : 0;
+        bubbleRenderer.sortingOrder = primarySpriteRenderer != null ? primarySpriteRenderer.sortingOrder : 0;
+
+        Vector2 driftDirection = (
+            (backwardsDirection * Random.Range(0.2f, 0.55f))
+            + (lateralDirection * Random.Range(-0.7f, 0.7f))
+            + (Vector2.up * Random.Range(0.65f, 1.05f))).normalized;
+        StartCoroutine(AnimateArtificialRiverBubble(
+            bubbleObject.transform,
+            bubbleRenderer,
+            driftDirection * Random.Range(ArtificialRiverBubbleDriftSpeed * 0.8f, ArtificialRiverBubbleDriftSpeed * 1.25f),
+            bubbleScale));
+    }
+
+    private IEnumerator AnimateArtificialRiverBubble(
+        Transform bubbleTransform,
+        SpriteRenderer bubbleRenderer,
+        Vector2 driftVelocity,
+        float initialScale)
+    {
+        if (bubbleTransform == null || bubbleRenderer == null)
+        {
+            yield break;
+        }
+
+        Color initialColor = bubbleRenderer.color;
+        float elapsed = 0f;
+
+        while (elapsed < ArtificialRiverBubbleLifetime)
+        {
+            if (bubbleTransform == null || bubbleRenderer == null)
+            {
+                yield break;
+            }
+
+            elapsed += Time.deltaTime;
+            float progress = Mathf.Clamp01(elapsed / ArtificialRiverBubbleLifetime);
+            bubbleTransform.position += (Vector3)(driftVelocity * Time.deltaTime);
+            bubbleTransform.localScale = Vector3.one * Mathf.Lerp(initialScale, initialScale * 1.35f, progress);
+
+            Color nextColor = initialColor;
+            nextColor.a = Mathf.Lerp(initialColor.a, 0f, progress);
+            bubbleRenderer.color = nextColor;
+            yield return null;
+        }
+
+        if (bubbleTransform != null)
+        {
+            Destroy(bubbleTransform.gameObject);
+        }
+    }
+
+    private static Sprite GetArtificialRiverBubbleSprite()
+    {
+        if (artificialRiverBubbleSprite != null)
+        {
+            return artificialRiverBubbleSprite;
+        }
+
+        Texture2D texture = new Texture2D(
+            ArtificialRiverBubbleSpriteTextureSize,
+            ArtificialRiverBubbleSpriteTextureSize,
+            TextureFormat.RGBA32,
+            false)
+        {
+            name = "ArtificialRiverBubbleTexture",
+            filterMode = FilterMode.Bilinear,
+            wrapMode = TextureWrapMode.Clamp,
+            hideFlags = HideFlags.HideAndDontSave
+        };
+
+        Color32[] pixels = new Color32[ArtificialRiverBubbleSpriteTextureSize * ArtificialRiverBubbleSpriteTextureSize];
+        float center = (ArtificialRiverBubbleSpriteTextureSize - 1f) * 0.5f;
+        float radius = center - 1f;
+
+        for (int y = 0; y < ArtificialRiverBubbleSpriteTextureSize; y++)
+        {
+            for (int x = 0; x < ArtificialRiverBubbleSpriteTextureSize; x++)
+            {
+                float dx = x - center;
+                float dy = y - center;
+                float distance = Mathf.Sqrt(dx * dx + dy * dy);
+                float alpha = Mathf.Clamp01((radius - distance) / ArtificialRiverBubbleSpriteEdgeSoftness);
+                alpha = Mathf.SmoothStep(0f, 1f, alpha);
+                pixels[(y * ArtificialRiverBubbleSpriteTextureSize) + x] = new Color(1f, 1f, 1f, alpha);
+            }
+        }
+
+        texture.SetPixels32(pixels);
+        texture.Apply(false, true);
+
+        artificialRiverBubbleSprite = Sprite.Create(
+            texture,
+            new Rect(0f, 0f, ArtificialRiverBubbleSpriteTextureSize, ArtificialRiverBubbleSpriteTextureSize),
+            new Vector2(0.5f, 0.5f),
+            ArtificialRiverBubbleSpriteTextureSize,
+            0u,
+            SpriteMeshType.FullRect);
+        artificialRiverBubbleSprite.name = "ArtificialRiverBubbleSprite";
+        artificialRiverBubbleSprite.hideFlags = HideFlags.HideAndDontSave;
+        return artificialRiverBubbleSprite;
     }
 
     private void ConsumeRunStamina()
