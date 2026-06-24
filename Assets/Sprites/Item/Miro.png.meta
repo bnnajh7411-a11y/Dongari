@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 1d136bad510890d4fa7990255d36c7b2
+guid: c410ee426b6bede4e9ff3a5fb8271f2b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5847280224285271262
-    second: Pul 1_0
+      213: 6803491411278378492
+    second: Miro_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -51,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 40
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Pul 1_0
+      name: Miro_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 64
-        height: 63
+        width: 729
+        height: 174
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ed4a0be3266b52150800000000000000
-      internalID: 5847280224285271262
+      spriteID: cf53ba1646bda6e50800000000000000
+      internalID: 6803491411278378492
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Pul 1_0: 5847280224285271262
+      Miro_0: 6803491411278378492
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

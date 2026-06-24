@@ -623,7 +623,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.2626, y: 139.9221, z: -9.1824}
+  m_LocalPosition: {x: 1.0431001, y: 139.9021, z: -9.1824}
   m_LocalScale: {x: 0.8527, y: 0.8527, z: 0.8527}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4727,6 +4727,7 @@ MonoBehaviour:
   waterRiseSpeed: 4
   waterFastRiseMultiplier: 1.3
   underwaterMovementSoundVolume: 1
+  artificialRiverEntryDuration: 1.5
 --- !u!50 &2028240023
 Rigidbody2D:
   serializedVersion: 5
@@ -4822,7 +4823,7 @@ Transform:
   m_GameObject: {fileID: 2028240021}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 1.9943, y: 140.22, z: -0.6982}
+  m_LocalPosition: {x: 3.3, y: 140.2, z: -0.6982}
   m_LocalScale: {x: -2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -43283,6 +43283,8 @@ MonoBehaviour:
   waterFastSinkMultiplier: 1.75
   waterRiseSpeed: 4
   waterFastRiseMultiplier: 1.3
+  underwaterMovementSoundVolume: 1
+  artificialRiverEntryDuration: 1.5
 --- !u!50 &2028240023
 Rigidbody2D:
   serializedVersion: 5

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 1d136bad510890d4fa7990255d36c7b2
+guid: a635247b9237224418aaa8e82e103211
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5847280224285271262
-    second: Pul 1_0
+      213: -6898819461063107734
+    second: Pyojipan_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Pul 1_0
+      name: Pyojipan_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 64
-        height: 63
+        x: 8
+        y: 7
+        width: 48
+        height: 42
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ed4a0be3266b52150800000000000000
-      internalID: 5847280224285271262
+      spriteID: a6b18cd60487240a0800000000000000
+      internalID: -6898819461063107734
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Pul 1_0: 5847280224285271262
+      Pyojipan_0: -6898819461063107734
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
