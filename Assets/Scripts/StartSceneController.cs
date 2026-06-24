@@ -30,9 +30,12 @@ public class StartSceneController : MonoBehaviour
     private const string ExitButtonObjectName = "ExitButton";
     private const string ButtonLabelObjectName = "Label";
     private const string KeyMappingPanelObjectName = "KeyMappingPanel";
+    private const string KeyMappingBackgroundClickAreaObjectName = "KeyMappingBackgroundClickArea";
     private const string KeyMappingWindowObjectName = "KeyMappingWindow";
     private const string OptionsPanelObjectName = "OptionsPanel";
+    private const string OptionsBackgroundClickAreaObjectName = "OptionsBackgroundClickArea";
     private const string OptionsWindowObjectName = "OptionsWindow";
+    private const string ResolutionBackgroundClickAreaObjectName = "ResolutionBackgroundClickArea";
     private const string KeyBindingScrollAreaObjectName = "KeyBindingScrollArea";
     private const string KeyBindingViewportObjectName = "KeyBindingViewport";
     private const string KeyBindingContentObjectName = "KeyBindingContent";
@@ -516,7 +519,8 @@ public class StartSceneController : MonoBehaviour
 
         Image panelOverlay = optionsPanel.GetComponent<Image>();
         panelOverlay.color = new Color(0f, 0f, 0f, 0.72f);
-        AttachBackgroundClickCloseHandler(optionsPanel, CloseOptionsPanel);
+        panelOverlay.raycastTarget = false;
+        CreateBackgroundClickCloseArea(optionsPanel.transform, OptionsBackgroundClickAreaObjectName, CloseOptionsPanel);
 
         GameObject windowObject = new GameObject(
             OptionsWindowObjectName,
@@ -618,7 +622,8 @@ public class StartSceneController : MonoBehaviour
 
         Image panelOverlay = keyMappingPanel.GetComponent<Image>();
         panelOverlay.color = new Color(0f, 0f, 0f, 0.72f);
-        AttachBackgroundClickCloseHandler(keyMappingPanel, CloseKeyMappingPanel);
+        panelOverlay.raycastTarget = false;
+        CreateBackgroundClickCloseArea(keyMappingPanel.transform, KeyMappingBackgroundClickAreaObjectName, CloseKeyMappingPanel);
 
         GameObject windowObject = new GameObject(
             KeyMappingWindowObjectName,
@@ -833,6 +838,11 @@ public class StartSceneController : MonoBehaviour
         contentRectTransform.anchorMax = Vector2.one;
         contentRectTransform.offsetMin = Vector2.zero;
         contentRectTransform.offsetMax = Vector2.zero;
+
+        CreateBackgroundClickCloseArea(
+            contentObject.transform,
+            ResolutionBackgroundClickAreaObjectName,
+            () => SetResolutionOptionsExpanded(false));
 
         CreateTextElement(
             contentObject.transform,
@@ -1978,20 +1988,33 @@ public class StartSceneController : MonoBehaviour
         }
     }
 
-    private void AttachBackgroundClickCloseHandler(GameObject panelObject, Action closeAction)
+    private GameObject CreateBackgroundClickCloseArea(Transform parent, string objectName, Action closeAction)
     {
-        if (panelObject == null || closeAction == null)
+        if (parent == null || closeAction == null)
         {
-            return;
+            return null;
         }
 
-        BackgroundClickCloseHandler handler = panelObject.GetComponent<BackgroundClickCloseHandler>();
-        if (handler == null)
-        {
-            handler = panelObject.AddComponent<BackgroundClickCloseHandler>();
-        }
+        GameObject clickArea = new GameObject(
+            objectName,
+            typeof(RectTransform),
+            typeof(Image));
 
+        clickArea.transform.SetParent(parent, false);
+
+        RectTransform clickAreaRectTransform = clickArea.GetComponent<RectTransform>();
+        clickAreaRectTransform.anchorMin = Vector2.zero;
+        clickAreaRectTransform.anchorMax = Vector2.one;
+        clickAreaRectTransform.offsetMin = Vector2.zero;
+        clickAreaRectTransform.offsetMax = Vector2.zero;
+
+        Image clickAreaImage = clickArea.GetComponent<Image>();
+        clickAreaImage.color = new Color(0f, 0f, 0f, 0f);
+        clickAreaImage.raycastTarget = true;
+
+        BackgroundClickCloseHandler handler = clickArea.AddComponent<BackgroundClickCloseHandler>();
         handler.Initialize(closeAction);
+        return clickArea;
     }
 
     private void SetActiveOptionsCategory(OptionsCategory category)
