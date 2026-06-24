@@ -79,9 +79,11 @@ public class PlayerMovement : MonoBehaviour
     private bool isClimbing;
     private bool isTopDownScene;
     private bool isWaterScene;
+    private bool isZooScene;
     private bool hasMovementBounds;
     private bool hadMovementInput;
     private int lastMovementAnimationDirection;
+    private bool lastMovementAnimationWasRunning;
     private bool hasParameterizedMovementAnimator;
     private bool jumpRequested;
     private Vector3 defaultScale;
@@ -260,13 +262,35 @@ public class PlayerMovement : MonoBehaviour
         animator.SetFloat("horizontal", Mathf.Abs(horizontalInput));
         animator.SetFloat("vertical", verticalInput);
 
-        if (hasMovementInput && (!hadMovementInput || movementAnimationDirection != lastMovementAnimationDirection))
+        bool shouldRestartFirstStep = hasMovementInput
+            && (!hadMovementInput
+                || movementAnimationDirection != lastMovementAnimationDirection
+                || isRunning != lastMovementAnimationWasRunning
+                || WasZooFirstStepRestartKeyReleasedThisFrame());
+
+        if (shouldRestartFirstStep)
         {
             animator.Play(FirstStepAnimationStateName, BaseAnimationLayerIndex, 0f);
         }
 
         hadMovementInput = hasMovementInput;
         lastMovementAnimationDirection = movementAnimationDirection;
+        lastMovementAnimationWasRunning = isRunning;
+    }
+
+    private bool WasZooFirstStepRestartKeyReleasedThisFrame()
+    {
+        return isZooScene
+            && (WasActionKeyReleasedThisFrame(InputActionType.MoveUp)
+                || WasActionKeyReleasedThisFrame(InputActionType.MoveDown)
+                || WasActionKeyReleasedThisFrame(InputActionType.MoveLeft)
+                || WasActionKeyReleasedThisFrame(InputActionType.MoveRight)
+                || WasActionKeyReleasedThisFrame(InputActionType.Run));
+    }
+
+    private bool WasActionKeyReleasedThisFrame(InputActionType action)
+    {
+        return Input.GetKeyUp(PlayerInputBindings.GetKey(action));
     }
 
     private bool HasParameterizedMovementAnimator()
@@ -553,8 +577,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void ConfigureMovementMode()
     {
-        isTopDownScene = IsTopDownScene(SceneManager.GetActiveScene().name);
-        isWaterScene = SceneManager.GetActiveScene().name == ArtificialRiverSceneName;
+        string activeSceneName = SceneManager.GetActiveScene().name;
+        isTopDownScene = IsTopDownScene(activeSceneName);
+        isWaterScene = activeSceneName == ArtificialRiverSceneName;
+        isZooScene = activeSceneName == ZooSceneName;
         rb.gravityScale = isTopDownScene ? 0f : baseGravityScale;
     }
 
