@@ -1136,7 +1136,7 @@ GameObject:
   - component: {fileID: 419142355}
   - component: {fileID: 419142354}
   m_Layer: 0
-  m_Name: Ground_0
+  m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5074,7 +5074,7 @@ GameObject:
   - component: {fileID: 1664019373}
   - component: {fileID: 1664019372}
   m_Layer: 0
-  m_Name: Mountain 1_0
+  m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

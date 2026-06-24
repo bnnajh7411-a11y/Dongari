@@ -92,17 +92,35 @@ public class IntroCutsceneController : MonoBehaviour
 
     private bool ShouldAdvanceCutscene()
     {
-        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+        bool mouseClick = Input.GetMouseButtonDown(0);
+        // The whole cutscene is rendered with UI, so only the Skip button should block mouse-to-advance.
+        if (mouseClick && IsPointerOverSkipButton())
         {
             return false;
         }
 
-        return Input.GetMouseButtonDown(0)
+        return mouseClick
             || Input.GetKeyDown(KeyCode.Return)
             || Input.GetKeyDown(KeyCode.KeypadEnter)
             || Input.GetKeyDown(KeyCode.Space)
             || PlayerInputBindings.WasJumpPressedThisFrame()
             || PlayerInputBindings.WasInteractPressedThisFrame();
+    }
+
+    private bool IsPointerOverSkipButton()
+    {
+        if (skipButton == null)
+        {
+            return false;
+        }
+
+        RectTransform skipButtonRectTransform = skipButton.transform as RectTransform;
+        if (skipButtonRectTransform == null)
+        {
+            return false;
+        }
+
+        return RectTransformUtility.RectangleContainsScreenPoint(skipButtonRectTransform, Input.mousePosition);
     }
 
     private void LoadNextScene()
