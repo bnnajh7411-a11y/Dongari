@@ -516,6 +516,7 @@ public class StartSceneController : MonoBehaviour
 
         Image panelOverlay = optionsPanel.GetComponent<Image>();
         panelOverlay.color = new Color(0f, 0f, 0f, 0.72f);
+        AttachBackgroundClickCloseHandler(optionsPanel, CloseOptionsPanel);
 
         GameObject windowObject = new GameObject(
             OptionsWindowObjectName,
@@ -617,6 +618,7 @@ public class StartSceneController : MonoBehaviour
 
         Image panelOverlay = keyMappingPanel.GetComponent<Image>();
         panelOverlay.color = new Color(0f, 0f, 0f, 0.72f);
+        AttachBackgroundClickCloseHandler(keyMappingPanel, CloseKeyMappingPanel);
 
         GameObject windowObject = new GameObject(
             KeyMappingWindowObjectName,
@@ -1976,6 +1978,22 @@ public class StartSceneController : MonoBehaviour
         }
     }
 
+    private void AttachBackgroundClickCloseHandler(GameObject panelObject, Action closeAction)
+    {
+        if (panelObject == null || closeAction == null)
+        {
+            return;
+        }
+
+        BackgroundClickCloseHandler handler = panelObject.GetComponent<BackgroundClickCloseHandler>();
+        if (handler == null)
+        {
+            handler = panelObject.AddComponent<BackgroundClickCloseHandler>();
+        }
+
+        handler.Initialize(closeAction);
+    }
+
     private void SetActiveOptionsCategory(OptionsCategory category)
     {
         if (activeOptionsCategory != category && isWaitingForBinding)
@@ -2488,5 +2506,25 @@ public class StartSceneController : MonoBehaviour
     private static bool IsPauseMenuBlockedScene(string sceneName)
     {
         return sceneName == StartSceneName || sceneName == IntroCutsceneSceneName;
+    }
+
+    private sealed class BackgroundClickCloseHandler : MonoBehaviour, IPointerClickHandler
+    {
+        private Action closeAction;
+
+        public void Initialize(Action onClose)
+        {
+            closeAction = onClose;
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (eventData == null || eventData.button != PointerEventData.InputButton.Left)
+            {
+                return;
+            }
+
+            closeAction?.Invoke();
+        }
     }
 }
