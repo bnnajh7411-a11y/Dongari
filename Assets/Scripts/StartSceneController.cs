@@ -17,6 +17,7 @@ public class StartSceneController : MonoBehaviour
 
     private const string StartSceneName = "Start";
     private const string IntroCutsceneSceneName = "IntroCutscene";
+    private const string ResultSceneName = "Result";
     private const string EventSystemObjectName = "EventSystem";
     private const string CanvasObjectName = "StartCanvas";
     private const string PauseCanvasObjectName = "PauseMenuCanvas";
@@ -167,6 +168,7 @@ public class StartSceneController : MonoBehaviour
         {
             PlayerHealth.ResetPersistentHealth();
             PlayerStamina.ResetPersistentStamina();
+            CollectedPickupCreditsState.ResetCollectedSprites();
         }
 
         BuildAvailableResolutionOptions();
@@ -2528,7 +2530,9 @@ public class StartSceneController : MonoBehaviour
 
     private static bool IsPauseMenuBlockedScene(string sceneName)
     {
-        return sceneName == StartSceneName || sceneName == IntroCutsceneSceneName;
+        return sceneName == StartSceneName
+            || sceneName == IntroCutsceneSceneName
+            || sceneName == ResultSceneName;
     }
 
     private sealed class BackgroundClickCloseHandler : MonoBehaviour, IPointerClickHandler

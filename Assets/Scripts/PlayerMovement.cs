@@ -12,6 +12,7 @@ public class PlayerMovement : MonoBehaviour
     private const string RoadSceneName = "Road";
     private const string ZooSceneName = "Zoo";
     private const string MountainSceneName = "Mountain";
+    private const string ResultSceneName = "Result";
     private const string ArtificialRiverSceneName = "ArtificialRiver";
     private const string ArtificialRiverEntryCircleObjectName = "Circle";
     private const string UnderwaterMovementAudioSourceObjectName = "UnderwaterMovementAudioSource";
@@ -571,6 +572,12 @@ public class PlayerMovement : MonoBehaviour
     {
         if (TryGetNextSceneName(SceneManager.GetActiveScene().name, out string nextSceneName))
         {
+            if (nextSceneName == ResultSceneName)
+            {
+                ResultSceneState.LoadCreditsResult();
+                return;
+            }
+
             SceneFadeTransition.LoadScene(nextSceneName);
         }
     }

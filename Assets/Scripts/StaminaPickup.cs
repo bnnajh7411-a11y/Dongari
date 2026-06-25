@@ -7,9 +7,11 @@ public class StaminaPickup : MonoBehaviour
     [SerializeField, Min(0f)] private float restoreAmount = 10f;
 
     private BoxCollider2D pickupCollider;
+    private SpriteRenderer pickupRenderer;
 
     private void Awake()
     {
+        pickupRenderer = GetComponent<SpriteRenderer>();
         EnsurePickupCollider();
     }
 
@@ -43,6 +45,8 @@ public class StaminaPickup : MonoBehaviour
             return;
         }
 
+        CollectedPickupCreditsState.RegisterCollectedSprite(
+            pickupRenderer != null ? pickupRenderer.sprite : null);
         playerStamina.RestoreStamina(restoreAmount);
         Destroy(gameObject);
     }

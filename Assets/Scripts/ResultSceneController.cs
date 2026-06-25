@@ -1,0 +1,755 @@
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+[DisallowMultipleComponent]
+public class ResultSceneController : MonoBehaviour
+{
+    private const string StartSceneName = "Start";
+    private const string EventSystemObjectName = "EventSystem";
+    private const string CanvasObjectName = "ResultCanvas";
+    private const string BackgroundObjectName = "Background";
+    private const string PanelObjectName = "ResultPanel";
+    private const string CreditsViewportObjectName = "CreditsViewport";
+    private const string CreditsContentObjectName = "CreditsContent";
+    private const string FooterGroupObjectName = "FooterGroup";
+    private const string TitleObjectName = "Title";
+    private const string BodyObjectName = "Body";
+    private const string HintObjectName = "Hint";
+    private const string ButtonObjectName = "StartButton";
+    private const string GameOverTitleText = "GAME OVER";
+    private const string CreditsBodyText = "\uC784\n\uC2DC\n\uC6A9";
+    private const string EmptyBodyText = "";
+    private const string ContinueHintText = "Press Enter or click START";
+    private const string StartButtonText = "\uBA54\uC778\uC73C\uB85C";
+    private const float CreditsScrollSpeed = 82f;
+    private const float CreditsScrollPadding = 56f;
+    private const float CreditsItemSize = 118f;
+    private const float CreditsItemSpacing = 38f;
+    private const float CreditsTextToItemsSpacing = 76f;
+    private const float FooterRevealDuration = 0.45f;
+
+    private Canvas rootCanvas;
+    private Font builtinFont;
+    private Image backgroundImage;
+    private Image panelImage;
+    private Outline panelOutline;
+    private RectTransform panelRectTransform;
+    private Text titleText;
+    private RectTransform titleRectTransform;
+    private RectTransform creditsViewportRectTransform;
+    private RectTransform creditsContentRectTransform;
+    private Text bodyText;
+    private RectTransform bodyRectTransform;
+    private Text hintText;
+    private RectTransform footerRectTransform;
+    private CanvasGroup footerCanvasGroup;
+    private Button startButton;
+    private bool isLoadingStartScene;
+    private bool isCreditsMode;
+    private bool creditsScrollComplete;
+    private float creditsEndY;
+    private readonly List<GameObject> creditItemObjects = new List<GameObject>();
+
+    private void Awake()
+    {
+        GamePauseState.SetPaused(false);
+        Time.timeScale = 1f;
+
+        EnsureEventSystem();
+        rootCanvas = EnsureCanvas();
+        BuildLayout();
+        ApplyDisplay(ResultSceneState.ConsumePendingDisplayMode(ResultSceneState.DisplayMode.GameOver));
+    }
+
+    private void OnDestroy()
+    {
+        if (startButton != null)
+        {
+            startButton.onClick.RemoveListener(HandleStartButtonPressed);
+        }
+    }
+
+    private void Update()
+    {
+        if (isLoadingStartScene)
+        {
+            return;
+        }
+
+        if (isCreditsMode)
+        {
+            UpdateCreditsRoll();
+        }
+
+        if (!CanReturnToTitle())
+        {
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Return)
+            || Input.GetKeyDown(KeyCode.Space)
+            || PlayerInputBindings.WasInteractPressedThisFrame())
+        {
+            LoadStartScene();
+        }
+    }
+
+    private void HandleStartButtonPressed()
+    {
+        LoadStartScene();
+    }
+
+    private void LoadStartScene()
+    {
+        if (isLoadingStartScene)
+        {
+            return;
+        }
+
+        isLoadingStartScene = SceneFadeTransition.LoadScene(StartSceneName);
+    }
+
+    private void ApplyDisplay(ResultSceneState.DisplayMode displayMode)
+    {
+        isCreditsMode = displayMode == ResultSceneState.DisplayMode.Credits;
+        creditsScrollComplete = false;
+        ApplyLayoutForDisplay(isCreditsMode);
+
+        if (backgroundImage != null)
+        {
+            backgroundImage.color = isCreditsMode
+                ? new Color(0.03f, 0.03f, 0.05f, 1f)
+                : new Color(0.19f, 0.08f, 0.09f, 1f);
+        }
+
+        if (panelImage != null)
+        {
+            panelImage.color = isCreditsMode
+                ? new Color(0f, 0f, 0f, 0f)
+                : new Color(0.24f, 0.13f, 0.15f, 0.94f);
+        }
+
+        if (panelOutline != null)
+        {
+            panelOutline.enabled = !isCreditsMode;
+        }
+
+        if (titleText != null)
+        {
+            titleText.gameObject.SetActive(!isCreditsMode);
+            titleText.text = GameOverTitleText;
+            titleText.fontSize = 46;
+            titleText.color = new Color(0.98f, 0.92f, 0.92f, 1f);
+        }
+
+        if (bodyText != null)
+        {
+            bodyText.text = isCreditsMode ? CreditsBodyText : EmptyBodyText;
+            bodyText.color = isCreditsMode
+                ? new Color(0.95f, 0.95f, 0.91f, 1f)
+                : new Color(0.98f, 0.92f, 0.92f, 1f);
+            bodyText.fontSize = isCreditsMode ? 56 : 28;
+        }
+
+        if (hintText != null)
+        {
+            hintText.text = ContinueHintText;
+            hintText.color = isCreditsMode
+                ? new Color(0.78f, 0.8f, 0.78f, 1f)
+                : new Color(0.88f, 0.77f, 0.77f, 1f);
+        }
+
+        if (isCreditsMode)
+        {
+            ConfigureCreditsRoll();
+            SetFooterState(0f);
+        }
+        else
+        {
+            if (bodyRectTransform != null)
+            {
+                bodyRectTransform.anchoredPosition = Vector2.zero;
+            }
+
+            if (creditsContentRectTransform != null)
+            {
+                creditsContentRectTransform.anchoredPosition = Vector2.zero;
+            }
+
+            SetFooterState(1f);
+        }
+    }
+
+    private void EnsureEventSystem()
+    {
+        if (FindAnyObjectByType<EventSystem>() != null)
+        {
+            return;
+        }
+
+        new GameObject(EventSystemObjectName, typeof(EventSystem), typeof(StandaloneInputModule));
+    }
+
+    private Canvas EnsureCanvas()
+    {
+        GameObject existingCanvasObject = GameObject.Find(CanvasObjectName);
+        if (existingCanvasObject != null && existingCanvasObject.TryGetComponent(out Canvas existingCanvas))
+        {
+            return existingCanvas;
+        }
+
+        GameObject canvasObject = new GameObject(
+            CanvasObjectName,
+            typeof(Canvas),
+            typeof(CanvasScaler),
+            typeof(GraphicRaycaster));
+
+        Canvas canvas = canvasObject.GetComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 250;
+
+        CanvasScaler canvasScaler = canvasObject.GetComponent<CanvasScaler>();
+        canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        canvasScaler.referenceResolution = new Vector2(1920f, 1080f);
+        canvasScaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+        canvasScaler.matchWidthOrHeight = 0.5f;
+
+        return canvas;
+    }
+
+    private void BuildLayout()
+    {
+        if (rootCanvas == null)
+        {
+            return;
+        }
+
+        Sprite uiSprite = RuntimeUiSpriteUtility.GetWhiteSprite();
+        backgroundImage = CreateFullscreenImage(rootCanvas.transform, BackgroundObjectName, uiSprite);
+        panelImage = CreatePanel(rootCanvas.transform, uiSprite);
+        panelRectTransform = panelImage.GetComponent<RectTransform>();
+        panelOutline = panelImage.GetComponent<Outline>();
+        titleText = CreateText(
+            panelImage.transform,
+            TitleObjectName,
+            new Vector2(0f, 186f),
+            new Vector2(640f, 90f),
+            46,
+            FontStyle.Bold,
+            TextAnchor.MiddleCenter);
+        titleRectTransform = titleText.GetComponent<RectTransform>();
+        creditsViewportRectTransform = CreateCreditsViewport(panelImage.transform);
+        creditsContentRectTransform = CreateCreditsContent(creditsViewportRectTransform);
+        bodyText = CreateText(
+            creditsContentRectTransform,
+            BodyObjectName,
+            Vector2.zero,
+            new Vector2(500f, 220f),
+            56,
+            FontStyle.Bold,
+            TextAnchor.MiddleCenter);
+        bodyRectTransform = bodyText.GetComponent<RectTransform>();
+        footerRectTransform = CreateFooterGroup(panelImage.transform);
+        hintText = CreateText(
+            footerRectTransform,
+            HintObjectName,
+            new Vector2(0f, 46f),
+            new Vector2(480f, 44f),
+            24,
+            FontStyle.Normal,
+            TextAnchor.MiddleCenter);
+        startButton = CreateButton(footerRectTransform, uiSprite, new Vector2(0f, -12f));
+    }
+
+    private Image CreateFullscreenImage(Transform parent, string objectName, Sprite sprite)
+    {
+        GameObject imageObject = new GameObject(
+            objectName,
+            typeof(RectTransform),
+            typeof(Image));
+        imageObject.transform.SetParent(parent, false);
+
+        RectTransform imageRectTransform = imageObject.GetComponent<RectTransform>();
+        imageRectTransform.anchorMin = Vector2.zero;
+        imageRectTransform.anchorMax = Vector2.one;
+        imageRectTransform.offsetMin = Vector2.zero;
+        imageRectTransform.offsetMax = Vector2.zero;
+
+        Image image = imageObject.GetComponent<Image>();
+        image.sprite = sprite;
+        image.type = Image.Type.Simple;
+        image.raycastTarget = false;
+        return image;
+    }
+
+    private Image CreatePanel(Transform parent, Sprite sprite)
+    {
+        GameObject panelObject = new GameObject(
+            PanelObjectName,
+            typeof(RectTransform),
+            typeof(Image),
+            typeof(Outline));
+        panelObject.transform.SetParent(parent, false);
+
+        RectTransform panelRectTransform = panelObject.GetComponent<RectTransform>();
+        panelRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        panelRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        panelRectTransform.pivot = new Vector2(0.5f, 0.5f);
+        panelRectTransform.sizeDelta = new Vector2(760f, 560f);
+        panelRectTransform.anchoredPosition = Vector2.zero;
+
+        Image panel = panelObject.GetComponent<Image>();
+        panel.sprite = sprite;
+        panel.type = Image.Type.Simple;
+
+        Outline outline = panelObject.GetComponent<Outline>();
+        outline.effectColor = new Color(0f, 0f, 0f, 0.16f);
+        outline.effectDistance = new Vector2(3f, -3f);
+        return panel;
+    }
+
+    private RectTransform CreateCreditsViewport(Transform parent)
+    {
+        GameObject viewportObject = new GameObject(
+            CreditsViewportObjectName,
+            typeof(RectTransform),
+            typeof(Image),
+            typeof(RectMask2D));
+        viewportObject.transform.SetParent(parent, false);
+
+        RectTransform viewportRectTransform = viewportObject.GetComponent<RectTransform>();
+        viewportRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        viewportRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        viewportRectTransform.pivot = new Vector2(0.5f, 0.5f);
+        viewportRectTransform.anchoredPosition = new Vector2(0f, 18f);
+        viewportRectTransform.sizeDelta = new Vector2(500f, 220f);
+
+        Image viewportImage = viewportObject.GetComponent<Image>();
+        viewportImage.color = new Color(0f, 0f, 0f, 0f);
+        viewportImage.raycastTarget = false;
+        return viewportRectTransform;
+    }
+
+    private RectTransform CreateCreditsContent(Transform parent)
+    {
+        GameObject contentObject = new GameObject(CreditsContentObjectName, typeof(RectTransform));
+        contentObject.transform.SetParent(parent, false);
+
+        RectTransform contentRectTransform = contentObject.GetComponent<RectTransform>();
+        contentRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        contentRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        contentRectTransform.pivot = new Vector2(0.5f, 0.5f);
+        contentRectTransform.anchoredPosition = Vector2.zero;
+        contentRectTransform.sizeDelta = new Vector2(500f, 220f);
+        return contentRectTransform;
+    }
+
+    private RectTransform CreateFooterGroup(Transform parent)
+    {
+        GameObject footerObject = new GameObject(
+            FooterGroupObjectName,
+            typeof(RectTransform),
+            typeof(CanvasGroup));
+        footerObject.transform.SetParent(parent, false);
+
+        RectTransform rectTransform = footerObject.GetComponent<RectTransform>();
+        rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        rectTransform.pivot = new Vector2(0.5f, 0.5f);
+        rectTransform.anchoredPosition = new Vector2(0f, -190f);
+        rectTransform.sizeDelta = new Vector2(480f, 150f);
+
+        footerCanvasGroup = footerObject.GetComponent<CanvasGroup>();
+        return rectTransform;
+    }
+
+    private Text CreateText(
+        Transform parent,
+        string objectName,
+        Vector2 anchoredPosition,
+        Vector2 sizeDelta,
+        int fontSize,
+        FontStyle fontStyle,
+        TextAnchor alignment)
+    {
+        GameObject textObject = new GameObject(objectName, typeof(RectTransform), typeof(Text));
+        textObject.transform.SetParent(parent, false);
+
+        RectTransform textRectTransform = textObject.GetComponent<RectTransform>();
+        textRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        textRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        textRectTransform.pivot = new Vector2(0.5f, 0.5f);
+        textRectTransform.anchoredPosition = anchoredPosition;
+        textRectTransform.sizeDelta = sizeDelta;
+
+        Text text = textObject.GetComponent<Text>();
+        text.font = GetBuiltinFont();
+        text.fontSize = fontSize;
+        text.fontStyle = fontStyle;
+        text.alignment = alignment;
+        text.horizontalOverflow = HorizontalWrapMode.Wrap;
+        text.verticalOverflow = VerticalWrapMode.Overflow;
+        text.lineSpacing = 1.15f;
+        text.raycastTarget = false;
+        return text;
+    }
+
+    private Button CreateButton(Transform parent, Sprite sprite, Vector2 anchoredPosition)
+    {
+        GameObject buttonObject = new GameObject(
+            ButtonObjectName,
+            typeof(RectTransform),
+            typeof(Image),
+            typeof(Button));
+        buttonObject.transform.SetParent(parent, false);
+
+        RectTransform buttonRectTransform = buttonObject.GetComponent<RectTransform>();
+        buttonRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        buttonRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        buttonRectTransform.pivot = new Vector2(0.5f, 0.5f);
+        buttonRectTransform.sizeDelta = new Vector2(230f, 68f);
+        buttonRectTransform.anchoredPosition = anchoredPosition;
+
+        Image buttonImage = buttonObject.GetComponent<Image>();
+        buttonImage.sprite = sprite;
+        buttonImage.type = Image.Type.Simple;
+        buttonImage.color = new Color(0.18f, 0.43f, 0.27f, 1f);
+
+        Button button = buttonObject.GetComponent<Button>();
+        button.targetGraphic = buttonImage;
+        button.colors = CreateButtonColors(buttonImage.color);
+        button.onClick.AddListener(HandleStartButtonPressed);
+
+        Text label = CreateText(
+            buttonObject.transform,
+            "Label",
+            Vector2.zero,
+            buttonRectTransform.sizeDelta,
+            28,
+            FontStyle.Bold,
+            TextAnchor.MiddleCenter);
+        label.text = StartButtonText;
+        label.color = Color.white;
+
+        return button;
+    }
+
+    private void ApplyLayoutForDisplay(bool isCreditsDisplay)
+    {
+        if (panelRectTransform != null)
+        {
+            if (isCreditsDisplay)
+            {
+                panelRectTransform.anchorMin = Vector2.zero;
+                panelRectTransform.anchorMax = Vector2.one;
+                panelRectTransform.pivot = new Vector2(0.5f, 0.5f);
+                panelRectTransform.offsetMin = Vector2.zero;
+                panelRectTransform.offsetMax = Vector2.zero;
+                panelRectTransform.anchoredPosition = Vector2.zero;
+            }
+            else
+            {
+                panelRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+                panelRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                panelRectTransform.pivot = new Vector2(0.5f, 0.5f);
+                panelRectTransform.sizeDelta = new Vector2(760f, 560f);
+                panelRectTransform.anchoredPosition = Vector2.zero;
+            }
+        }
+
+        if (titleRectTransform != null)
+        {
+            if (isCreditsDisplay)
+            {
+                titleRectTransform.anchorMin = new Vector2(0.5f, 1f);
+                titleRectTransform.anchorMax = new Vector2(0.5f, 1f);
+                titleRectTransform.pivot = new Vector2(0.5f, 0.5f);
+                titleRectTransform.anchoredPosition = new Vector2(0f, -72f);
+                titleRectTransform.sizeDelta = new Vector2(760f, 72f);
+            }
+            else
+            {
+                titleRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+                titleRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                titleRectTransform.pivot = new Vector2(0.5f, 0.5f);
+                titleRectTransform.anchoredPosition = new Vector2(0f, 186f);
+                titleRectTransform.sizeDelta = new Vector2(640f, 90f);
+            }
+        }
+
+        if (creditsViewportRectTransform != null)
+        {
+            if (isCreditsDisplay)
+            {
+                creditsViewportRectTransform.anchorMin = new Vector2(0f, 0f);
+                creditsViewportRectTransform.anchorMax = new Vector2(1f, 1f);
+                creditsViewportRectTransform.pivot = new Vector2(0.5f, 0.5f);
+                creditsViewportRectTransform.offsetMin = new Vector2(220f, 0f);
+                creditsViewportRectTransform.offsetMax = new Vector2(-220f, 0f);
+            }
+            else
+            {
+                creditsViewportRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+                creditsViewportRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                creditsViewportRectTransform.pivot = new Vector2(0.5f, 0.5f);
+                creditsViewportRectTransform.anchoredPosition = new Vector2(0f, 18f);
+                creditsViewportRectTransform.sizeDelta = new Vector2(500f, 220f);
+            }
+        }
+
+        if (footerRectTransform != null)
+        {
+            if (isCreditsDisplay)
+            {
+                footerRectTransform.anchorMin = new Vector2(0.5f, 0f);
+                footerRectTransform.anchorMax = new Vector2(0.5f, 0f);
+                footerRectTransform.pivot = new Vector2(0.5f, 0.5f);
+                footerRectTransform.anchoredPosition = new Vector2(0f, 94f);
+                footerRectTransform.sizeDelta = new Vector2(480f, 150f);
+            }
+            else
+            {
+                footerRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+                footerRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                footerRectTransform.pivot = new Vector2(0.5f, 0.5f);
+                footerRectTransform.anchoredPosition = new Vector2(0f, -190f);
+                footerRectTransform.sizeDelta = new Vector2(480f, 150f);
+            }
+        }
+    }
+
+    private void ConfigureCreditsRoll()
+    {
+        if (creditsContentRectTransform == null
+            || bodyRectTransform == null
+            || creditsViewportRectTransform == null
+            || bodyText == null)
+        {
+            return;
+        }
+
+        ClearCreditItems();
+        Canvas.ForceUpdateCanvases();
+        float viewportWidth = creditsViewportRectTransform.rect.width;
+        float viewportHeight = creditsViewportRectTransform.rect.height;
+
+        creditsContentRectTransform.sizeDelta = new Vector2(viewportWidth, creditsContentRectTransform.sizeDelta.y);
+        bodyRectTransform.sizeDelta = new Vector2(viewportWidth, bodyRectTransform.sizeDelta.y);
+        Canvas.ForceUpdateCanvases();
+
+        float textHeight = Mathf.Max(bodyText.preferredHeight, 1f);
+        Sprite[] collectedSprites = CollectedPickupCreditsState.GetCollectedSprites();
+        float itemsHeight = 0f;
+        if (collectedSprites.Length > 0)
+        {
+            itemsHeight = (collectedSprites.Length * CreditsItemSize)
+                + ((collectedSprites.Length - 1) * CreditsItemSpacing)
+                + CreditsTextToItemsSpacing;
+        }
+
+        float contentHeight = textHeight + itemsHeight;
+        creditsContentRectTransform.sizeDelta = new Vector2(viewportWidth, contentHeight);
+        bodyRectTransform.sizeDelta = new Vector2(viewportWidth, textHeight);
+        bodyRectTransform.anchoredPosition = new Vector2(0f, (contentHeight * 0.5f) - (textHeight * 0.5f));
+
+        if (collectedSprites.Length > 0)
+        {
+            float currentTop = (contentHeight * 0.5f) - textHeight - CreditsTextToItemsSpacing;
+            for (int i = 0; i < collectedSprites.Length; i++)
+            {
+                Sprite sprite = collectedSprites[i];
+                if (sprite == null)
+                {
+                    continue;
+                }
+
+                float centerY = currentTop - (CreditsItemSize * 0.5f);
+                CreateCreditItem(sprite, new Vector2(0f, centerY));
+                currentTop -= CreditsItemSize + CreditsItemSpacing;
+            }
+        }
+
+        float startY = -(viewportHeight * 0.5f) - (contentHeight * 0.5f) - CreditsScrollPadding;
+        creditsEndY = (viewportHeight * 0.5f) + (contentHeight * 0.5f) + CreditsScrollPadding;
+        creditsContentRectTransform.anchoredPosition = new Vector2(0f, startY);
+    }
+
+    private void UpdateCreditsRoll()
+    {
+        if (creditsContentRectTransform == null || footerCanvasGroup == null)
+        {
+            return;
+        }
+
+        if (!creditsScrollComplete)
+        {
+            float nextY = creditsContentRectTransform.anchoredPosition.y + (CreditsScrollSpeed * Time.unscaledDeltaTime);
+            if (nextY >= creditsEndY)
+            {
+                nextY = creditsEndY;
+                creditsScrollComplete = true;
+            }
+
+            creditsContentRectTransform.anchoredPosition = new Vector2(
+                creditsContentRectTransform.anchoredPosition.x,
+                nextY);
+        }
+
+        if (!creditsScrollComplete)
+        {
+            return;
+        }
+
+        float nextAlpha = Mathf.MoveTowards(
+            footerCanvasGroup.alpha,
+            1f,
+            Time.unscaledDeltaTime / FooterRevealDuration);
+        SetFooterState(nextAlpha);
+    }
+
+    private void CreateCreditItem(Sprite sprite, Vector2 anchoredPosition)
+    {
+        if (creditsContentRectTransform == null || sprite == null)
+        {
+            return;
+        }
+
+        GameObject itemObject = new GameObject(
+            $"CreditItem_{creditItemObjects.Count}",
+            typeof(RectTransform),
+            typeof(Image));
+        itemObject.transform.SetParent(creditsContentRectTransform, false);
+
+        RectTransform itemRectTransform = itemObject.GetComponent<RectTransform>();
+        itemRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        itemRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        itemRectTransform.pivot = new Vector2(0.5f, 0.5f);
+        itemRectTransform.anchoredPosition = anchoredPosition;
+        itemRectTransform.sizeDelta = new Vector2(CreditsItemSize, CreditsItemSize);
+
+        Image itemImage = itemObject.GetComponent<Image>();
+        itemImage.sprite = sprite;
+        itemImage.preserveAspect = true;
+        itemImage.raycastTarget = false;
+        itemImage.color = Color.white;
+
+        creditItemObjects.Add(itemObject);
+    }
+
+    private void ClearCreditItems()
+    {
+        for (int i = 0; i < creditItemObjects.Count; i++)
+        {
+            if (creditItemObjects[i] != null)
+            {
+                Destroy(creditItemObjects[i]);
+            }
+        }
+
+        creditItemObjects.Clear();
+    }
+
+    private bool CanReturnToTitle()
+    {
+        return !isCreditsMode || (footerCanvasGroup != null && footerCanvasGroup.alpha >= 0.999f);
+    }
+
+    private void SetFooterState(float alpha)
+    {
+        if (footerCanvasGroup == null)
+        {
+            return;
+        }
+
+        footerCanvasGroup.alpha = Mathf.Clamp01(alpha);
+        bool isInteractable = footerCanvasGroup.alpha >= 0.999f;
+        footerCanvasGroup.interactable = isInteractable;
+        footerCanvasGroup.blocksRaycasts = isInteractable;
+
+        if (startButton != null)
+        {
+            startButton.interactable = isInteractable;
+        }
+    }
+
+    private Font GetBuiltinFont()
+    {
+        if (builtinFont != null)
+        {
+            return builtinFont;
+        }
+
+        builtinFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        return builtinFont;
+    }
+
+    private static ColorBlock CreateButtonColors(Color normalColor)
+    {
+        ColorBlock colors = ColorBlock.defaultColorBlock;
+        colors.normalColor = normalColor;
+        colors.highlightedColor = Color.Lerp(normalColor, Color.white, 0.14f);
+        colors.pressedColor = Color.Lerp(normalColor, Color.black, 0.18f);
+        colors.selectedColor = colors.highlightedColor;
+        colors.disabledColor = new Color(0.35f, 0.35f, 0.35f, 0.7f);
+        return colors;
+    }
+}
+
+public static class ResultSceneState
+{
+    public const string ResultSceneName = "Result";
+
+    public enum DisplayMode
+    {
+        GameOver,
+        Credits
+    }
+
+    private static bool hasPendingDisplayMode;
+    private static DisplayMode pendingDisplayMode;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStaticState()
+    {
+        hasPendingDisplayMode = false;
+        pendingDisplayMode = DisplayMode.GameOver;
+    }
+
+    public static bool LoadGameOverResult()
+    {
+        return LoadResult(DisplayMode.GameOver);
+    }
+
+    public static bool LoadCreditsResult()
+    {
+        return LoadResult(DisplayMode.Credits);
+    }
+
+    public static DisplayMode ConsumePendingDisplayMode(DisplayMode fallbackDisplayMode)
+    {
+        if (!hasPendingDisplayMode)
+        {
+            return fallbackDisplayMode;
+        }
+
+        DisplayMode displayMode = pendingDisplayMode;
+        hasPendingDisplayMode = false;
+        return displayMode;
+    }
+
+    private static bool LoadResult(DisplayMode displayMode)
+    {
+        hasPendingDisplayMode = true;
+        pendingDisplayMode = displayMode;
+
+        if (!Application.CanStreamedLevelBeLoaded(ResultSceneName))
+        {
+            Debug.LogError($"Scene '{ResultSceneName}' is not available in Build Settings.");
+            return false;
+        }
+
+        return SceneFadeTransition.LoadScene(ResultSceneName);
+    }
+}
