@@ -78,6 +78,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isRunning;
     private bool isGrounded;
     private bool isClimbing;
+    private bool suppressClimbWhileHoldingDown;
     private bool isTopDownScene;
     private bool isWaterScene;
     private bool isZooScene;
@@ -1259,14 +1260,29 @@ public class PlayerMovement : MonoBehaviour
         }
 
         bool hasClimbInput = Mathf.Abs(verticalInput) > VerticalVelocityThreshold;
+        bool isHoldingDownInput = verticalInput < -VerticalVelocityThreshold;
+
+        if (!isHoldingDownInput)
+        {
+            suppressClimbWhileHoldingDown = false;
+        }
 
         if (!isClimbing)
         {
-            if (ropeColliders.Count > 0 && hasClimbInput)
+            if (!suppressClimbWhileHoldingDown
+                && ropeColliders.Count > 0
+                && hasClimbInput)
             {
                 BeginClimbing();
             }
 
+            return;
+        }
+
+        if (isHoldingDownInput)
+        {
+            suppressClimbWhileHoldingDown = true;
+            StopClimbing(resetVerticalVelocity: true);
             return;
         }
 
@@ -1285,9 +1301,15 @@ public class PlayerMovement : MonoBehaviour
         rb.gravityScale = 0f;
     }
 
-    private void StopClimbing()
+    private void StopClimbing(bool resetVerticalVelocity = false)
     {
+        if (resetVerticalVelocity)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
+        }
+
         isClimbing = false;
+        rb.gravityScale = baseGravityScale;
     }
 
     private void ApplyTemporaryMovementSpeedMultiplier(float multiplier, float duration)

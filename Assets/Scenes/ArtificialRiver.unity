@@ -1769,9 +1769,9 @@ MonoBehaviour:
   fallGravityMultiplier: 2.4
   maxFallSpeed: 20
   waterSinkSpeed: 2.5
-  waterFastSinkMultiplier: 1.75
+  waterFastSinkMultiplier: 2
   waterRiseSpeed: 4
-  waterFastRiseMultiplier: 1.3
+  waterFastRiseMultiplier: 2
   underwaterMovementSoundVolume: 1
   artificialRiverEntryDuration: 2
 --- !u!50 &424229153
