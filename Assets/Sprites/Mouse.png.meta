@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: c410ee426b6bede4e9ff3a5fb8271f2b
+guid: 3d97d55664875834f967024a378fa07e
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6803491411278378492
-    second: Miro_0
+      213: -357421434760999972
+    second: Mouse_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Miro_0
+      name: Mouse_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 729
-        height: 174
+        x: 56
+        y: 157
+        width: 392
+        height: 202
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: cf53ba1646bda6e50800000000000000
-      internalID: 6803491411278378492
+      spriteID: cdbc5f9491f2a0bf0800000000000000
+      internalID: -357421434760999972
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Miro_0: 6803491411278378492
+      Mouse_0: -357421434760999972
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -29,5 +29,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Mountain.unity
     guid: 7b6ef1d2f4bf354469c699f322a064b1
+  - enabled: 1
+    path: Assets/Scenes/Result.unity
+    guid: b0a11e1f2e0e4f84a7771d0cbff3185b
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}

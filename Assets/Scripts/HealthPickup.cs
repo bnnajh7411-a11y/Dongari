@@ -7,9 +7,11 @@ public class HealthPickup : MonoBehaviour
     [SerializeField, Min(1)] private int restoreAmount = 5;
 
     private BoxCollider2D pickupCollider;
+    private SpriteRenderer pickupRenderer;
 
     private void Awake()
     {
+        pickupRenderer = GetComponent<SpriteRenderer>();
         EnsurePickupCollider();
     }
 
@@ -43,6 +45,8 @@ public class HealthPickup : MonoBehaviour
             return;
         }
 
+        CollectedPickupCreditsState.RegisterCollectedSprite(
+            pickupRenderer != null ? pickupRenderer.sprite : null);
         playerHealth.RestoreHealth(restoreAmount);
         Destroy(gameObject);
     }
