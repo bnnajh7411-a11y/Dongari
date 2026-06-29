@@ -16,13 +16,11 @@ public class ResultSceneController : MonoBehaviour
     private const string FooterGroupObjectName = "FooterGroup";
     private const string TitleObjectName = "Title";
     private const string BodyObjectName = "Body";
-    private const string HintObjectName = "Hint";
     private const string ButtonObjectName = "StartButton";
     private const string GameOverTitleText = "GAME OVER";
-    private const string CreditsBodyText = "\uC784\n\uC2DC\n\uC6A9";
+    private const string CreditsBodyText = "\uc548\uc804\ud55c\u0020\uacf3\uc5d0\u0020\ub3c4\ucc29\ud588\uc2b5\ub2c8\ub2e4";
     private const string EmptyBodyText = "";
-    private const string ContinueHintText = "Press Enter or click START";
-    private const string StartButtonText = "\uBA54\uC778\uC73C\uB85C";
+    private const string StartButtonText = "\ud0c0\uc774\ud2c0\ub85c";
     private const float CreditsScrollSpeed = 82f;
     private const float CreditsScrollPadding = 56f;
     private const float CreditsItemSize = 118f;
@@ -42,7 +40,6 @@ public class ResultSceneController : MonoBehaviour
     private RectTransform creditsContentRectTransform;
     private Text bodyText;
     private RectTransform bodyRectTransform;
-    private Text hintText;
     private RectTransform footerRectTransform;
     private CanvasGroup footerCanvasGroup;
     private Button startButton;
@@ -153,13 +150,6 @@ public class ResultSceneController : MonoBehaviour
             bodyText.fontSize = isCreditsMode ? 56 : 28;
         }
 
-        if (hintText != null)
-        {
-            hintText.text = ContinueHintText;
-            hintText.color = isCreditsMode
-                ? new Color(0.78f, 0.8f, 0.78f, 1f)
-                : new Color(0.88f, 0.77f, 0.77f, 1f);
-        }
 
         if (isCreditsMode)
         {
@@ -252,14 +242,6 @@ public class ResultSceneController : MonoBehaviour
             TextAnchor.MiddleCenter);
         bodyRectTransform = bodyText.GetComponent<RectTransform>();
         footerRectTransform = CreateFooterGroup(panelImage.transform);
-        hintText = CreateText(
-            footerRectTransform,
-            HintObjectName,
-            new Vector2(0f, 46f),
-            new Vector2(480f, 44f),
-            24,
-            FontStyle.Normal,
-            TextAnchor.MiddleCenter);
         startButton = CreateButton(footerRectTransform, uiSprite, new Vector2(0f, -12f));
     }
 
