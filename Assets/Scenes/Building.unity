@@ -5177,28 +5177,60 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.9300416, y: 0.8742752}
   m_EdgeRadius: 0
---- !u!95 &2056000004
-Animator:
-  serializedVersion: 7
+--- !u!114 &2056000004
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2028240021}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 0c982beaa9eb97f439c85514588d1c13, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c28167af7d549c4bb4ba3aa6dfc64af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeerClipAnimator
+  viewMode: 0
+  playStartClips: 1
+  horizontalInputThreshold: 0.01
+  airborneVelocityThreshold: 0.1
+  sideView:
+    idle: {fileID: 7400000, guid: 3143ba9c5f7a24044b7a06022ceabba2, type: 2}
+    walkStart: {fileID: 7400000, guid: f849e3711bea6de40a540113c99cfec2, type: 2}
+    walk: {fileID: 7400000, guid: acafb8f8b8c5c8a4680a8e6b6786818e, type: 2}
+    runStart: {fileID: 7400000, guid: b6fb0c767ea287343bd5ca0cd57f62d3, type: 2}
+    run: {fileID: 7400000, guid: b664d196b25ecda43ad203fc36e9edae, type: 2}
+    jump: {fileID: 7400000, guid: b7dd62b45fcf6f94bb3a9b7eb09ee4cf, type: 2}
+  topView:
+    down:
+      idle: {fileID: 0}
+      walkStart: {fileID: 0}
+      walk: {fileID: 0}
+      runStart: {fileID: 0}
+      run: {fileID: 0}
+    side:
+      idle: {fileID: 0}
+      walkStart: {fileID: 0}
+      walk: {fileID: 0}
+      runStart: {fileID: 0}
+      run: {fileID: 0}
+    sideDown:
+      idle: {fileID: 0}
+      walkStart: {fileID: 0}
+      walk: {fileID: 0}
+      runStart: {fileID: 0}
+      run: {fileID: 0}
+    up:
+      idle: {fileID: 0}
+      walkStart: {fileID: 0}
+      walk: {fileID: 0}
+      runStart: {fileID: 0}
+      run: {fileID: 0}
+    upSide:
+      idle: {fileID: 0}
+      walkStart: {fileID: 0}
+      walk: {fileID: 0}
+      runStart: {fileID: 0}
+      run: {fileID: 0}
 --- !u!1 &2056000100
 GameObject:
   m_ObjectHideFlags: 0

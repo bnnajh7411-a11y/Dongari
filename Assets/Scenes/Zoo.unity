@@ -1243,6 +1243,7 @@ GameObject:
   - component: {fileID: 1812676430}
   - component: {fileID: 1812676434}
   - component: {fileID: 1812676435}
+  - component: {fileID: 1812676436}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1412,7 +1413,59 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0.0048527718, y: 0}
   m_Radius: 0.4114852
---- !u!95 &1812676435
+--- !u!114 &1812676435
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1812676428}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c28167af7d549c4bb4ba3aa6dfc64af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeerClipAnimator
+  viewMode: 1
+  playStartClips: 1
+  sideView:
+    idle: {fileID: 7400000, guid: 3143ba9c5f7a24044b7a06022ceabba2, type: 2}
+    walkStart: {fileID: 7400000, guid: f849e3711bea6de40a540113c99cfec2, type: 2}
+    walk: {fileID: 7400000, guid: acafb8f8b8c5c8a4680a8e6b6786818e, type: 2}
+    runStart: {fileID: 7400000, guid: b6fb0c767ea287343bd5ca0cd57f62d3, type: 2}
+    run: {fileID: 7400000, guid: b664d196b25ecda43ad203fc36e9edae, type: 2}
+    jump: {fileID: 7400000, guid: b7dd62b45fcf6f94bb3a9b7eb09ee4cf, type: 2}
+  topView:
+    down:
+      idle: {fileID: 7400000, guid: 1d96b8166853f3d40aa64c4a9523e52b, type: 2}
+      walkStart: {fileID: 7400000, guid: 8c7f59ce7c6e5e0408e454c635e82f05, type: 2}
+      walk: {fileID: 7400000, guid: 18ac72b36d3d6ef48888d5ad3cfa3f26, type: 2}
+      runStart: {fileID: 7400000, guid: fe6b68bd19ac8a447aa83e10d8191bbe, type: 2}
+      run: {fileID: 7400000, guid: 70a0a70061d715e40b61e13897b556ff, type: 2}
+    side:
+      idle: {fileID: 7400000, guid: ef3c19ef99e130746bee7b2a39ad5786, type: 2}
+      walkStart: {fileID: 7400000, guid: b441c372006ad934aa85be2d42ba40e5, type: 2}
+      walk: {fileID: 7400000, guid: 26b1aa2192e8b654c9d19055803dc78a, type: 2}
+      runStart: {fileID: 7400000, guid: 4a52cce6f9492c64db5c51dd2c8d0947, type: 2}
+      run: {fileID: 7400000, guid: a8051d8e7503e0641b6c6b650c48f846, type: 2}
+    sideDown:
+      idle: {fileID: 7400000, guid: 20f79403cb32e5b4d971a8094e9f1be4, type: 2}
+      walkStart: {fileID: 7400000, guid: 3df8aa14ac657054d906323707e6fd80, type: 2}
+      walk: {fileID: 7400000, guid: 7bc52d561d9a1fe4e8e038fdfaf41a1b, type: 2}
+      runStart: {fileID: 7400000, guid: 6ee3cf972461a1b408ec1ed919cc2694, type: 2}
+      run: {fileID: 7400000, guid: 8364744db204d464992545e508e7d649, type: 2}
+    up:
+      idle: {fileID: 7400000, guid: aff601edcddc5d242afb3a3e8eb82bed, type: 2}
+      walkStart: {fileID: 7400000, guid: 06555459661f6c342a5fa370a48e5a24, type: 2}
+      walk: {fileID: 7400000, guid: 04e52198b6cbf504da070a6fce4248c8, type: 2}
+      runStart: {fileID: 7400000, guid: d27dd8905895fdf478b9441be7ab3138, type: 2}
+      run: {fileID: 7400000, guid: e31d306d1dc8045439ea7427e04af559, type: 2}
+    upSide:
+      idle: {fileID: 7400000, guid: 4553be89f0e6d4348a4675443978deaf, type: 2}
+      walkStart: {fileID: 7400000, guid: c2cc22a6413101f4a9c94791ad2bea39, type: 2}
+      walk: {fileID: 7400000, guid: 3be9a6f1a554140429e03dbb3b27fd0d, type: 2}
+      runStart: {fileID: 7400000, guid: 198ec1e3efc3c994ca8d3005c7acd821, type: 2}
+      run: {fileID: 7400000, guid: 90d36784567f80d45b61796af30e75fb, type: 2}
+--- !u!95 &1812676436
 Animator:
   serializedVersion: 7
   m_ObjectHideFlags: 0
@@ -1422,7 +1475,7 @@ Animator:
   m_GameObject: {fileID: 1812676428}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 5a0cef71a8cc29c4fbffa21c94402fed, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

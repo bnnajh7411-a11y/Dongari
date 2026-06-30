@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -22,8 +21,6 @@ public class PlayerMovement : MonoBehaviour
     private const string GroundObjectName = "Ground";
     private const string RopeObjectName = "Rope";
     private const string WaterObjectName = "Water";
-    private const string FirstStepAnimationStateName = "FirstStep";
-    private const int BaseAnimationLayerIndex = 0;
     private const float ArtificialRiverEntryArcRatio = 0.7f;
     private const float ArtificialRiverEntryWaterInset = 1.1f;
     private const float ArtificialRiverBubbleLifetime = 0.5f;
@@ -81,19 +78,14 @@ public class PlayerMovement : MonoBehaviour
     private bool suppressClimbWhileHoldingDown;
     private bool isTopDownScene;
     private bool isWaterScene;
-    private bool isZooScene;
     private bool hasMovementBounds;
-    private bool hadMovementInput;
-    private int lastMovementAnimationDirection;
-    private bool lastMovementAnimationWasRunning;
-    private bool hasParameterizedMovementAnimator;
     private bool jumpRequested;
+    private bool jumpPressedThisFrame;
     private Vector3 defaultScale;
     private Bounds movementBounds;
     private float movementSpeedMultiplier = 1f;
     private Coroutine movementSpeedModifierRoutine;
     private AudioSource underwaterMovementAudioSource;
-    private Animator animator;
     private SpriteRenderer primarySpriteRenderer;
     private Vector2 artificialRiverEntryCircleCenter;
     private Vector2 artificialRiverEntryCircleExtents;
@@ -111,13 +103,24 @@ public class PlayerMovement : MonoBehaviour
     private float artificialRiverEntryElapsed;
     private float nextArtificialRiverBubbleSpawnTime;
 
+    public float HorizontalInput => horizontalInput;
+    public float VerticalInput => verticalInput;
+    public bool IsRunning => isRunning;
+    public bool IsGrounded => isGrounded;
+    public bool IsClimbing => isClimbing;
+    public bool UsesTopDownMovement => isTopDownScene;
+    public bool UsesWaterMovement => isWaterScene;
+    public bool JumpPressedThisFrame => jumpPressedThisFrame;
+    public bool HasMovementInput => HasMovementInputValue();
+    public bool IsAirborne => !isTopDownScene && !isWaterScene && !isClimbing && !isGrounded;
+    public Vector2 MovementInput => new Vector2(horizontalInput, verticalInput);
+    public Vector2 CurrentVelocity => rb != null ? rb.linearVelocity : Vector2.zero;
+
     protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         playerCollider = GetComponent<Collider2D>();
-        animator = GetComponent<Animator>();
         primarySpriteRenderer = GetComponent<SpriteRenderer>();
-        hasParameterizedMovementAnimator = HasParameterizedMovementAnimator();
         baseGravityScale = rb.gravityScale;
 
         defaultScale = transform.localScale;
@@ -155,6 +158,8 @@ public class PlayerMovement : MonoBehaviour
 
     protected virtual void Update()
     {
+        jumpPressedThisFrame = false;
+
         if (GamePauseState.IsPaused)
         {
             StopUnderwaterMovementSound();
@@ -165,16 +170,16 @@ public class PlayerMovement : MonoBehaviour
         {
             UpdateFacingDirection();
             UpdateUnderwaterMovementSound();
-            UpdateAnimation();
             return;
         }
 
         horizontalInput = ReadHorizontalInput();
         verticalInput = ReadVerticalInput();
-        isRunning = IsRunPressed() && CanSprint() && HasMovementInput();
+        jumpPressedThisFrame = WasJumpPressed();
+        isRunning = IsRunPressed() && CanSprint() && HasMovementInputValue();
         UpdateClimbingState();
 
-        if (!isClimbing && !isTopDownScene && !IsWaterMovementActive() && WasJumpPressed() && isGrounded)
+        if (!isClimbing && !isTopDownScene && !IsWaterMovementActive() && jumpPressedThisFrame && isGrounded)
         {
             jumpRequested = true;
         }
@@ -186,7 +191,6 @@ public class PlayerMovement : MonoBehaviour
 
         UpdateFacingDirection();
         UpdateUnderwaterMovementSound();
-        UpdateAnimation();
     }
 
     protected virtual void FixedUpdate()
@@ -208,7 +212,7 @@ public class PlayerMovement : MonoBehaviour
         {
             jumpRequested = false;
             ApplyWaterMovement();
-            UpdateArtificialRiverBubbleTrail(HasMovementInput() ? rb.linearVelocity : Vector2.zero);
+            UpdateArtificialRiverBubbleTrail(HasMovementInputValue() ? rb.linearVelocity : Vector2.zero);
             ConsumeRunStamina();
             return;
         }
@@ -249,100 +253,6 @@ public class PlayerMovement : MonoBehaviour
         ApplyGravity();
         ConsumeRunStamina();
     }
-    private void UpdateAnimation()
-    {
-        if (animator == null || !hasParameterizedMovementAnimator)
-        {
-            return;
-        }
-
-        bool hasMovementInput = HasMovementInput();
-        int movementAnimationDirection = GetMovementAnimationDirection();
-
-        animator.SetBool("isRunning", isRunning);
-        animator.SetBool("isMove", hasMovementInput);
-        animator.SetFloat("horizontal", Mathf.Abs(horizontalInput));
-        animator.SetFloat("vertical", verticalInput);
-
-        bool shouldRestartFirstStep = hasMovementInput
-            && (!hadMovementInput
-                || movementAnimationDirection != lastMovementAnimationDirection
-                || isRunning != lastMovementAnimationWasRunning
-                || WasZooFirstStepRestartKeyReleasedThisFrame());
-
-        if (shouldRestartFirstStep)
-        {
-            animator.Play(FirstStepAnimationStateName, BaseAnimationLayerIndex, 0f);
-        }
-
-        hadMovementInput = hasMovementInput;
-        lastMovementAnimationDirection = movementAnimationDirection;
-        lastMovementAnimationWasRunning = isRunning;
-    }
-
-    private bool WasZooFirstStepRestartKeyReleasedThisFrame()
-    {
-        return isZooScene
-            && (WasActionKeyReleasedThisFrame(InputActionType.MoveUp)
-                || WasActionKeyReleasedThisFrame(InputActionType.MoveDown)
-                || WasActionKeyReleasedThisFrame(InputActionType.MoveLeft)
-                || WasActionKeyReleasedThisFrame(InputActionType.MoveRight)
-                || WasActionKeyReleasedThisFrame(InputActionType.Run));
-    }
-
-    private bool WasActionKeyReleasedThisFrame(InputActionType action)
-    {
-        return Input.GetKeyUp(PlayerInputBindings.GetKey(action));
-    }
-
-    private bool HasParameterizedMovementAnimator()
-    {
-        return HasAnimatorParameter("isRunning", AnimatorControllerParameterType.Bool)
-            && HasAnimatorParameter("isMove", AnimatorControllerParameterType.Bool)
-            && HasAnimatorParameter("horizontal", AnimatorControllerParameterType.Float)
-            && HasAnimatorParameter("vertical", AnimatorControllerParameterType.Float);
-    }
-
-    private bool HasAnimatorParameter(string parameterName, AnimatorControllerParameterType parameterType)
-    {
-        if (animator == null)
-        {
-            return false;
-        }
-
-        int parameterHash = Animator.StringToHash(parameterName);
-        AnimatorControllerParameter[] parameters = animator.parameters;
-        for (int i = 0; i < parameters.Length; i++)
-        {
-            AnimatorControllerParameter parameter = parameters[i];
-            if (parameter.nameHash == parameterHash && parameter.type == parameterType)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private int GetMovementAnimationDirection()
-    {
-        bool hasHorizontalInput = Mathf.Abs(horizontalInput) > VerticalVelocityThreshold;
-        bool hasUpInput = verticalInput > VerticalVelocityThreshold;
-        bool hasDownInput = verticalInput < -VerticalVelocityThreshold;
-
-        if (hasUpInput)
-        {
-            return hasHorizontalInput ? 2 : 1;
-        }
-
-        if (hasDownInput)
-        {
-            return hasHorizontalInput ? 5 : 4;
-        }
-
-        return hasHorizontalInput ? 3 : 0;
-    }
-
     private void UpdateFacingDirection()
     {
         if (horizontalInput > FacingThreshold)
@@ -385,7 +295,7 @@ public class PlayerMovement : MonoBehaviour
         return PlayerInputBindings.WasInteractPressedThisFrame();
     }
 
-    private bool HasMovementInput()
+    private bool HasMovementInputValue()
     {
         return Mathf.Abs(horizontalInput) > VerticalVelocityThreshold
             || Mathf.Abs(verticalInput) > VerticalVelocityThreshold;
@@ -588,7 +498,6 @@ public class PlayerMovement : MonoBehaviour
         string activeSceneName = SceneManager.GetActiveScene().name;
         isTopDownScene = IsTopDownScene(activeSceneName);
         isWaterScene = activeSceneName == ArtificialRiverSceneName;
-        isZooScene = activeSceneName == ZooSceneName;
         rb.gravityScale = isTopDownScene ? 0f : baseGravityScale;
     }
 
@@ -741,7 +650,6 @@ public class PlayerMovement : MonoBehaviour
         horizontalInput = 0f;
         verticalInput = -1f;
         isRunning = false;
-        hadMovementInput = false;
         artificialRiverEntryPreviousPosition = startPosition;
         artificialRiverEntryElapsed = 0f;
         isArtificialRiverEntrySequenceActive = true;
@@ -1203,7 +1111,7 @@ public class PlayerMovement : MonoBehaviour
     {
         return isWaterScene
             && IsWaterMovementActive()
-            && HasMovementInput();
+            && HasMovementInputValue();
     }
 
     private void StopUnderwaterMovementSound()
