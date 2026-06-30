@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Video;
 
 [DisallowMultipleComponent]
 public class IntroCutsceneController : MonoBehaviour
@@ -10,7 +10,6 @@ public class IntroCutsceneController : MonoBehaviour
 
     private const string EventSystemObjectName = "CutsceneEventSystem";
     private const string CanvasObjectName = "CutsceneCanvas";
-    private const string ImageObjectName = "CutsceneImage";
     private const string SkipButtonObjectName = "SkipButton";
     private const string SkipButtonLabelObjectName = "Label";
 
@@ -21,13 +20,15 @@ public class IntroCutsceneController : MonoBehaviour
     [SerializeField] private Color backgroundColor = Color.black;
     [SerializeField] private Color skipButtonColor = new Color(0f, 0f, 0f, 0.72f);
     [SerializeField] private Color skipButtonTextColor = Color.white;
-    [SerializeField] private Sprite[] pages;
+    [SerializeField] private VideoClip introVideoClip;
 
     private Font builtinFont;
-    private Image cutsceneImage;
+    private Camera cutsceneCamera;
+    private Canvas cutsceneCanvas;
     private Button skipButton;
-    private int currentPageIndex;
+    private VideoPlayer videoPlayer;
     private bool isLoadingNextScene;
+    private bool isUsingVideoPlayback;
 
     public static void SetPendingNextScene(string sceneName)
     {
@@ -36,51 +37,67 @@ public class IntroCutsceneController : MonoBehaviour
 
     private void Awake()
     {
-        EnsureMainCamera();
+        cutsceneCamera = EnsureMainCamera();
         EnsureEventSystem();
-        Canvas canvas = EnsureCanvas();
-        cutsceneImage = EnsureCutsceneImage(canvas.transform);
-        skipButton = EnsureSkipButton(canvas.transform);
+        cutsceneCanvas = EnsureCanvas();
+        skipButton = EnsureSkipButton(cutsceneCanvas.transform);
     }
 
     private void Start()
     {
-        if (pages == null || pages.Length == 0)
+        if (introVideoClip != null)
         {
-            Debug.LogWarning("IntroCutsceneController does not have any cutscene pages configured, so it will continue immediately.", this);
-            LoadNextScene();
+            StartVideoPlayback();
             return;
         }
 
-        currentPageIndex = 0;
-        ShowPage(currentPageIndex);
+        StartImageCutscene();
+    }
+
+    private void OnDestroy()
+    {
+        UnregisterVideoCallbacks();
+    }
+
+    private void StartImageCutscene()
+    {
+        isUsingVideoPlayback = false;
+
+        if (cutsceneCanvas == null)
+        {
+            cutsceneCanvas = EnsureCanvas();
+        }
+
     }
 
     private void Update()
     {
-        if (isLoadingNextScene || !ShouldAdvanceCutscene())
+        if (isLoadingNextScene || isUsingVideoPlayback || !ShouldAdvanceCutscene())
         {
             return;
         }
-
-        currentPageIndex++;
-        if (currentPageIndex >= pages.Length)
-        {
-            LoadNextScene();
-            return;
-        }
-
-        ShowPage(currentPageIndex);
     }
 
-    private void ShowPage(int pageIndex)
+    private void StartVideoPlayback()
     {
-        if (cutsceneImage == null)
+        if (cutsceneCamera == null)
         {
+            Debug.LogError("IntroCutsceneController could not find or create a camera for video playback.", this);
+            FallbackAfterVideoFailure();
             return;
         }
 
-        cutsceneImage.sprite = pages[pageIndex];
+        isUsingVideoPlayback = true;
+
+        videoPlayer = EnsureVideoPlayer();
+        if (videoPlayer == null)
+        {
+            FallbackAfterVideoFailure();
+            return;
+        }
+
+        videoPlayer.clip = introVideoClip;
+        videoPlayer.Prepare();
     }
 
     private bool ShouldAdvanceCutscene()
@@ -152,14 +169,14 @@ public class IntroCutsceneController : MonoBehaviour
         eventSystemObject.AddComponent<StandaloneInputModule>();
     }
 
-    private void EnsureMainCamera()
+    private Camera EnsureMainCamera()
     {
         if (Camera.main != null)
         {
             Camera.main.backgroundColor = backgroundColor;
             Camera.main.clearFlags = CameraClearFlags.SolidColor;
             Camera.main.orthographic = true;
-            return;
+            return Camera.main;
         }
 
         GameObject cameraObject = new GameObject("Main Camera");
@@ -171,6 +188,7 @@ public class IntroCutsceneController : MonoBehaviour
         cameraComponent.backgroundColor = backgroundColor;
         cameraComponent.clearFlags = CameraClearFlags.SolidColor;
         cameraComponent.orthographic = true;
+        return cameraComponent;
     }
 
     private Canvas EnsureCanvas()
@@ -191,22 +209,35 @@ public class IntroCutsceneController : MonoBehaviour
         return canvas;
     }
 
-    private Image EnsureCutsceneImage(Transform parent)
+    private VideoPlayer EnsureVideoPlayer()
     {
-        GameObject imageObject = new GameObject(ImageObjectName);
-        imageObject.transform.SetParent(parent, false);
+        if (videoPlayer == null)
+        {
+            videoPlayer = GetComponent<VideoPlayer>();
+        }
 
-        RectTransform rectTransform = imageObject.AddComponent<RectTransform>();
-        rectTransform.anchorMin = Vector2.zero;
-        rectTransform.anchorMax = Vector2.one;
-        rectTransform.pivot = new Vector2(0.5f, 0.5f);
-        rectTransform.offsetMin = new Vector2(48f, 120f);
-        rectTransform.offsetMax = new Vector2(-48f, -48f);
+        if (videoPlayer == null)
+        {
+            videoPlayer = gameObject.AddComponent<VideoPlayer>();
+        }
 
-        Image image = imageObject.AddComponent<Image>();
-        image.preserveAspect = true;
-        image.color = Color.white;
-        return image;
+        UnregisterVideoCallbacks();
+
+        videoPlayer.source = VideoSource.VideoClip;
+        videoPlayer.renderMode = VideoRenderMode.CameraNearPlane;
+        videoPlayer.targetCamera = cutsceneCamera;
+        videoPlayer.targetCameraAlpha = 1f;
+        videoPlayer.aspectRatio = VideoAspectRatio.FitInside;
+        videoPlayer.playOnAwake = false;
+        videoPlayer.waitForFirstFrame = true;
+        videoPlayer.isLooping = false;
+        // The intro video is silent, so keep Unity's audio pipeline disabled.
+        videoPlayer.audioOutputMode = VideoAudioOutputMode.None;
+        videoPlayer.skipOnDrop = true;
+        videoPlayer.prepareCompleted += HandleVideoPrepared;
+        videoPlayer.loopPointReached += HandleVideoPlaybackFinished;
+        videoPlayer.errorReceived += HandleVideoErrorReceived;
+        return videoPlayer;
     }
 
     private Button EnsureSkipButton(Transform parent)
@@ -260,7 +291,72 @@ public class IntroCutsceneController : MonoBehaviour
             skipButton.interactable = false;
         }
 
+        StopVideoPlayback();
         LoadNextScene();
+    }
+
+    private void HandleVideoPrepared(VideoPlayer source)
+    {
+        if (isLoadingNextScene || source != videoPlayer)
+        {
+            return;
+        }
+
+        source.Play();
+    }
+
+    private void HandleVideoPlaybackFinished(VideoPlayer source)
+    {
+        if (isLoadingNextScene || source != videoPlayer)
+        {
+            return;
+        }
+
+        LoadNextScene();
+    }
+
+    private void HandleVideoErrorReceived(VideoPlayer source, string errorMessage)
+    {
+        if (source != videoPlayer)
+        {
+            return;
+        }
+
+        Debug.LogError($"Intro cutscene video playback failed: {errorMessage}", this);
+        FallbackAfterVideoFailure();
+    }
+
+    private void FallbackAfterVideoFailure()
+    {
+        StopVideoPlayback();
+        isUsingVideoPlayback = false;
+
+        LoadNextScene();
+    }
+
+    private void StopVideoPlayback()
+    {
+        if (videoPlayer == null)
+        {
+            return;
+        }
+
+        if (videoPlayer.isPlaying || videoPlayer.isPrepared)
+        {
+            videoPlayer.Stop();
+        }
+    }
+
+    private void UnregisterVideoCallbacks()
+    {
+        if (videoPlayer == null)
+        {
+            return;
+        }
+
+        videoPlayer.prepareCompleted -= HandleVideoPrepared;
+        videoPlayer.loopPointReached -= HandleVideoPlaybackFinished;
+        videoPlayer.errorReceived -= HandleVideoErrorReceived;
     }
 
     private ColorBlock CreateButtonColors(Color normalColor)
