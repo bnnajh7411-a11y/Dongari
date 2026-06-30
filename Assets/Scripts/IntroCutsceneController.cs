@@ -11,25 +11,20 @@ public class IntroCutsceneController : MonoBehaviour
     private const string EventSystemObjectName = "CutsceneEventSystem";
     private const string CanvasObjectName = "CutsceneCanvas";
     private const string ImageObjectName = "CutsceneImage";
-    private const string PromptObjectName = "CutscenePrompt";
     private const string SkipButtonObjectName = "SkipButton";
     private const string SkipButtonLabelObjectName = "Label";
 
     private static string pendingNextSceneName;
 
     [SerializeField] private string fallbackNextSceneName = "Zoo";
-    [SerializeField] private string continuePrompt = "Click or press Enter to continue";
-    [SerializeField] private string finalPrompt = "Click or press Enter to start";
     [SerializeField] private string skipButtonLabel = "SKIP";
     [SerializeField] private Color backgroundColor = Color.black;
-    [SerializeField] private Color promptTextColor = new Color(1f, 1f, 1f, 0.9f);
     [SerializeField] private Color skipButtonColor = new Color(0f, 0f, 0f, 0.72f);
     [SerializeField] private Color skipButtonTextColor = Color.white;
     [SerializeField] private Sprite[] pages;
 
     private Font builtinFont;
     private Image cutsceneImage;
-    private Text promptText;
     private Button skipButton;
     private int currentPageIndex;
     private bool isLoadingNextScene;
@@ -45,7 +40,6 @@ public class IntroCutsceneController : MonoBehaviour
         EnsureEventSystem();
         Canvas canvas = EnsureCanvas();
         cutsceneImage = EnsureCutsceneImage(canvas.transform);
-        promptText = EnsurePromptText(canvas.transform);
         skipButton = EnsureSkipButton(canvas.transform);
     }
 
@@ -81,13 +75,12 @@ public class IntroCutsceneController : MonoBehaviour
 
     private void ShowPage(int pageIndex)
     {
-        if (cutsceneImage == null || promptText == null)
+        if (cutsceneImage == null)
         {
             return;
         }
 
         cutsceneImage.sprite = pages[pageIndex];
-        promptText.text = pageIndex == pages.Length - 1 ? finalPrompt : continuePrompt;
     }
 
     private bool ShouldAdvanceCutscene()
@@ -214,28 +207,6 @@ public class IntroCutsceneController : MonoBehaviour
         image.preserveAspect = true;
         image.color = Color.white;
         return image;
-    }
-
-    private Text EnsurePromptText(Transform parent)
-    {
-        GameObject textObject = new GameObject(PromptObjectName);
-        textObject.transform.SetParent(parent, false);
-
-        RectTransform rectTransform = textObject.AddComponent<RectTransform>();
-        rectTransform.anchorMin = new Vector2(0.5f, 0f);
-        rectTransform.anchorMax = new Vector2(0.5f, 0f);
-        rectTransform.pivot = new Vector2(0.5f, 0.5f);
-        rectTransform.anchoredPosition = new Vector2(0f, 54f);
-        rectTransform.sizeDelta = new Vector2(920f, 72f);
-
-        Text text = textObject.AddComponent<Text>();
-        text.font = GetBuiltinFont();
-        text.fontSize = 28;
-        text.alignment = TextAnchor.MiddleCenter;
-        text.color = promptTextColor;
-        text.horizontalOverflow = HorizontalWrapMode.Wrap;
-        text.verticalOverflow = VerticalWrapMode.Overflow;
-        return text;
     }
 
     private Button EnsureSkipButton(Transform parent)
