@@ -21,6 +21,7 @@ public class CameraFollow : MonoBehaviour
     private const string GroundObjectName = "Ground";
     private const string CameraBoundsObjectName = "CameraBounds";
     private const string RoadSceneName = "Road";
+    private const string ZooSceneName = "Zoo";
 
     private Camera attachedCamera;
     private float depthOffset;
@@ -185,7 +186,7 @@ public class CameraFollow : MonoBehaviour
     private bool IsTopDownScene()
     {
         string activeSceneName = SceneManager.GetActiveScene().name;
-        return activeSceneName == RoadSceneName;
+        return activeSceneName == RoadSceneName || activeSceneName == ZooSceneName;
     }
 
     private Vector3 GetClampedCameraPosition(Vector3 desiredPosition)

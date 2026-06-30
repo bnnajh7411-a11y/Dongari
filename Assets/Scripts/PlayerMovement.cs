@@ -70,6 +70,7 @@ public class PlayerMovement : MonoBehaviour
     private Collider2D playerCollider;
     private PlayerStamina playerStamina;
     private float baseGravityScale;
+    private RigidbodyType2D baseBodyType;
     private float horizontalInput;
     private float verticalInput;
     private bool isRunning;
@@ -122,6 +123,7 @@ public class PlayerMovement : MonoBehaviour
         playerCollider = GetComponent<Collider2D>();
         primarySpriteRenderer = GetComponent<SpriteRenderer>();
         baseGravityScale = rb.gravityScale;
+        baseBodyType = rb.bodyType;
 
         defaultScale = transform.localScale;
         defaultScale.x = Mathf.Abs(defaultScale.x);
@@ -498,7 +500,9 @@ public class PlayerMovement : MonoBehaviour
         string activeSceneName = SceneManager.GetActiveScene().name;
         isTopDownScene = IsTopDownScene(activeSceneName);
         isWaterScene = activeSceneName == ArtificialRiverSceneName;
+        rb.bodyType = isTopDownScene ? RigidbodyType2D.Kinematic : baseBodyType;
         rb.gravityScale = isTopDownScene ? 0f : baseGravityScale;
+        rb.linearVelocity = Vector2.zero;
     }
 
     private void EnsurePlayerHealthComponent()
