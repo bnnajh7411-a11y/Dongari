@@ -5,6 +5,9 @@ using UnityEngine;
 public class HealthPickup : MonoBehaviour
 {
     [SerializeField, Min(1)] private int restoreAmount = 5;
+    [SerializeField, TextArea(2, 4)]
+    private string creditsDescription =
+        "상처를 추스르고 다시 나아갈 힘을 얻었습니다.";
 
     private BoxCollider2D pickupCollider;
     private SpriteRenderer pickupRenderer;
@@ -46,7 +49,8 @@ public class HealthPickup : MonoBehaviour
         }
 
         CollectedPickupCreditsState.RegisterCollectedSprite(
-            pickupRenderer != null ? pickupRenderer.sprite : null);
+            pickupRenderer != null ? pickupRenderer.sprite : null,
+            creditsDescription);
         playerHealth.RestoreHealth(restoreAmount);
         Destroy(gameObject);
     }

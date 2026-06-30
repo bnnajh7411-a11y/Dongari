@@ -5,6 +5,9 @@ using UnityEngine;
 public class StaminaPickup : MonoBehaviour
 {
     [SerializeField, Min(0f)] private float restoreAmount = 10f;
+    [SerializeField, TextArea(2, 4)]
+    private string creditsDescription =
+        "다시 달릴 힘을 되찾았습니다.";
 
     private BoxCollider2D pickupCollider;
     private SpriteRenderer pickupRenderer;
@@ -46,7 +49,8 @@ public class StaminaPickup : MonoBehaviour
         }
 
         CollectedPickupCreditsState.RegisterCollectedSprite(
-            pickupRenderer != null ? pickupRenderer.sprite : null);
+            pickupRenderer != null ? pickupRenderer.sprite : null,
+            creditsDescription);
         playerStamina.RestoreStamina(restoreAmount);
         Destroy(gameObject);
     }

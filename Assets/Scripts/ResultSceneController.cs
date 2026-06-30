@@ -18,14 +18,18 @@ public class ResultSceneController : MonoBehaviour
     private const string BodyObjectName = "Body";
     private const string ButtonObjectName = "StartButton";
     private const string GameOverTitleText = "GAME OVER";
-    private const string CreditsBodyText = "\uc548\uc804\ud55c\u0020\uacf3\uc5d0\u0020\ub3c4\ucc29\ud588\uc2b5\ub2c8\ub2e4";
+    private const string CreditsBodyText = "안전한 곳에 도착했습니다";
     private const string EmptyBodyText = "";
-    private const string StartButtonText = "\ud0c0\uc774\ud2c0\ub85c";
+    private const string StartButtonText = "타이틀로";
     private const float CreditsScrollSpeed = 82f;
     private const float CreditsScrollPadding = 56f;
     private const float CreditsItemSize = 118f;
     private const float CreditsItemSpacing = 38f;
     private const float CreditsTextToItemsSpacing = 76f;
+    private const float CreditsItemHorizontalPadding = 18f;
+    private const float CreditsItemTextSpacing = 28f;
+    private const float CreditsItemTextVerticalPadding = 14f;
+    private const int CreditsItemTextFontSize = 30;
     private const float FooterRevealDuration = 0.45f;
 
     private Canvas rootCanvas;
@@ -522,13 +526,27 @@ public class ResultSceneController : MonoBehaviour
         Canvas.ForceUpdateCanvases();
 
         float textHeight = Mathf.Max(bodyText.preferredHeight, 1f);
-        Sprite[] collectedSprites = CollectedPickupCreditsState.GetCollectedSprites();
+        CollectedPickupCreditsState.CreditEntry[] collectedEntries =
+            CollectedPickupCreditsState.GetCollectedEntries();
+        float[] itemHeights = new float[collectedEntries.Length];
         float itemsHeight = 0f;
-        if (collectedSprites.Length > 0)
+        int visibleItemCount = 0;
+        for (int i = 0; i < collectedEntries.Length; i++)
         {
-            itemsHeight = (collectedSprites.Length * CreditsItemSize)
-                + ((collectedSprites.Length - 1) * CreditsItemSpacing)
-                + CreditsTextToItemsSpacing;
+            CollectedPickupCreditsState.CreditEntry entry = collectedEntries[i];
+            if (entry == null || entry.Sprite == null)
+            {
+                continue;
+            }
+
+            itemHeights[i] = GetCreditItemHeight(entry, viewportWidth);
+            itemsHeight += itemHeights[i];
+            visibleItemCount++;
+        }
+
+        if (visibleItemCount > 0)
+        {
+            itemsHeight += ((visibleItemCount - 1) * CreditsItemSpacing) + CreditsTextToItemsSpacing;
         }
 
         float contentHeight = textHeight + itemsHeight;
@@ -536,20 +554,21 @@ public class ResultSceneController : MonoBehaviour
         bodyRectTransform.sizeDelta = new Vector2(viewportWidth, textHeight);
         bodyRectTransform.anchoredPosition = new Vector2(0f, (contentHeight * 0.5f) - (textHeight * 0.5f));
 
-        if (collectedSprites.Length > 0)
+        if (visibleItemCount > 0)
         {
             float currentTop = (contentHeight * 0.5f) - textHeight - CreditsTextToItemsSpacing;
-            for (int i = 0; i < collectedSprites.Length; i++)
+            for (int i = 0; i < collectedEntries.Length; i++)
             {
-                Sprite sprite = collectedSprites[i];
-                if (sprite == null)
+                CollectedPickupCreditsState.CreditEntry entry = collectedEntries[i];
+                if (entry == null || entry.Sprite == null)
                 {
                     continue;
                 }
 
-                float centerY = currentTop - (CreditsItemSize * 0.5f);
-                CreateCreditItem(sprite, new Vector2(0f, centerY));
-                currentTop -= CreditsItemSize + CreditsItemSpacing;
+                float itemHeight = itemHeights[i];
+                float centerY = currentTop - (itemHeight * 0.5f);
+                CreateCreditItem(entry, new Vector2(0f, centerY), viewportWidth, itemHeight);
+                currentTop -= itemHeight + CreditsItemSpacing;
             }
         }
 
@@ -591,17 +610,76 @@ public class ResultSceneController : MonoBehaviour
         SetFooterState(nextAlpha);
     }
 
-    private void CreateCreditItem(Sprite sprite, Vector2 anchoredPosition)
+    private float GetCreditItemHeight(CollectedPickupCreditsState.CreditEntry entry, float viewportWidth)
     {
-        if (creditsContentRectTransform == null || sprite == null)
+        if (entry == null)
+        {
+            return CreditsItemSize;
+        }
+
+        float textHeight = GetCreditItemTextHeight(entry.Description, viewportWidth);
+        return Mathf.Max(CreditsItemSize, textHeight + (CreditsItemTextVerticalPadding * 2f));
+    }
+
+    private float GetCreditItemTextHeight(string description, float viewportWidth)
+    {
+        if (string.IsNullOrWhiteSpace(description))
+        {
+            return 0f;
+        }
+
+        Font font = GetBuiltinFont();
+        if (font == null)
+        {
+            return 0f;
+        }
+
+        TextGenerationSettings settings = new TextGenerationSettings
+        {
+            alignByGeometry = false,
+            color = Color.white,
+            font = font,
+            fontSize = CreditsItemTextFontSize,
+            fontStyle = FontStyle.Normal,
+            generationExtents = new Vector2(GetCreditItemTextWidth(viewportWidth), 0f),
+            horizontalOverflow = HorizontalWrapMode.Wrap,
+            lineSpacing = 1.15f,
+            pivot = Vector2.zero,
+            resizeTextForBestFit = false,
+            resizeTextMaxSize = CreditsItemTextFontSize,
+            resizeTextMinSize = CreditsItemTextFontSize,
+            richText = false,
+            scaleFactor = 1f,
+            textAnchor = TextAnchor.UpperLeft,
+            updateBounds = true,
+            verticalOverflow = VerticalWrapMode.Overflow
+        };
+
+        TextGenerator textGenerator = new TextGenerator();
+        return Mathf.Ceil(textGenerator.GetPreferredHeight(description, settings));
+    }
+
+    private float GetCreditItemTextWidth(float viewportWidth)
+    {
+        float availableWidth = viewportWidth
+            - (CreditsItemHorizontalPadding * 2f)
+            - CreditsItemSize
+            - CreditsItemTextSpacing;
+        return Mathf.Max(availableWidth, 1f);
+    }
+
+    private void CreateCreditItem(
+        CollectedPickupCreditsState.CreditEntry entry,
+        Vector2 anchoredPosition,
+        float viewportWidth,
+        float itemHeight)
+    {
+        if (creditsContentRectTransform == null || entry == null || entry.Sprite == null)
         {
             return;
         }
 
-        GameObject itemObject = new GameObject(
-            $"CreditItem_{creditItemObjects.Count}",
-            typeof(RectTransform),
-            typeof(Image));
+        GameObject itemObject = new GameObject($"CreditItem_{creditItemObjects.Count}", typeof(RectTransform));
         itemObject.transform.SetParent(creditsContentRectTransform, false);
 
         RectTransform itemRectTransform = itemObject.GetComponent<RectTransform>();
@@ -609,13 +687,47 @@ public class ResultSceneController : MonoBehaviour
         itemRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
         itemRectTransform.pivot = new Vector2(0.5f, 0.5f);
         itemRectTransform.anchoredPosition = anchoredPosition;
-        itemRectTransform.sizeDelta = new Vector2(CreditsItemSize, CreditsItemSize);
+        itemRectTransform.sizeDelta = new Vector2(viewportWidth, itemHeight);
 
-        Image itemImage = itemObject.GetComponent<Image>();
-        itemImage.sprite = sprite;
+        GameObject imageObject = new GameObject("Image", typeof(RectTransform), typeof(Image));
+        imageObject.transform.SetParent(itemObject.transform, false);
+
+        RectTransform imageRectTransform = imageObject.GetComponent<RectTransform>();
+        imageRectTransform.anchorMin = new Vector2(0f, 0.5f);
+        imageRectTransform.anchorMax = new Vector2(0f, 0.5f);
+        imageRectTransform.pivot = new Vector2(0f, 0.5f);
+        imageRectTransform.anchoredPosition = new Vector2(CreditsItemHorizontalPadding, 0f);
+        imageRectTransform.sizeDelta = new Vector2(CreditsItemSize, CreditsItemSize);
+
+        Image itemImage = imageObject.GetComponent<Image>();
+        itemImage.sprite = entry.Sprite;
         itemImage.preserveAspect = true;
         itemImage.raycastTarget = false;
         itemImage.color = Color.white;
+
+        GameObject descriptionObject = new GameObject("Description", typeof(RectTransform), typeof(Text));
+        descriptionObject.transform.SetParent(itemObject.transform, false);
+
+        RectTransform descriptionRectTransform = descriptionObject.GetComponent<RectTransform>();
+        descriptionRectTransform.anchorMin = new Vector2(0f, 0.5f);
+        descriptionRectTransform.anchorMax = new Vector2(0f, 0.5f);
+        descriptionRectTransform.pivot = new Vector2(0f, 0.5f);
+        descriptionRectTransform.anchoredPosition = new Vector2(
+            CreditsItemHorizontalPadding + CreditsItemSize + CreditsItemTextSpacing,
+            0f);
+        descriptionRectTransform.sizeDelta = new Vector2(GetCreditItemTextWidth(viewportWidth), itemHeight);
+
+        Text descriptionText = descriptionObject.GetComponent<Text>();
+        descriptionText.font = GetBuiltinFont();
+        descriptionText.fontSize = CreditsItemTextFontSize;
+        descriptionText.fontStyle = FontStyle.Normal;
+        descriptionText.alignment = TextAnchor.MiddleLeft;
+        descriptionText.horizontalOverflow = HorizontalWrapMode.Wrap;
+        descriptionText.verticalOverflow = VerticalWrapMode.Overflow;
+        descriptionText.lineSpacing = 1.15f;
+        descriptionText.raycastTarget = false;
+        descriptionText.color = new Color(0.95f, 0.95f, 0.91f, 1f);
+        descriptionText.text = entry.Description;
 
         creditItemObjects.Add(itemObject);
     }
