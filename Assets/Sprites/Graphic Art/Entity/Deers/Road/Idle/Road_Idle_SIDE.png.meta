@@ -122,6 +122,108 @@ TextureImporter:
   - first:
       213: -3465202045307506002
     second: Road_Idle_SIDE_39
+  - first:
+      213: -2177043061721843192
+    second: Road_Idle_SIDE_40
+  - first:
+      213: -6436531128657280541
+    second: Road_Idle_SIDE_41
+  - first:
+      213: 5164517769755782569
+    second: Road_Idle_SIDE_42
+  - first:
+      213: -2431770892557949558
+    second: Road_Idle_SIDE_43
+  - first:
+      213: -2480438747051429228
+    second: Road_Idle_SIDE_44
+  - first:
+      213: -702996446039729322
+    second: Road_Idle_SIDE_45
+  - first:
+      213: 1243205602614831432
+    second: Road_Idle_SIDE_46
+  - first:
+      213: -6095673352092410118
+    second: Road_Idle_SIDE_47
+  - first:
+      213: 1284236649094979519
+    second: Road_Idle_SIDE_48
+  - first:
+      213: 7929071877985472212
+    second: Road_Idle_SIDE_49
+  - first:
+      213: -9040019681423356346
+    second: Road_Idle_SIDE_50
+  - first:
+      213: -1213574066376852635
+    second: Road_Idle_SIDE_51
+  - first:
+      213: 6653532018756279533
+    second: Road_Idle_SIDE_52
+  - first:
+      213: 7515072274762024592
+    second: Road_Idle_SIDE_53
+  - first:
+      213: -8719791832094690539
+    second: Road_Idle_SIDE_54
+  - first:
+      213: -8966161793383881241
+    second: Road_Idle_SIDE_55
+  - first:
+      213: -1570851764038554542
+    second: Road_Idle_SIDE_56
+  - first:
+      213: 7397565994362595083
+    second: Road_Idle_SIDE_57
+  - first:
+      213: 287638134655231856
+    second: Road_Idle_SIDE_58
+  - first:
+      213: -3065721159463712133
+    second: Road_Idle_SIDE_59
+  - first:
+      213: -9097574101802096119
+    second: Road_Idle_SIDE_60
+  - first:
+      213: 2778132574753229370
+    second: Road_Idle_SIDE_61
+  - first:
+      213: 7412803153725339222
+    second: Road_Idle_SIDE_62
+  - first:
+      213: 6818732897858587096
+    second: Road_Idle_SIDE_63
+  - first:
+      213: 2945311111233270537
+    second: Road_Idle_SIDE_64
+  - first:
+      213: -3133657462053496343
+    second: Road_Idle_SIDE_65
+  - first:
+      213: -4797622932442554872
+    second: Road_Idle_SIDE_66
+  - first:
+      213: -1681088534605998799
+    second: Road_Idle_SIDE_67
+  - first:
+      213: 4817044934385360401
+    second: Road_Idle_SIDE_68
+  - first:
+      213: 5884948067107752355
+    second: Road_Idle_SIDE_69
+  - first:
+      213: -8192142157151741696
+    second: Road_Idle_SIDE_70
+  - first:
+      213: -8447259851741279557
+    second: Road_Idle_SIDE_71
+  - first:
+      213: -761205284249719904
+    second: Road_Idle_SIDE_72
+  - first:
+      213: -5538613367263037760
+    second: Road_Idle_SIDE_73
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -221,9 +323,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 574
         width: 1000
-        height: 1000
+        height: 426
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -243,9 +345,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 80
-        width: 835
-        height: 783
+        y: 0
+        width: 948
+        height: 870
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -264,10 +366,10 @@ TextureImporter:
       name: Road_Idle_SIDE_2
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 8
-        height: 23
+        x: 6
+        y: 832
+        width: 13
+        height: 31
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -286,10 +388,10 @@ TextureImporter:
       name: Road_Idle_SIDE_3
       rect:
         serializedVersion: 2
-        x: 5
-        y: 848
-        width: 18
-        height: 23
+        x: 7
+        y: 865
+        width: 7
+        height: 6
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -308,10 +410,10 @@ TextureImporter:
       name: Road_Idle_SIDE_4
       rect:
         serializedVersion: 2
-        x: 7
-        y: 895
+        x: 9
+        y: 909
         width: 7
-        height: 14
+        height: 12
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -330,10 +432,10 @@ TextureImporter:
       name: Road_Idle_SIDE_5
       rect:
         serializedVersion: 2
-        x: 7
-        y: 870
-        width: 12
-        height: 11
+        x: 9
+        y: 883
+        width: 10
+        height: 6
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -352,9 +454,9 @@ TextureImporter:
       name: Road_Idle_SIDE_6
       rect:
         serializedVersion: 2
-        x: 7
-        y: 109
-        width: 16
+        x: 9
+        y: 877
+        width: 12
         height: 8
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -374,10 +476,10 @@ TextureImporter:
       name: Road_Idle_SIDE_7
       rect:
         serializedVersion: 2
-        x: 7
-        y: 87
-        width: 12
-        height: 25
+        x: 28
+        y: 861
+        width: 8
+        height: 6
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -396,10 +498,10 @@ TextureImporter:
       name: Road_Idle_SIDE_8
       rect:
         serializedVersion: 2
-        x: 26
-        y: 894
-        width: 11
-        height: 10
+        x: 39
+        y: 857
+        width: 9
+        height: 8
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -418,10 +520,10 @@ TextureImporter:
       name: Road_Idle_SIDE_9
       rect:
         serializedVersion: 2
-        x: 28
-        y: 851
-        width: 24
-        height: 20
+        x: 60
+        y: 877
+        width: 8
+        height: 6
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -440,10 +542,10 @@ TextureImporter:
       name: Road_Idle_SIDE_10
       rect:
         serializedVersion: 2
-        x: 28
-        y: 99
-        width: 9
-        height: 7
+        x: 63
+        y: 916
+        width: 6
+        height: 6
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -462,10 +564,10 @@ TextureImporter:
       name: Road_Idle_SIDE_11
       rect:
         serializedVersion: 2
-        x: 28
-        y: 93
-        width: 12
-        height: 7
+        x: 76
+        y: 867
+        width: 6
+        height: 6
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -484,10 +586,10 @@ TextureImporter:
       name: Road_Idle_SIDE_12
       rect:
         serializedVersion: 2
-        x: 29
-        y: 874
-        width: 13
-        height: 16
+        x: 84
+        y: 860
+        width: 12
+        height: 8
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -506,9 +608,9 @@ TextureImporter:
       name: Road_Idle_SIDE_13
       rect:
         serializedVersion: 2
-        x: 53
-        y: 916
-        width: 7
+        x: 91
+        y: 856
+        width: 6
         height: 6
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -528,10 +630,10 @@ TextureImporter:
       name: Road_Idle_SIDE_14
       rect:
         serializedVersion: 2
-        x: 54
-        y: 104
-        width: 7
-        height: 7
+        x: 99
+        y: 861
+        width: 10
+        height: 10
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -550,10 +652,10 @@ TextureImporter:
       name: Road_Idle_SIDE_15
       rect:
         serializedVersion: 2
-        x: 59
-        y: 98
-        width: 7
-        height: 7
+        x: 105
+        y: 848
+        width: 17
+        height: 14
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -572,10 +674,10 @@ TextureImporter:
       name: Road_Idle_SIDE_16
       rect:
         serializedVersion: 2
-        x: 68
-        y: 873
-        width: 9
-        height: 7
+        x: 121
+        y: 867
+        width: 6
+        height: 8
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -594,10 +696,10 @@ TextureImporter:
       name: Road_Idle_SIDE_17
       rect:
         serializedVersion: 2
-        x: 72
-        y: 854
-        width: 24
-        height: 17
+        x: 127
+        y: 857
+        width: 13
+        height: 9
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -616,8 +718,8 @@ TextureImporter:
       name: Road_Idle_SIDE_18
       rect:
         serializedVersion: 2
-        x: 79
-        y: 101
+        x: 128
+        y: 870
         width: 6
         height: 6
       alignment: 0
@@ -638,10 +740,10 @@ TextureImporter:
       name: Road_Idle_SIDE_19
       rect:
         serializedVersion: 2
-        x: 81
-        y: 884
-        width: 8
-        height: 7
+        x: 132
+        y: 866
+        width: 11
+        height: 11
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -660,10 +762,10 @@ TextureImporter:
       name: Road_Idle_SIDE_20
       rect:
         serializedVersion: 2
-        x: 83
-        y: 871
+        x: 143
+        y: 864
         width: 7
-        height: 6
+        height: 8
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -682,10 +784,10 @@ TextureImporter:
       name: Road_Idle_SIDE_21
       rect:
         serializedVersion: 2
-        x: 86
-        y: 909
-        width: 10
-        height: 6
+        x: 148
+        y: 862
+        width: 15
+        height: 14
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -704,10 +806,10 @@ TextureImporter:
       name: Road_Idle_SIDE_22
       rect:
         serializedVersion: 2
-        x: 90
-        y: 870
-        width: 8
-        height: 11
+        x: 155
+        y: 856
+        width: 6
+        height: 7
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -726,10 +828,10 @@ TextureImporter:
       name: Road_Idle_SIDE_23
       rect:
         serializedVersion: 2
-        x: 91
-        y: 851
+        x: 160
+        y: 868
         width: 10
-        height: 14
+        height: 10
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -748,10 +850,10 @@ TextureImporter:
       name: Road_Idle_SIDE_24
       rect:
         serializedVersion: 2
-        x: 95
-        y: 859
+        x: 160
+        y: 853
         width: 16
-        height: 12
+        height: 14
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -770,10 +872,10 @@ TextureImporter:
       name: Road_Idle_SIDE_25
       rect:
         serializedVersion: 2
-        x: 101
-        y: 847
-        width: 20
-        height: 17
+        x: 161
+        y: 876
+        width: 18
+        height: 11
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -792,8 +894,8 @@ TextureImporter:
       name: Road_Idle_SIDE_26
       rect:
         serializedVersion: 2
-        x: 104
-        y: 886
+        x: 177
+        y: 887
         width: 7
         height: 6
       alignment: 0
@@ -814,10 +916,10 @@ TextureImporter:
       name: Road_Idle_SIDE_27
       rect:
         serializedVersion: 2
-        x: 114
-        y: 859
-        width: 6
-        height: 6
+        x: 177
+        y: 860
+        width: 11
+        height: 11
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -836,10 +938,10 @@ TextureImporter:
       name: Road_Idle_SIDE_28
       rect:
         serializedVersion: 2
-        x: 119
-        y: 864
-        width: 15
-        height: 8
+        x: 180
+        y: 869
+        width: 12
+        height: 13
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -858,10 +960,10 @@ TextureImporter:
       name: Road_Idle_SIDE_29
       rect:
         serializedVersion: 2
-        x: 120
-        y: 870
-        width: 15
-        height: 10
+        x: 189
+        y: 862
+        width: 7
+        height: 8
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -880,10 +982,10 @@ TextureImporter:
       name: Road_Idle_SIDE_30
       rect:
         serializedVersion: 2
-        x: 120
-        y: 845
-        width: 16
-        height: 17
+        x: 194
+        y: 867
+        width: 15
+        height: 21
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -902,10 +1004,10 @@ TextureImporter:
       name: Road_Idle_SIDE_31
       rect:
         serializedVersion: 2
-        x: 131
-        y: 860
-        width: 15
-        height: 16
+        x: 198
+        y: 850
+        width: 17
+        height: 19
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -924,10 +1026,10 @@ TextureImporter:
       name: Road_Idle_SIDE_32
       rect:
         serializedVersion: 2
-        x: 162
-        y: 867
-        width: 9
-        height: 12
+        x: 202
+        y: 900
+        width: 8
+        height: 9
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -946,10 +1048,10 @@ TextureImporter:
       name: Road_Idle_SIDE_33
       rect:
         serializedVersion: 2
-        x: 165
-        y: 860
-        width: 9
-        height: 8
+        x: 209
+        y: 866
+        width: 12
+        height: 14
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -968,10 +1070,10 @@ TextureImporter:
       name: Road_Idle_SIDE_34
       rect:
         serializedVersion: 2
-        x: 189
-        y: 856
-        width: 19
-        height: 13
+        x: 217
+        y: 904
+        width: 6
+        height: 6
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -990,10 +1092,10 @@ TextureImporter:
       name: Road_Idle_SIDE_35
       rect:
         serializedVersion: 2
-        x: 212
-        y: 870
-        width: 8
-        height: 7
+        x: 222
+        y: 864
+        width: 11
+        height: 10
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1012,10 +1114,10 @@ TextureImporter:
       name: Road_Idle_SIDE_36
       rect:
         serializedVersion: 2
-        x: 297
-        y: 861
-        width: 9
-        height: 9
+        x: 222
+        y: 856
+        width: 8
+        height: 8
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1034,10 +1136,10 @@ TextureImporter:
       name: Road_Idle_SIDE_37
       rect:
         serializedVersion: 2
-        x: 328
-        y: 859
-        width: 9
-        height: 8
+        x: 231
+        y: 854
+        width: 13
+        height: 12
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1056,10 +1158,10 @@ TextureImporter:
       name: Road_Idle_SIDE_38
       rect:
         serializedVersion: 2
-        x: 819
-        y: 461
-        width: 15
-        height: 15
+        x: 234
+        y: 876
+        width: 9
+        height: 6
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1078,10 +1180,10 @@ TextureImporter:
       name: Road_Idle_SIDE_39
       rect:
         serializedVersion: 2
-        x: 834
-        y: 470
-        width: 11
-        height: 8
+        x: 235
+        y: 865
+        width: 18
+        height: 11
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1092,6 +1194,754 @@ TextureImporter:
       bones: []
       spriteID: ea23d76691129efc0800000000000000
       internalID: -3465202045307506002
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_40
+      rect:
+        serializedVersion: 2
+        x: 241
+        y: 854
+        width: 28
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80a375daed699c1e0800000000000000
+      internalID: -2177043061721843192
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_41
+      rect:
+        serializedVersion: 2
+        x: 243
+        y: 885
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e183aa6a09dca6a0800000000000000
+      internalID: -6436531128657280541
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_42
+      rect:
+        serializedVersion: 2
+        x: 243
+        y: 870
+        width: 22
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ad6c7e7c8d0ca740800000000000000
+      internalID: 5164517769755782569
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_43
+      rect:
+        serializedVersion: 2
+        x: 262
+        y: 877
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a85e2fdd14d904ed0800000000000000
+      internalID: -2431770892557949558
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_44
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 856
+        width: 16
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49272eaf916b39dd0800000000000000
+      internalID: -2480438747051429228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_45
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 865
+        width: 12
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65b907bf4747e36f0800000000000000
+      internalID: -702996446039729322
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_46
+      rect:
+        serializedVersion: 2
+        x: 284
+        y: 877
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 849e1a6a8e0c04110800000000000000
+      internalID: 1243205602614831432
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_47
+      rect:
+        serializedVersion: 2
+        x: 291
+        y: 857
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: afe97bde161d76ba0800000000000000
+      internalID: -6095673352092410118
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_48
+      rect:
+        serializedVersion: 2
+        x: 295
+        y: 861
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fbf18dc9d6682d110800000000000000
+      internalID: 1284236649094979519
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_49
+      rect:
+        serializedVersion: 2
+        x: 305
+        y: 871
+        width: 11
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4de0dddecd8b90e60800000000000000
+      internalID: 7929071877985472212
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_50
+      rect:
+        serializedVersion: 2
+        x: 308
+        y: 855
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64e883eeef56b8280800000000000000
+      internalID: -9040019681423356346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_51
+      rect:
+        serializedVersion: 2
+        x: 317
+        y: 886
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56b3bf001d4882fe0800000000000000
+      internalID: -1213574066376852635
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_52
+      rect:
+        serializedVersion: 2
+        x: 325
+        y: 874
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: decd7af7e18165c50800000000000000
+      internalID: 6653532018756279533
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_53
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 859
+        width: 13
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 096c396da66ea4860800000000000000
+      internalID: 7515072274762024592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_54
+      rect:
+        serializedVersion: 2
+        x: 344
+        y: 856
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 513b4a437831df680800000000000000
+      internalID: -8719791832094690539
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_55
+      rect:
+        serializedVersion: 2
+        x: 380
+        y: 855
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7e5acaa8a5bc19380800000000000000
+      internalID: -8966161793383881241
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_56
+      rect:
+        serializedVersion: 2
+        x: 385
+        y: 857
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 25cafa1b4a6333ae0800000000000000
+      internalID: -1570851764038554542
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_57
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 862
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b07ed70f31f69a660800000000000000
+      internalID: 7397565994362595083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_58
+      rect:
+        serializedVersion: 2
+        x: 436
+        y: 891
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0772bf70c55edf300800000000000000
+      internalID: 287638134655231856
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_59
+      rect:
+        serializedVersion: 2
+        x: 908
+        y: 0
+        width: 92
+        height: 575
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7a44cd29de5475d0800000000000000
+      internalID: -3065721159463712133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_60
+      rect:
+        serializedVersion: 2
+        x: 994
+        y: 554
+        width: 6
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 90aea403e8ceeb180800000000000000
+      internalID: -9097574101802096119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_61
+      rect:
+        serializedVersion: 2
+        x: 939
+        y: 512
+        width: 10
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3a8b198bd8ed8620800000000000000
+      internalID: 2778132574753229370
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_62
+      rect:
+        serializedVersion: 2
+        x: 944
+        y: 522
+        width: 9
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 656b1bf81319fd660800000000000000
+      internalID: 7412803153725339222
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_63
+      rect:
+        serializedVersion: 2
+        x: 994
+        y: 506
+        width: 6
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d98123817101ae50800000000000000
+      internalID: 6818732897858587096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_64
+      rect:
+        serializedVersion: 2
+        x: 931
+        y: 505
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 903f11ac9d8dfd820800000000000000
+      internalID: 2945311111233270537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_65
+      rect:
+        serializedVersion: 2
+        x: 940
+        y: 506
+        width: 10
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e99c8e14230384d0800000000000000
+      internalID: -3133657462053496343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_66
+      rect:
+        serializedVersion: 2
+        x: 955
+        y: 503
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80e5e71ac5b6b6db0800000000000000
+      internalID: -4797622932442554872
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_67
+      rect:
+        serializedVersion: 2
+        x: 963
+        y: 506
+        width: 8
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 135d3d272e29ba8e0800000000000000
+      internalID: -1681088534605998799
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_68
+      rect:
+        serializedVersion: 2
+        x: 994
+        y: 489
+        width: 6
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 11e522598d499d240800000000000000
+      internalID: 4817044934385360401
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_69
+      rect:
+        serializedVersion: 2
+        x: 994
+        y: 478
+        width: 6
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a9449556198ba150800000000000000
+      internalID: 5884948067107752355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_70
+      rect:
+        serializedVersion: 2
+        x: 278
+        y: 126
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 009d775ac1aaf4e80800000000000000
+      internalID: -8192142157151741696
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_71
+      rect:
+        serializedVersion: 2
+        x: 259
+        y: 101
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bbaca8b9bed45ca80800000000000000
+      internalID: -8447259851741279557
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_72
+      rect:
+        serializedVersion: 2
+        x: 277
+        y: 106
+        width: 11
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ab2527b3d7af65f0800000000000000
+      internalID: -761205284249719904
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Idle_SIDE_73
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 8
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c67e00cc74e223b0800000000000000
+      internalID: -5538613367263037760
       vertices: []
       indices: 
       edges: []
@@ -1145,9 +1995,43 @@ TextureImporter:
       Road_Idle_SIDE_38: 6173950551949864327
       Road_Idle_SIDE_39: -3465202045307506002
       Road_Idle_SIDE_4: 2074240081764129771
+      Road_Idle_SIDE_40: -2177043061721843192
+      Road_Idle_SIDE_41: -6436531128657280541
+      Road_Idle_SIDE_42: 5164517769755782569
+      Road_Idle_SIDE_43: -2431770892557949558
+      Road_Idle_SIDE_44: -2480438747051429228
+      Road_Idle_SIDE_45: -702996446039729322
+      Road_Idle_SIDE_46: 1243205602614831432
+      Road_Idle_SIDE_47: -6095673352092410118
+      Road_Idle_SIDE_48: 1284236649094979519
+      Road_Idle_SIDE_49: 7929071877985472212
       Road_Idle_SIDE_5: 1747135657691753697
+      Road_Idle_SIDE_50: -9040019681423356346
+      Road_Idle_SIDE_51: -1213574066376852635
+      Road_Idle_SIDE_52: 6653532018756279533
+      Road_Idle_SIDE_53: 7515072274762024592
+      Road_Idle_SIDE_54: -8719791832094690539
+      Road_Idle_SIDE_55: -8966161793383881241
+      Road_Idle_SIDE_56: -1570851764038554542
+      Road_Idle_SIDE_57: 7397565994362595083
+      Road_Idle_SIDE_58: 287638134655231856
+      Road_Idle_SIDE_59: -3065721159463712133
       Road_Idle_SIDE_6: -8936730462049972128
+      Road_Idle_SIDE_60: -9097574101802096119
+      Road_Idle_SIDE_61: 2778132574753229370
+      Road_Idle_SIDE_62: 7412803153725339222
+      Road_Idle_SIDE_63: 6818732897858587096
+      Road_Idle_SIDE_64: 2945311111233270537
+      Road_Idle_SIDE_65: -3133657462053496343
+      Road_Idle_SIDE_66: -4797622932442554872
+      Road_Idle_SIDE_67: -1681088534605998799
+      Road_Idle_SIDE_68: 4817044934385360401
+      Road_Idle_SIDE_69: 5884948067107752355
       Road_Idle_SIDE_7: 4924863839296403958
+      Road_Idle_SIDE_70: -8192142157151741696
+      Road_Idle_SIDE_71: -8447259851741279557
+      Road_Idle_SIDE_72: -761205284249719904
+      Road_Idle_SIDE_73: -5538613367263037760
       Road_Idle_SIDE_8: 299261280709940303
       Road_Idle_SIDE_9: -1296883155750892611
   mipmapLimitGroupName: 

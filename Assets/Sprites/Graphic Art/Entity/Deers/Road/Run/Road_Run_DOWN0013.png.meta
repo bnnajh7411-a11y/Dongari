@@ -1,0 +1,533 @@
+fileFormatVersion: 2
+guid: 986d55f39b3184c45a34bbd177a6ad02
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -6240610644302498134
+    second: Road_Run_DOWN0013_0
+  - first:
+      213: -1254864794849911346
+    second: Road_Run_DOWN0013_1
+  - first:
+      213: 6322811127213170972
+    second: Road_Run_DOWN0013_2
+  - first:
+      213: 6892426384563958625
+    second: Road_Run_DOWN0013_3
+  - first:
+      213: -163807826537875771
+    second: Road_Run_DOWN0013_4
+  - first:
+      213: -3210571722640531636
+    second: Road_Run_DOWN0013_5
+  - first:
+      213: 6785379901051346914
+    second: Road_Run_DOWN0013_6
+  - first:
+      213: -9026031610816058337
+    second: Road_Run_DOWN0013_7
+  - first:
+      213: 4102629290450649112
+    second: Road_Run_DOWN0013_8
+  - first:
+      213: 6060666390656567432
+    second: Road_Run_DOWN0013_9
+  - first:
+      213: -2564184375684361069
+    second: Road_Run_DOWN0013_10
+  - first:
+      213: 7102684354597684944
+    second: Road_Run_DOWN0013_11
+  - first:
+      213: 7469128175901049684
+    second: Road_Run_DOWN0013_12
+  - first:
+      213: -7956905222255301849
+    second: Road_Run_DOWN0013_13
+  - first:
+      213: 5307757104737453151
+    second: Road_Run_DOWN0013_14
+  - first:
+      213: 5772024019354081616
+    second: Road_Run_DOWN0013_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 110
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 3
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Road_Run_DOWN0013_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1000
+        height: 1000
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa6f3d4eea5e469a0800000000000000
+      internalID: -6240610644302498134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Run_DOWN0013_1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 3
+        width: 706
+        height: 818
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ecdd3dd1e13d59ee0800000000000000
+      internalID: -1254864794849911346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Run_DOWN0013_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 10
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c11ad6378332fb750800000000000000
+      internalID: 6322811127213170972
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Run_DOWN0013_3
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 843
+        width: 10
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 163f6747741d6af50800000000000000
+      internalID: 6892426384563958625
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Run_DOWN0013_4
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 819
+        width: 14
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c6f7cf46a90abdf0800000000000000
+      internalID: -163807826537875771
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Run_DOWN0013_5
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 833
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c4fd8125702c173d0800000000000000
+      internalID: -3210571722640531636
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Run_DOWN0013_6
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 809
+        width: 11
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ef9d3cc1138a2e50800000000000000
+      internalID: 6785379901051346914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Run_DOWN0013_7
+      rect:
+        serializedVersion: 2
+        x: 35
+        y: 844
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f1cacd962181db280800000000000000
+      internalID: -9026031610816058337
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Run_DOWN0013_8
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 812
+        width: 10
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8108c6e5a977fe830800000000000000
+      internalID: 4102629290450649112
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Run_DOWN0013_9
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 823
+        width: 9
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 888cb35b8ffcb1450800000000000000
+      internalID: 6060666390656567432
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Run_DOWN0013_10
+      rect:
+        serializedVersion: 2
+        x: 75
+        y: 830
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3941abc55ef2a6cd0800000000000000
+      internalID: -2564184375684361069
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Run_DOWN0013_11
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 811
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d60583f9cdc19260800000000000000
+      internalID: 7102684354597684944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Run_DOWN0013_12
+      rect:
+        serializedVersion: 2
+        x: 695
+        y: 484
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 453817ab08ca7a760800000000000000
+      internalID: 7469128175901049684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Run_DOWN0013_13
+      rect:
+        serializedVersion: 2
+        x: 696
+        y: 487
+        width: 14
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72ba50c9bd4639190800000000000000
+      internalID: -7956905222255301849
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Run_DOWN0013_14
+      rect:
+        serializedVersion: 2
+        x: 698
+        y: 503
+        width: 15
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f548eed07f0f8a940800000000000000
+      internalID: 5307757104737453151
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Run_DOWN0013_15
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 495
+        width: 11
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0595f9c93495a1050800000000000000
+      internalID: 5772024019354081616
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Road_Run_DOWN0013_0: -6240610644302498134
+      Road_Run_DOWN0013_1: -1254864794849911346
+      Road_Run_DOWN0013_10: -2564184375684361069
+      Road_Run_DOWN0013_11: 7102684354597684944
+      Road_Run_DOWN0013_12: 7469128175901049684
+      Road_Run_DOWN0013_13: -7956905222255301849
+      Road_Run_DOWN0013_14: 5307757104737453151
+      Road_Run_DOWN0013_15: 5772024019354081616
+      Road_Run_DOWN0013_2: 6322811127213170972
+      Road_Run_DOWN0013_3: 6892426384563958625
+      Road_Run_DOWN0013_4: -163807826537875771
+      Road_Run_DOWN0013_5: -3210571722640531636
+      Road_Run_DOWN0013_6: 6785379901051346914
+      Road_Run_DOWN0013_7: -9026031610816058337
+      Road_Run_DOWN0013_8: 4102629290450649112
+      Road_Run_DOWN0013_9: 6060666390656567432
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
