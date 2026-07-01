@@ -224,6 +224,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StaminaPickup
   restoreAmount: 10
+  creditsDescription: "\uB2E4\uC2DC \uB2EC\uB9B4 \uD798\uC744 \uB418\uCC3E\uC558\uC2B5\uB2C8\uB2E4."
 --- !u!1 &379055929
 GameObject:
   m_ObjectHideFlags: 0
@@ -356,7 +357,7 @@ Transform:
   m_GameObject: {fileID: 379055929}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 112.51, y: 23.930008, z: 0.9625}
+  m_LocalPosition: {x: 112.47, y: 23.77, z: 0.9625}
   m_LocalScale: {x: 1.9090828, y: 0.7953701, z: 0.8063}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1014,6 +1015,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthPickup
   restoreAmount: 5
+  creditsDescription: "\uC0C1\uCC98\uB97C \uCD94\uC2A4\uB974\uACE0 \uB2E4\uC2DC \uB098\uC544\uAC08
+    \uD798\uC744 \uC5BB\uC5C8\uC2B5\uB2C8\uB2E4."
 --- !u!1 &1439972884
 GameObject:
   m_ObjectHideFlags: 0
@@ -1045,6 +1048,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StaminaPickup
   restoreAmount: 10
+  creditsDescription: "\uB2E4\uC2DC \uB2EC\uB9B4 \uD798\uC744 \uB418\uCC3E\uC558\uC2B5\uB2C8\uB2E4."
 --- !u!212 &1439972886
 SpriteRenderer:
   serializedVersion: 2

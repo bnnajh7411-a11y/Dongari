@@ -15028,6 +15028,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StaminaPickup
   restoreAmount: 10
+  creditsDescription: \ub2e4\ud68c\uc6a9\uae30\ub97c\u0020\uc0ac\uc6a9\ud574\uc694
 --- !u!212 &686039460
 SpriteRenderer:
   serializedVersion: 2
@@ -26863,6 +26864,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthPickup
   restoreAmount: 5
+  creditsDescription: \ubd84\ub9ac\uc218\uac70\ub97c\u0020\uc798\u0020\ud574\uc694
 --- !u!212 &1175768817
 SpriteRenderer:
   serializedVersion: 2
@@ -26912,12 +26914,12 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 3625043607559282579, guid: 19fb86013d8c24d6cb8410c0aadf30fa, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 63f3299c0ae3e2f40957160f0a401ff8, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 0.5}
+  m_Size: {x: 0.64, y: 0.64}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -26931,9 +26933,9 @@ Transform:
   m_GameObject: {fileID: 1175768815}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 15.2, y: 13, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 14.46, y: 12.79, z: 0}
+  m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -34320,6 +34322,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StaminaPickup
   restoreAmount: 10
+  creditsDescription: \ub2e4\ud68c\uc6a9\uae30\ub97c\u0020\uc0ac\uc6a9\ud574\uc694
 --- !u!212 &1533796069
 SpriteRenderer:
   serializedVersion: 2

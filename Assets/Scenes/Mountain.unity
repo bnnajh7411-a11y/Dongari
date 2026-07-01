@@ -3918,7 +3918,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StaminaPickup
   restoreAmount: 10
-  creditsDescription: "\uB2E4\uC2DC \uB2EC\uB9B4 \uD798\uC744 \uB418\uCC3E\uC558\uC2B5\uB2C8\uB2E4."
+  creditsDescription: \uc4f0\ub808\uae30\ub97c\u0020\uc544\ubb34\ub370\ub098\u0020\ubc84\ub9ac\uc9c0\u0020\uc54a\uc544\uc694
 --- !u!212 &1387096300
 SpriteRenderer:
   serializedVersion: 2
