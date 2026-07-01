@@ -19,6 +19,7 @@ public class PlayerMovement : MonoBehaviour
     private const string GreenAlgaeObjectName = "GreenAlgae";
     private const string NextObjectName = "Next";
     private const string GroundObjectName = "Ground";
+    private const string ZooBoundaryWallsRootObjectName = "ZooBoundaryWalls";
     private const string RopeObjectName = "Rope";
     private const string WaterObjectName = "Water";
     private const float ArtificialRiverEntryArcRatio = 0.7f;
@@ -32,6 +33,8 @@ public class PlayerMovement : MonoBehaviour
     private const float ArtificialRiverBubbleVerticalScatter = 0.1f;
     private const int ArtificialRiverBubbleSpriteTextureSize = 48;
     private const float ArtificialRiverBubbleSpriteEdgeSoftness = 2f;
+    private const float ZooBoundarySkinWidth = 0.02f;
+    private const int ZooBoundaryHitCapacity = 16;
     private static readonly string[] ArtificialRiverColliderObjectNames =
     {
         GreenAlgaeObjectName,
@@ -78,6 +81,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isClimbing;
     private bool suppressClimbWhileHoldingDown;
     private bool isTopDownScene;
+    private bool isZooScene;
     private bool isWaterScene;
     private bool hasMovementBounds;
     private bool jumpRequested;
@@ -97,6 +101,9 @@ public class PlayerMovement : MonoBehaviour
     private readonly HashSet<Collider2D> ropeColliders = new HashSet<Collider2D>();
     private readonly HashSet<Collider2D> wallColliders = new HashSet<Collider2D>();
     private readonly HashSet<Collider2D> waterColliders = new HashSet<Collider2D>();
+    private readonly RaycastHit2D[] zooBoundaryHits = new RaycastHit2D[ZooBoundaryHitCapacity];
+    private ContactFilter2D zooBoundaryFilter;
+    private bool hasZooBoundaryFilter;
 
     private static AudioClip underwaterMovementAudioClip;
     private static Sprite artificialRiverBubbleSprite;
@@ -129,6 +136,7 @@ public class PlayerMovement : MonoBehaviour
         defaultScale.x = Mathf.Abs(defaultScale.x);
 
         ConfigureMovementMode();
+        EnsureZooBoundaryWalls();
         EnsurePlayerHealthComponent();
         EnsureMountainFallDamageComponent();
         EnsurePlayerStaminaComponent();
@@ -222,7 +230,10 @@ public class PlayerMovement : MonoBehaviour
         if (isTopDownScene)
         {
             ApplyTopDownMovement();
-            ClampPositionToGroundBounds();
+            if (!isZooScene)
+            {
+                ClampPositionToGroundBounds();
+            }
             ConsumeRunStamina();
             return;
         }
@@ -499,6 +510,7 @@ public class PlayerMovement : MonoBehaviour
     {
         string activeSceneName = SceneManager.GetActiveScene().name;
         isTopDownScene = IsTopDownScene(activeSceneName);
+        isZooScene = activeSceneName == ZooSceneName;
         isWaterScene = activeSceneName == ArtificialRiverSceneName;
         rb.bodyType = isTopDownScene ? RigidbodyType2D.Kinematic : baseBodyType;
         rb.gravityScale = isTopDownScene ? 0f : baseGravityScale;
@@ -597,6 +609,150 @@ public class PlayerMovement : MonoBehaviour
         {
             FitSpriteColliders(ArtificialRiverColliderObjectNames[i]);
         }
+    }
+
+    private void EnsureZooBoundaryWalls()
+    {
+        if (!isZooScene || playerCollider == null)
+        {
+            return;
+        }
+
+        if (GameObject.Find(ZooBoundaryWallsRootObjectName) != null)
+        {
+            return;
+        }
+
+        GameObject groundObject = GameObject.Find(GroundObjectName);
+        if (groundObject == null)
+        {
+            return;
+        }
+
+        Collider2D[] groundColliders = groundObject.GetComponents<Collider2D>();
+        for (int i = 0; i < groundColliders.Length; i++)
+        {
+            Collider2D groundCollider = groundColliders[i];
+            if (groundCollider != null)
+            {
+                Physics2D.IgnoreCollision(playerCollider, groundCollider, true);
+            }
+        }
+
+        int wallLayer = GetZooBoundaryWallLayer();
+        PolygonCollider2D polygonCollider = groundObject.GetComponent<PolygonCollider2D>();
+        if (polygonCollider != null && polygonCollider.pathCount > 0)
+        {
+            CreateZooBoundaryWallsFromPolygon(polygonCollider, groundObject.transform, wallLayer);
+            return;
+        }
+
+        if (TryGetGroundBounds(out Bounds groundBounds))
+        {
+            CreateZooBoundaryWallsFromBounds(groundBounds, groundObject.transform, wallLayer);
+        }
+    }
+
+    private void CreateZooBoundaryWallsFromPolygon(PolygonCollider2D groundCollider, Transform parent, int wallLayer)
+    {
+        if (groundCollider == null || parent == null)
+        {
+            return;
+        }
+
+        GameObject wallsRoot = new GameObject(ZooBoundaryWallsRootObjectName);
+        wallsRoot.layer = wallLayer;
+        wallsRoot.transform.SetParent(parent, false);
+        wallsRoot.transform.localPosition = Vector3.zero;
+        wallsRoot.transform.localRotation = Quaternion.identity;
+        wallsRoot.transform.localScale = Vector3.one;
+
+        for (int pathIndex = 0; pathIndex < groundCollider.pathCount; pathIndex++)
+        {
+            Vector2[] path = groundCollider.GetPath(pathIndex);
+            CreateZooBoundaryEdgeCollider(
+                wallsRoot.transform,
+                $"Edge_{pathIndex}",
+                EnsureClosedPath(path),
+                wallLayer);
+        }
+    }
+
+    private void CreateZooBoundaryWallsFromBounds(Bounds groundBounds, Transform parent, int wallLayer)
+    {
+        if (parent == null)
+        {
+            return;
+        }
+
+        GameObject wallsRoot = new GameObject(ZooBoundaryWallsRootObjectName);
+        wallsRoot.layer = wallLayer;
+        wallsRoot.transform.SetParent(parent, false);
+        wallsRoot.transform.localPosition = Vector3.zero;
+        wallsRoot.transform.localRotation = Quaternion.identity;
+        wallsRoot.transform.localScale = Vector3.one;
+
+        Vector2[] rectangle = new Vector2[5];
+        rectangle[0] = new Vector2(groundBounds.min.x, groundBounds.min.y);
+        rectangle[1] = new Vector2(groundBounds.min.x, groundBounds.max.y);
+        rectangle[2] = new Vector2(groundBounds.max.x, groundBounds.max.y);
+        rectangle[3] = new Vector2(groundBounds.max.x, groundBounds.min.y);
+        rectangle[4] = rectangle[0];
+
+        CreateZooBoundaryEdgeCollider(wallsRoot.transform, "Bounds", rectangle, wallLayer);
+    }
+
+    private static void CreateZooBoundaryEdgeCollider(
+        Transform parent,
+        string wallName,
+        Vector2[] path,
+        int wallLayer)
+    {
+        if (parent == null || path == null || path.Length < 2)
+        {
+            return;
+        }
+
+        GameObject wallObject = new GameObject(wallName, typeof(EdgeCollider2D));
+        wallObject.layer = wallLayer;
+        wallObject.transform.SetParent(parent, false);
+        wallObject.transform.localPosition = Vector3.zero;
+        wallObject.transform.localRotation = Quaternion.identity;
+        wallObject.transform.localScale = Vector3.one;
+
+        EdgeCollider2D wallCollider = wallObject.GetComponent<EdgeCollider2D>();
+        wallCollider.isTrigger = false;
+        wallCollider.edgeRadius = 0f;
+        wallCollider.points = path;
+    }
+
+    private static Vector2[] EnsureClosedPath(Vector2[] path)
+    {
+        if (path == null || path.Length < 2)
+        {
+            return path;
+        }
+
+        bool isClosed = path[0] == path[path.Length - 1];
+        if (isClosed)
+        {
+            return path;
+        }
+
+        Vector2[] closedPath = new Vector2[path.Length + 1];
+        for (int i = 0; i < path.Length; i++)
+        {
+            closedPath[i] = path[i];
+        }
+
+        closedPath[closedPath.Length - 1] = path[0];
+        return closedPath;
+    }
+
+    private static int GetZooBoundaryWallLayer()
+    {
+        int wallLayer = LayerMask.NameToLayer("Ground");
+        return wallLayer >= 0 ? wallLayer : 0;
     }
 
     private void FitSpriteColliders(string objectName)
@@ -1056,7 +1212,119 @@ public class PlayerMovement : MonoBehaviour
             movementInput.Normalize();
         }
 
+        if (isZooScene)
+        {
+            ApplyZooTopDownMovement(movementInput, currentSpeed);
+            return;
+        }
+
         rb.linearVelocity = movementInput * currentSpeed;
+    }
+
+    private void ApplyZooTopDownMovement(Vector2 movementInput, float currentSpeed)
+    {
+        if (playerCollider == null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
+        Vector2 desiredDelta = movementInput * currentSpeed * Time.fixedDeltaTime;
+        Vector2 resolvedDelta = ResolveZooMovement(desiredDelta);
+
+        if (resolvedDelta.sqrMagnitude <= Mathf.Epsilon)
+        {
+            rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
+        rb.MovePosition(rb.position + resolvedDelta);
+        rb.linearVelocity = Time.fixedDeltaTime > 0f
+            ? resolvedDelta / Time.fixedDeltaTime
+            : Vector2.zero;
+    }
+
+    private Vector2 ResolveZooMovement(Vector2 desiredDelta)
+    {
+        if (playerCollider == null || desiredDelta.sqrMagnitude <= Mathf.Epsilon)
+        {
+            return desiredDelta;
+        }
+
+        EnsureZooBoundaryFilter();
+        if (!hasZooBoundaryFilter)
+        {
+            return desiredDelta;
+        }
+
+        Vector2 direction = desiredDelta.normalized;
+        float travelDistance = desiredDelta.magnitude;
+        int hitCount = playerCollider.Cast(
+            direction,
+            zooBoundaryFilter,
+            zooBoundaryHits,
+            travelDistance + ZooBoundarySkinWidth);
+
+        if (hitCount <= 0)
+        {
+            return desiredDelta;
+        }
+
+        float allowedDistance = travelDistance;
+        RaycastHit2D nearestHit = default;
+        bool hasHit = false;
+
+        for (int i = 0; i < hitCount; i++)
+        {
+            RaycastHit2D hit = zooBoundaryHits[i];
+            if (hit.collider == null)
+            {
+                continue;
+            }
+
+            if (!hasHit || hit.distance < nearestHit.distance)
+            {
+                nearestHit = hit;
+                hasHit = true;
+            }
+
+            allowedDistance = Mathf.Min(
+                allowedDistance,
+                Mathf.Max(0f, hit.distance - ZooBoundarySkinWidth));
+        }
+
+        if (!hasHit)
+        {
+            return desiredDelta;
+        }
+
+        Vector2 blockedDelta = direction * allowedDistance;
+        Vector2 remainingDelta = desiredDelta - blockedDelta;
+        Vector2 slideDelta = remainingDelta - (Vector2.Dot(remainingDelta, nearestHit.normal) * nearestHit.normal);
+        return blockedDelta + slideDelta;
+    }
+
+    private void EnsureZooBoundaryFilter()
+    {
+        if (hasZooBoundaryFilter || playerCollider == null)
+        {
+            return;
+        }
+
+        int wallLayer = GetZooBoundaryWallLayer();
+        int wallLayerMask = wallLayer >= 0
+            ? 1 << wallLayer
+            : Physics2D.GetLayerCollisionMask(gameObject.layer);
+
+        zooBoundaryFilter = new ContactFilter2D
+        {
+            useLayerMask = true,
+            useTriggers = false,
+            useDepth = false,
+            useOutsideDepth = false
+        };
+        zooBoundaryFilter.SetLayerMask(wallLayerMask);
+        hasZooBoundaryFilter = true;
     }
 
     private void ApplyClimbMovement()
