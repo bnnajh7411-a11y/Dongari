@@ -5,27 +5,6 @@ TextureImporter:
   - first:
       213: 3837873110731034974
     second: Road_Run_DOWN0003_0
-  - first:
-      213: 5589057069338931601
-    second: Road_Run_DOWN0003_1
-  - first:
-      213: 9134085027573249858
-    second: Road_Run_DOWN0003_2
-  - first:
-      213: 3886292677287801483
-    second: Road_Run_DOWN0003_3
-  - first:
-      213: 3095160716258012920
-    second: Road_Run_DOWN0003_4
-  - first:
-      213: 2137708720254676904
-    second: Road_Run_DOWN0003_5
-  - first:
-      213: 7753069375064492490
-    second: Road_Run_DOWN0003_6
-  - first:
-      213: 5174871717082947848
-    second: Road_Run_DOWN0003_7
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -124,10 +103,10 @@ TextureImporter:
       name: Road_Run_DOWN0003_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 875
-        width: 7
-        height: 125
+        x: 440
+        y: 288
+        width: 113
+        height: 315
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -138,160 +117,6 @@ TextureImporter:
       bones: []
       spriteID: e519522a24dd24530800000000000000
       internalID: 3837873110731034974
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_Run_DOWN0003_1
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 0
-        width: 1000
-        height: 1000
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 191355fdac1509d40800000000000000
-      internalID: 5589057069338931601
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_Run_DOWN0003_2
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 3
-        width: 693
-        height: 849
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 247b7b820f9c2ce70800000000000000
-      internalID: 9134085027573249858
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_Run_DOWN0003_3
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 0
-        width: 10
-        height: 27
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b82f0fa7992eee530800000000000000
-      internalID: 3886292677287801483
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_Run_DOWN0003_4
-      rect:
-        serializedVersion: 2
-        x: 677
-        y: 518
-        width: 20
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8fe6d47c54834fa20800000000000000
-      internalID: 3095160716258012920
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_Run_DOWN0003_5
-      rect:
-        serializedVersion: 2
-        x: 678
-        y: 547
-        width: 14
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8afe80841caaaad10800000000000000
-      internalID: 2137708720254676904
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_Run_DOWN0003_6
-      rect:
-        serializedVersion: 2
-        x: 678
-        y: 538
-        width: 11
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ac9cda3e48f689b60800000000000000
-      internalID: 7753069375064492490
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_Run_DOWN0003_7
-      rect:
-        serializedVersion: 2
-        x: 694
-        y: 519
-        width: 10
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 801e1f6b866d0d740800000000000000
-      internalID: 5174871717082947848
       vertices: []
       indices: 
       edges: []
@@ -311,13 +136,6 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       Road_Run_DOWN0003_0: 3837873110731034974
-      Road_Run_DOWN0003_1: 5589057069338931601
-      Road_Run_DOWN0003_2: 9134085027573249858
-      Road_Run_DOWN0003_3: 3886292677287801483
-      Road_Run_DOWN0003_4: 3095160716258012920
-      Road_Run_DOWN0003_5: 2137708720254676904
-      Road_Run_DOWN0003_6: 7753069375064492490
-      Road_Run_DOWN0003_7: 5174871717082947848
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

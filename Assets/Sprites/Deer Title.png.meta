@@ -1,0 +1,1339 @@
+fileFormatVersion: 2
+guid: b69946aab90adea479b3bf564da6e29e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -9041621370712903250
+    second: Deer Title_0
+  - first:
+      213: -3651631784908879936
+    second: Deer Title_1
+  - first:
+      213: 3438531856901662187
+    second: Deer Title_2
+  - first:
+      213: 8027864578679869947
+    second: Deer Title_3
+  - first:
+      213: -1827645062362864844
+    second: Deer Title_4
+  - first:
+      213: 3485771530031331325
+    second: Deer Title_5
+  - first:
+      213: 1009323407336583921
+    second: Deer Title_6
+  - first:
+      213: 5574272625838253310
+    second: Deer Title_7
+  - first:
+      213: -201199371906282393
+    second: Deer Title_8
+  - first:
+      213: 7974612030561418159
+    second: Deer Title_9
+  - first:
+      213: 8939827572374070090
+    second: Deer Title_10
+  - first:
+      213: -4901691166578185375
+    second: Deer Title_11
+  - first:
+      213: 4779797048217923093
+    second: Deer Title_12
+  - first:
+      213: -1901329562841009253
+    second: Deer Title_13
+  - first:
+      213: -6163927445616800359
+    second: Deer Title_14
+  - first:
+      213: -7864578996703212908
+    second: Deer Title_15
+  - first:
+      213: 6031015612148771107
+    second: Deer Title_16
+  - first:
+      213: 992877073417934136
+    second: Deer Title_17
+  - first:
+      213: -4369697888009729095
+    second: Deer Title_18
+  - first:
+      213: -5765925794721985033
+    second: Deer Title_19
+  - first:
+      213: 2472545801816866137
+    second: Deer Title_20
+  - first:
+      213: 5273914695190471563
+    second: Deer Title_21
+  - first:
+      213: 2786786164908418264
+    second: Deer Title_22
+  - first:
+      213: 2059465970582356531
+    second: Deer Title_23
+  - first:
+      213: 7151918566394700361
+    second: Deer Title_24
+  - first:
+      213: -7976094331299981091
+    second: Deer Title_25
+  - first:
+      213: 8762100633086642068
+    second: Deer Title_26
+  - first:
+      213: 4274203249292109076
+    second: Deer Title_27
+  - first:
+      213: -4879292294596774943
+    second: Deer Title_28
+  - first:
+      213: -5385289333064878439
+    second: Deer Title_29
+  - first:
+      213: -694737384383917628
+    second: Deer Title_30
+  - first:
+      213: 7431592376850724931
+    second: Deer Title_31
+  - first:
+      213: 8716730146218666943
+    second: Deer Title_32
+  - first:
+      213: 2888284996675235918
+    second: Deer Title_33
+  - first:
+      213: 5385269315082198996
+    second: Deer Title_34
+  - first:
+      213: 1719349060942795704
+    second: Deer Title_35
+  - first:
+      213: -2525319222044363780
+    second: Deer Title_36
+  - first:
+      213: -7450182481729075772
+    second: Deer Title_37
+  - first:
+      213: -7538893644225547410
+    second: Deer Title_38
+  - first:
+      213: -712148266690391438
+    second: Deer Title_39
+  - first:
+      213: 6596720879290240182
+    second: Deer Title_40
+  - first:
+      213: 2354429654630848631
+    second: Deer Title_41
+  - first:
+      213: -3452029898518115544
+    second: Deer Title_42
+  - first:
+      213: -8292723895185935850
+    second: Deer Title_43
+  - first:
+      213: 8750557776697909885
+    second: Deer Title_44
+  - first:
+      213: 1218745803258781903
+    second: Deer Title_45
+  - first:
+      213: 8540323107246594615
+    second: Deer Title_46
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 3
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Deer Title_0
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 769
+        width: 76
+        height: 149
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea1b3159445b58280800000000000000
+      internalID: -9041621370712903250
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_1
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 769
+        width: 42
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c70bf12d3cc25dc0800000000000000
+      internalID: -3651631784908879936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_2
+      rect:
+        serializedVersion: 2
+        x: 169
+        y: 769
+        width: 42
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be5ec77718e18bf20800000000000000
+      internalID: 3438531856901662187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_3
+      rect:
+        serializedVersion: 2
+        x: 215
+        y: 770
+        width: 42
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf197250d44b86f60800000000000000
+      internalID: 8027864578679869947
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_4
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 555
+        width: 72
+        height: 149
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4336d52cf76e2a6e0800000000000000
+      internalID: -1827645062362864844
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_5
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 553
+        width: 34
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df7ffa7fcb2ff5030800000000000000
+      internalID: 3485771530031331325
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_6
+      rect:
+        serializedVersion: 2
+        x: 209
+        y: 642
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f2b8c59a46d10e00800000000000000
+      internalID: 1009323407336583921
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_7
+      rect:
+        serializedVersion: 2
+        x: 338
+        y: 553
+        width: 34
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef4e5406b6bcb5d40800000000000000
+      internalID: 5574272625838253310
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_8
+      rect:
+        serializedVersion: 2
+        x: 379
+        y: 642
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 76c8e7cbc32353df0800000000000000
+      internalID: -201199371906282393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_9
+      rect:
+        serializedVersion: 2
+        x: 117
+        y: 555
+        width: 52
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fab7b27f3638bae60800000000000000
+      internalID: 7974612030561418159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_10
+      rect:
+        serializedVersion: 2
+        x: 203
+        y: 555
+        width: 29
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a436994dfc5a01c70800000000000000
+      internalID: 8939827572374070090
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_11
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 555
+        width: 56
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16bef61bad1b9fbb0800000000000000
+      internalID: -4901691166578185375
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_12
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 554
+        width: 40
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51e6d754710455240800000000000000
+      internalID: 4779797048217923093
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_13
+      rect:
+        serializedVersion: 2
+        x: 373
+        y: 555
+        width: 29
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b93b9e516de1d95e0800000000000000
+      internalID: -1901329562841009253
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_14
+      rect:
+        serializedVersion: 2
+        x: 405
+        y: 554
+        width: 47
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 99dcab665a4557aa0800000000000000
+      internalID: -6163927445616800359
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_15
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 555
+        width: 56
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49ac18122176bd290800000000000000
+      internalID: -7864578996703212908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_16
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 341
+        width: 72
+        height: 149
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 32966fcdeb872b350800000000000000
+      internalID: 6031015612148771107
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_17
+      rect:
+        serializedVersion: 2
+        x: 233
+        y: 427
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83594b2107867cd00800000000000000
+      internalID: 992877073417934136
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_18
+      rect:
+        serializedVersion: 2
+        x: 601
+        y: 338
+        width: 34
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9bbc7692ce6bb53c0800000000000000
+      internalID: -4369697888009729095
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_19
+      rect:
+        serializedVersion: 2
+        x: 684
+        y: 339
+        width: 29
+        height: 105
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7fd8554f9015bffa0800000000000000
+      internalID: -5765925794721985033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_20
+      rect:
+        serializedVersion: 2
+        x: 118
+        y: 339
+        width: 56
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95d7d208e4f305220800000000000000
+      internalID: 2472545801816866137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_21
+      rect:
+        serializedVersion: 2
+        x: 173
+        y: 338
+        width: 54
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b836a8e0975b03940800000000000000
+      internalID: 5273914695190471563
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_22
+      rect:
+        serializedVersion: 2
+        x: 227
+        y: 339
+        width: 29
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d4e6508047aca620800000000000000
+      internalID: 2786786164908418264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_23
+      rect:
+        serializedVersion: 2
+        x: 258
+        y: 339
+        width: 41
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 33201938361b49c10800000000000000
+      internalID: 2059465970582356531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_24
+      rect:
+        serializedVersion: 2
+        x: 302
+        y: 338
+        width: 46
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9422a7c2b08b04360800000000000000
+      internalID: 7151918566394700361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_25
+      rect:
+        serializedVersion: 2
+        x: 353
+        y: 339
+        width: 56
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd89bdff6783f4190800000000000000
+      internalID: -7976094331299981091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_26
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 339
+        width: 83
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 497ca592a1c399970800000000000000
+      internalID: 8762100633086642068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_27
+      rect:
+        serializedVersion: 2
+        x: 497
+        y: 338
+        width: 43
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 41560e3a535015b30800000000000000
+      internalID: 4274203249292109076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_28
+      rect:
+        serializedVersion: 2
+        x: 544
+        y: 339
+        width: 56
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e332497285494cb0800000000000000
+      internalID: -4879292294596774943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_29
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 338
+        width: 48
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 996b7f152eb9345b0800000000000000
+      internalID: -5385289333064878439
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_30
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 126
+        width: 85
+        height: 150
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c1dc9f970ccb56f0800000000000000
+      internalID: -694737384383917628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_31
+      rect:
+        serializedVersion: 2
+        x: 426
+        y: 211
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34830b974e1522760800000000000000
+      internalID: 7431592376850724931
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_32
+      rect:
+        serializedVersion: 2
+        x: 451
+        y: 123
+        width: 52
+        height: 106
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fbb6d4082eb08f870800000000000000
+      internalID: 8716730146218666943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_33
+      rect:
+        serializedVersion: 2
+        x: 514
+        y: 211
+        width: 17
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e40fae4d6ef351820800000000000000
+      internalID: 2888284996675235918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_34
+      rect:
+        serializedVersion: 2
+        x: 538
+        y: 124
+        width: 29
+        height: 105
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4df1941e8e15cba40800000000000000
+      internalID: 5385269315082198996
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_35
+      rect:
+        serializedVersion: 2
+        x: 575
+        y: 211
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b395668cda5cd710800000000000000
+      internalID: 1719349060942795704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_36
+      rect:
+        serializedVersion: 2
+        x: 599
+        y: 123
+        width: 34
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf374991c8344fcd0800000000000000
+      internalID: -2525319222044363780
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_37
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 123
+        width: 42
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c543b07182ab9890800000000000000
+      internalID: -7450182481729075772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_38
+      rect:
+        serializedVersion: 2
+        x: 169
+        y: 123
+        width: 38
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e637c706c28706790800000000000000
+      internalID: -7538893644225547410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_39
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 91
+        width: 52
+        height: 106
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2725280bce0fd16f0800000000000000
+      internalID: -712148266690391438
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_40
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 123
+        width: 47
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6bc4f7450b24c8b50800000000000000
+      internalID: 6596720879290240182
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_41
+      rect:
+        serializedVersion: 2
+        x: 319
+        y: 124
+        width: 56
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 778daeceb4d9ca020800000000000000
+      internalID: 2354429654630848631
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_42
+      rect:
+        serializedVersion: 2
+        x: 379
+        y: 123
+        width: 38
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82bccc0d81de710d0800000000000000
+      internalID: -3452029898518115544
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_43
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 124
+        width: 29
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6127c07dd835aec80800000000000000
+      internalID: -8292723895185935850
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_44
+      rect:
+        serializedVersion: 2
+        x: 508
+        y: 124
+        width: 28
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d726c9a7fe9307970800000000000000
+      internalID: 8750557776697909885
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_45
+      rect:
+        serializedVersion: 2
+        x: 569
+        y: 124
+        width: 29
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc0ecb2d9dad9e010800000000000000
+      internalID: 1218745803258781903
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Title_46
+      rect:
+        serializedVersion: 2
+        x: 632
+        y: 90
+        width: 54
+        height: 106
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 73a5e721e92558670800000000000000
+      internalID: 8540323107246594615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Deer Title_0: -9041621370712903250
+      Deer Title_1: -3651631784908879936
+      Deer Title_10: 8939827572374070090
+      Deer Title_11: -4901691166578185375
+      Deer Title_12: 4779797048217923093
+      Deer Title_13: -1901329562841009253
+      Deer Title_14: -6163927445616800359
+      Deer Title_15: -7864578996703212908
+      Deer Title_16: 6031015612148771107
+      Deer Title_17: 992877073417934136
+      Deer Title_18: -4369697888009729095
+      Deer Title_19: -5765925794721985033
+      Deer Title_2: 3438531856901662187
+      Deer Title_20: 2472545801816866137
+      Deer Title_21: 5273914695190471563
+      Deer Title_22: 2786786164908418264
+      Deer Title_23: 2059465970582356531
+      Deer Title_24: 7151918566394700361
+      Deer Title_25: -7976094331299981091
+      Deer Title_26: 8762100633086642068
+      Deer Title_27: 4274203249292109076
+      Deer Title_28: -4879292294596774943
+      Deer Title_29: -5385289333064878439
+      Deer Title_3: 8027864578679869947
+      Deer Title_30: -694737384383917628
+      Deer Title_31: 7431592376850724931
+      Deer Title_32: 8716730146218666943
+      Deer Title_33: 2888284996675235918
+      Deer Title_34: 5385269315082198996
+      Deer Title_35: 1719349060942795704
+      Deer Title_36: -2525319222044363780
+      Deer Title_37: -7450182481729075772
+      Deer Title_38: -7538893644225547410
+      Deer Title_39: -712148266690391438
+      Deer Title_4: -1827645062362864844
+      Deer Title_40: 6596720879290240182
+      Deer Title_41: 2354429654630848631
+      Deer Title_42: -3452029898518115544
+      Deer Title_43: -8292723895185935850
+      Deer Title_44: 8750557776697909885
+      Deer Title_45: 1218745803258781903
+      Deer Title_46: 8540323107246594615
+      Deer Title_5: 3485771530031331325
+      Deer Title_6: 1009323407336583921
+      Deer Title_7: 5574272625838253310
+      Deer Title_8: -201199371906282393
+      Deer Title_9: 7974612030561418159
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
