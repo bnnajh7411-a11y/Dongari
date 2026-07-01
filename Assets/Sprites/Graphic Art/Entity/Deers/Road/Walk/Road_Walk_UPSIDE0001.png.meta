@@ -1,0 +1,1547 @@
+fileFormatVersion: 2
+guid: 217b8f30b4cdf3c46a90cb3ac464faa6
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7470283438827720129
+    second: Road_Walk_UPSIDE0001_0
+  - first:
+      213: 3284588105361775439
+    second: Road_Walk_UPSIDE0001_1
+  - first:
+      213: 8269302236435260877
+    second: Road_Walk_UPSIDE0001_2
+  - first:
+      213: -3330394603347787419
+    second: Road_Walk_UPSIDE0001_3
+  - first:
+      213: 4843215042431608420
+    second: Road_Walk_UPSIDE0001_4
+  - first:
+      213: -744709751669444259
+    second: Road_Walk_UPSIDE0001_5
+  - first:
+      213: -4217017412954084108
+    second: Road_Walk_UPSIDE0001_6
+  - first:
+      213: 6749548018953230798
+    second: Road_Walk_UPSIDE0001_7
+  - first:
+      213: 7453046353887286004
+    second: Road_Walk_UPSIDE0001_8
+  - first:
+      213: 9210137746726461118
+    second: Road_Walk_UPSIDE0001_9
+  - first:
+      213: -3289252738047980164
+    second: Road_Walk_UPSIDE0001_10
+  - first:
+      213: 4848997809603029509
+    second: Road_Walk_UPSIDE0001_11
+  - first:
+      213: -1281631548819637404
+    second: Road_Walk_UPSIDE0001_12
+  - first:
+      213: 1899840222553625532
+    second: Road_Walk_UPSIDE0001_13
+  - first:
+      213: -4519716131004821290
+    second: Road_Walk_UPSIDE0001_14
+  - first:
+      213: 5401760850665092011
+    second: Road_Walk_UPSIDE0001_15
+  - first:
+      213: -979336465263585429
+    second: Road_Walk_UPSIDE0001_16
+  - first:
+      213: 7226593627803188615
+    second: Road_Walk_UPSIDE0001_17
+  - first:
+      213: 8868432346999846260
+    second: Road_Walk_UPSIDE0001_18
+  - first:
+      213: 1623431361712967244
+    second: Road_Walk_UPSIDE0001_19
+  - first:
+      213: 1278489311302764269
+    second: Road_Walk_UPSIDE0001_20
+  - first:
+      213: 6876629063512680728
+    second: Road_Walk_UPSIDE0001_21
+  - first:
+      213: 711674435272542646
+    second: Road_Walk_UPSIDE0001_22
+  - first:
+      213: -5266786313575152700
+    second: Road_Walk_UPSIDE0001_23
+  - first:
+      213: 7107241803721632636
+    second: Road_Walk_UPSIDE0001_24
+  - first:
+      213: -4197267932821570457
+    second: Road_Walk_UPSIDE0001_25
+  - first:
+      213: -4883892955604562555
+    second: Road_Walk_UPSIDE0001_26
+  - first:
+      213: 4505287636918851716
+    second: Road_Walk_UPSIDE0001_27
+  - first:
+      213: 771212671255575776
+    second: Road_Walk_UPSIDE0001_28
+  - first:
+      213: -3130109829818597266
+    second: Road_Walk_UPSIDE0001_29
+  - first:
+      213: 4578476802069867242
+    second: Road_Walk_UPSIDE0001_30
+  - first:
+      213: -6095448295840425446
+    second: Road_Walk_UPSIDE0001_31
+  - first:
+      213: 489114795429305928
+    second: Road_Walk_UPSIDE0001_32
+  - first:
+      213: -4386568571419988315
+    second: Road_Walk_UPSIDE0001_33
+  - first:
+      213: -7221072057859690793
+    second: Road_Walk_UPSIDE0001_34
+  - first:
+      213: 1945933518269439631
+    second: Road_Walk_UPSIDE0001_35
+  - first:
+      213: 6761925761354970630
+    second: Road_Walk_UPSIDE0001_36
+  - first:
+      213: 4277791316728608440
+    second: Road_Walk_UPSIDE0001_37
+  - first:
+      213: -8287469498657151986
+    second: Road_Walk_UPSIDE0001_38
+  - first:
+      213: 6867611799229549062
+    second: Road_Walk_UPSIDE0001_39
+  - first:
+      213: 4975618196762634095
+    second: Road_Walk_UPSIDE0001_40
+  - first:
+      213: -6941230396608404474
+    second: Road_Walk_UPSIDE0001_41
+  - first:
+      213: -9052874102349277223
+    second: Road_Walk_UPSIDE0001_42
+  - first:
+      213: 204063106370308823
+    second: Road_Walk_UPSIDE0001_43
+  - first:
+      213: -1838057829948725129
+    second: Road_Walk_UPSIDE0001_44
+  - first:
+      213: 5873035276209536751
+    second: Road_Walk_UPSIDE0001_45
+  - first:
+      213: -2006168510487768091
+    second: Road_Walk_UPSIDE0001_46
+  - first:
+      213: 740671719899991260
+    second: Road_Walk_UPSIDE0001_47
+  - first:
+      213: 669762869947283990
+    second: Road_Walk_UPSIDE0001_48
+  - first:
+      213: 6523708009278966383
+    second: Road_Walk_UPSIDE0001_49
+  - first:
+      213: -6477199206726839333
+    second: Road_Walk_UPSIDE0001_50
+  - first:
+      213: 8190024560352312527
+    second: Road_Walk_UPSIDE0001_51
+  - first:
+      213: 3657566453427891412
+    second: Road_Walk_UPSIDE0001_52
+  - first:
+      213: 278516584528398066
+    second: Road_Walk_UPSIDE0001_53
+  - first:
+      213: -603649596359283972
+    second: Road_Walk_UPSIDE0001_54
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 110
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 3
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 490
+        width: 1000
+        height: 510
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f32b039aac8345890800000000000000
+      internalID: -7470283438827720129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 806
+        height: 896
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4bdf85ba73359d20800000000000000
+      internalID: 3284588105361775439
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_2
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 914
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dc52117429672c270800000000000000
+      internalID: 8269302236435260877
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_3
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 896
+        width: 10
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 561c391e0cf08c1d0800000000000000
+      internalID: -3330394603347787419
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_4
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 900
+        width: 11
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 466e6feab6e863340800000000000000
+      internalID: 4843215042431608420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_5
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 942
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5139fe2d624aa5f0800000000000000
+      internalID: -744709751669444259
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_6
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 917
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4fc2c3171052a75c0800000000000000
+      internalID: -4217017412954084108
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_7
+      rect:
+        serializedVersion: 2
+        x: 69
+        y: 918
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec91620a9263bad50800000000000000
+      internalID: 6749548018953230798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_8
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 895
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f2d8f1cb2a8e6760800000000000000
+      internalID: 7453046353887286004
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_9
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 921
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ebe1c06bb7bf0df70800000000000000
+      internalID: 9210137746726461118
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_10
+      rect:
+        serializedVersion: 2
+        x: 75
+        y: 902
+        width: 16
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7d4b2cdf0a3a52d0800000000000000
+      internalID: -3289252738047980164
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_11
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 895
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 50a290611d91b4340800000000000000
+      internalID: 4848997809603029509
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_12
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 895
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46bfbaf85eab63ee0800000000000000
+      internalID: -1281631548819637404
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_13
+      rect:
+        serializedVersion: 2
+        x: 95
+        y: 890
+        width: 11
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb3de4bdd969d5a10800000000000000
+      internalID: 1899840222553625532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_14
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 894
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d0dad5102eb641c0800000000000000
+      internalID: -4519716131004821290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_15
+      rect:
+        serializedVersion: 2
+        x: 106
+        y: 903
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba33189bfd8e6fa40800000000000000
+      internalID: 5401760850665092011
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_16
+      rect:
+        serializedVersion: 2
+        x: 110
+        y: 884
+        width: 31
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b6790607ca2b862f0800000000000000
+      internalID: -979336465263585429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_17
+      rect:
+        serializedVersion: 2
+        x: 118
+        y: 932
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 78d7f49cd940a4460800000000000000
+      internalID: 7226593627803188615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_18
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 914
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 475728d8b30031b70800000000000000
+      internalID: 8868432346999846260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_19
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 922
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c4e4120e836978610800000000000000
+      internalID: 1623431361712967244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_20
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 891
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de6c551414b1eb110800000000000000
+      internalID: 1278489311302764269
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_21
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 888
+        width: 13
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 819ecc603b1be6f50800000000000000
+      internalID: 6876629063512680728
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_22
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 896
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b98526d02060e900800000000000000
+      internalID: 711674435272542646
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_23
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 912
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c3c67f90cd98e6b0800000000000000
+      internalID: -5266786313575152700
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_24
+      rect:
+        serializedVersion: 2
+        x: 157
+        y: 893
+        width: 15
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7b62a3c3cef1a260800000000000000
+      internalID: 7107241803721632636
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_25
+      rect:
+        serializedVersion: 2
+        x: 163
+        y: 924
+        width: 12
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 76c380d9d0f40c5c0800000000000000
+      internalID: -4197267932821570457
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_26
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 910
+        width: 13
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58d482c9b3de83cb0800000000000000
+      internalID: -4883892955604562555
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_27
+      rect:
+        serializedVersion: 2
+        x: 182
+        y: 890
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 488d1895c3ff58e30800000000000000
+      internalID: 4505287636918851716
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_28
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 921
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ecf774a6d5e3ba00800000000000000
+      internalID: 771212671255575776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_29
+      rect:
+        serializedVersion: 2
+        x: 191
+        y: 927
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6044bd91bd9f84d0800000000000000
+      internalID: -3130109829818597266
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_30
+      rect:
+        serializedVersion: 2
+        x: 193
+        y: 906
+        width: 10
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aeaadb7c4640a8f30800000000000000
+      internalID: 4578476802069867242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_31
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 891
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1adbabe11e986ba0800000000000000
+      internalID: -6095448295840425446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_32
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 900
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84e93f3a05fa9c600800000000000000
+      internalID: 489114795429305928
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_33
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 925
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ae6e951027cf13c0800000000000000
+      internalID: -4386568571419988315
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_34
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 904
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7de26c5e83999cb90800000000000000
+      internalID: -7221072057859690793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_35
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 894
+        width: 13
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8ed9f09938510b10800000000000000
+      internalID: 1945933518269439631
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_36
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 901
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 606302b57af27dd50800000000000000
+      internalID: 6761925761354970630
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_37
+      rect:
+        serializedVersion: 2
+        x: 233
+        y: 893
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b6fbd0b984cd5b30800000000000000
+      internalID: 4277791316728608440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_38
+      rect:
+        serializedVersion: 2
+        x: 237
+        y: 927
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e04e7ad566efcfc80800000000000000
+      internalID: -8287469498657151986
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_39
+      rect:
+        serializedVersion: 2
+        x: 245
+        y: 898
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60acb549b88ae4f50800000000000000
+      internalID: 6867611799229549062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_40
+      rect:
+        serializedVersion: 2
+        x: 257
+        y: 907
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f67a1045362fc0540800000000000000
+      internalID: 4975618196762634095
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_41
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 889
+        width: 16
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60423020bbbcbaf90800000000000000
+      internalID: -6941230396608404474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_42
+      rect:
+        serializedVersion: 2
+        x: 279
+        y: 927
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d75325d7fabd5280800000000000000
+      internalID: -9052874102349277223
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_43
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 588
+        width: 8
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7da07f6605af4d200800000000000000
+      internalID: 204063106370308823
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_44
+      rect:
+        serializedVersion: 2
+        x: 786
+        y: 555
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 778e7416428ed76e0800000000000000
+      internalID: -1838057829948725129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_45
+      rect:
+        serializedVersion: 2
+        x: 787
+        y: 572
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: feebecf8776318150800000000000000
+      internalID: 5873035276209536751
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_46
+      rect:
+        serializedVersion: 2
+        x: 789
+        y: 500
+        width: 6
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e35dcc6e58a824e0800000000000000
+      internalID: -2006168510487768091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_47
+      rect:
+        serializedVersion: 2
+        x: 792
+        y: 596
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cdc01d74105674a00800000000000000
+      internalID: 740671719899991260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_48
+      rect:
+        serializedVersion: 2
+        x: 798
+        y: 521
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61a34fa18c97b4900800000000000000
+      internalID: 669762869947283990
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_49
+      rect:
+        serializedVersion: 2
+        x: 803
+        y: 583
+        width: 14
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f6a817fceddd88a50800000000000000
+      internalID: 6523708009278966383
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_50
+      rect:
+        serializedVersion: 2
+        x: 992
+        y: 32
+        width: 8
+        height: 459
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd3da9f93ad5c16a0800000000000000
+      internalID: -6477199206726839333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_51
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 105
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fcc368de1ffc8a170800000000000000
+      internalID: 8190024560352312527
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_52
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 99
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4dc64fe8f4942c230800000000000000
+      internalID: 3657566453427891412
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_53
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 10
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f6ced4ab5d7dd300800000000000000
+      internalID: 278516584528398066
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Road_Walk_UPSIDE0001_54
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 0
+        width: 216
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cfa6230f3e76f97f0800000000000000
+      internalID: -603649596359283972
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Road_Walk_UPSIDE0001_0: -7470283438827720129
+      Road_Walk_UPSIDE0001_1: 3284588105361775439
+      Road_Walk_UPSIDE0001_10: -3289252738047980164
+      Road_Walk_UPSIDE0001_11: 4848997809603029509
+      Road_Walk_UPSIDE0001_12: -1281631548819637404
+      Road_Walk_UPSIDE0001_13: 1899840222553625532
+      Road_Walk_UPSIDE0001_14: -4519716131004821290
+      Road_Walk_UPSIDE0001_15: 5401760850665092011
+      Road_Walk_UPSIDE0001_16: -979336465263585429
+      Road_Walk_UPSIDE0001_17: 7226593627803188615
+      Road_Walk_UPSIDE0001_18: 8868432346999846260
+      Road_Walk_UPSIDE0001_19: 1623431361712967244
+      Road_Walk_UPSIDE0001_2: 8269302236435260877
+      Road_Walk_UPSIDE0001_20: 1278489311302764269
+      Road_Walk_UPSIDE0001_21: 6876629063512680728
+      Road_Walk_UPSIDE0001_22: 711674435272542646
+      Road_Walk_UPSIDE0001_23: -5266786313575152700
+      Road_Walk_UPSIDE0001_24: 7107241803721632636
+      Road_Walk_UPSIDE0001_25: -4197267932821570457
+      Road_Walk_UPSIDE0001_26: -4883892955604562555
+      Road_Walk_UPSIDE0001_27: 4505287636918851716
+      Road_Walk_UPSIDE0001_28: 771212671255575776
+      Road_Walk_UPSIDE0001_29: -3130109829818597266
+      Road_Walk_UPSIDE0001_3: -3330394603347787419
+      Road_Walk_UPSIDE0001_30: 4578476802069867242
+      Road_Walk_UPSIDE0001_31: -6095448295840425446
+      Road_Walk_UPSIDE0001_32: 489114795429305928
+      Road_Walk_UPSIDE0001_33: -4386568571419988315
+      Road_Walk_UPSIDE0001_34: -7221072057859690793
+      Road_Walk_UPSIDE0001_35: 1945933518269439631
+      Road_Walk_UPSIDE0001_36: 6761925761354970630
+      Road_Walk_UPSIDE0001_37: 4277791316728608440
+      Road_Walk_UPSIDE0001_38: -8287469498657151986
+      Road_Walk_UPSIDE0001_39: 6867611799229549062
+      Road_Walk_UPSIDE0001_4: 4843215042431608420
+      Road_Walk_UPSIDE0001_40: 4975618196762634095
+      Road_Walk_UPSIDE0001_41: -6941230396608404474
+      Road_Walk_UPSIDE0001_42: -9052874102349277223
+      Road_Walk_UPSIDE0001_43: 204063106370308823
+      Road_Walk_UPSIDE0001_44: -1838057829948725129
+      Road_Walk_UPSIDE0001_45: 5873035276209536751
+      Road_Walk_UPSIDE0001_46: -2006168510487768091
+      Road_Walk_UPSIDE0001_47: 740671719899991260
+      Road_Walk_UPSIDE0001_48: 669762869947283990
+      Road_Walk_UPSIDE0001_49: 6523708009278966383
+      Road_Walk_UPSIDE0001_5: -744709751669444259
+      Road_Walk_UPSIDE0001_50: -6477199206726839333
+      Road_Walk_UPSIDE0001_51: 8190024560352312527
+      Road_Walk_UPSIDE0001_52: 3657566453427891412
+      Road_Walk_UPSIDE0001_53: 278516584528398066
+      Road_Walk_UPSIDE0001_54: -603649596359283972
+      Road_Walk_UPSIDE0001_6: -4217017412954084108
+      Road_Walk_UPSIDE0001_7: 6749548018953230798
+      Road_Walk_UPSIDE0001_8: 7453046353887286004
+      Road_Walk_UPSIDE0001_9: 9210137746726461118
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
