@@ -153,13 +153,7 @@ MonoBehaviour:
   backgroundColor: {r: 0, g: 0, b: 0, a: 1}
   skipButtonColor: {r: 0, g: 0, b: 0, a: 0.72}
   skipButtonTextColor: {r: 1, g: 1, b: 1, a: 1}
-  introVideoClip: {fileID: 32900000, guid: 06b5e161e95b8c244997b94d18426fcd, type: 3}
-  pages:
-  - {fileID: 21300000, guid: a60cc3079a8788548967a030a70d19f0, type: 3}
-  - {fileID: 21300000, guid: 32d7b67772f3035438347d7e39eb9380, type: 3}
-  - {fileID: 21300000, guid: a1be878fd3f656344a7b9521924d0e0d, type: 3}
-  - {fileID: 21300000, guid: e0e98ea4753ffd8479fc64ea88c731cb, type: 3}
-  - {fileID: 21300000, guid: ce04658fbe4ba894093db794787cef2e, type: 3}
+  introVideoClip: {fileID: 32900000, guid: 79a019aa99f80844faea52c8a2c09fa7, type: 3}
 --- !u!4 &433460457
 Transform:
   m_ObjectHideFlags: 0
