@@ -7,6 +7,8 @@ using UnityEngine.UI;
 public class ResultSceneController : MonoBehaviour
 {
     private const string StartSceneName = "Start";
+    private const string CreditsMusicAudioSourceObjectName = "CreditsMusicAudioSource";
+    private const string CreditsMusicResourcesPath = "Audios/maksymmalko-historical-history-music-254182";
     private const string EventSystemObjectName = "EventSystem";
     private const string CanvasObjectName = "ResultCanvas";
     private const string BackgroundObjectName = "Background";
@@ -34,6 +36,8 @@ public class ResultSceneController : MonoBehaviour
 
     private Canvas rootCanvas;
     private Font builtinFont;
+    private AudioSource creditsMusicAudioSource;
+    private AudioClip creditsMusicClip;
     private Image backgroundImage;
     private Image panelImage;
     private Outline panelOutline;
@@ -61,11 +65,17 @@ public class ResultSceneController : MonoBehaviour
         EnsureEventSystem();
         rootCanvas = EnsureCanvas();
         BuildLayout();
+        EnsureCreditsMusicAudioSource();
         ApplyDisplay(ResultSceneState.ConsumePendingDisplayMode(ResultSceneState.DisplayMode.GameOver));
     }
 
     private void OnDestroy()
     {
+        if (creditsMusicAudioSource != null && creditsMusicAudioSource.isPlaying)
+        {
+            creditsMusicAudioSource.Stop();
+        }
+
         if (startButton != null)
         {
             startButton.onClick.RemoveListener(HandleStartButtonPressed);
@@ -117,6 +127,7 @@ public class ResultSceneController : MonoBehaviour
         isCreditsMode = displayMode == ResultSceneState.DisplayMode.Credits;
         creditsScrollComplete = false;
         ApplyLayoutForDisplay(isCreditsMode);
+        UpdateCreditsMusicPlayback();
 
         if (backgroundImage != null)
         {
@@ -173,6 +184,79 @@ public class ResultSceneController : MonoBehaviour
             }
 
             SetFooterState(1f);
+        }
+    }
+
+    private void EnsureCreditsMusicAudioSource()
+    {
+        if (creditsMusicAudioSource == null)
+        {
+            Transform existingAudioSourceTransform = transform.Find(CreditsMusicAudioSourceObjectName);
+            if (existingAudioSourceTransform != null)
+            {
+                creditsMusicAudioSource = existingAudioSourceTransform.GetComponent<AudioSource>();
+            }
+        }
+
+        if (creditsMusicAudioSource == null)
+        {
+            GameObject audioSourceObject = new GameObject(CreditsMusicAudioSourceObjectName);
+            audioSourceObject.transform.SetParent(transform, false);
+            creditsMusicAudioSource = audioSourceObject.AddComponent<AudioSource>();
+        }
+
+        if (creditsMusicAudioSource == null)
+        {
+            return;
+        }
+
+        if (creditsMusicClip == null)
+        {
+            creditsMusicClip = Resources.Load<AudioClip>(CreditsMusicResourcesPath);
+            if (creditsMusicClip == null)
+            {
+                Debug.LogWarning($"Could not load credits music clip at Resources path '{CreditsMusicResourcesPath}'.", this);
+            }
+        }
+
+        creditsMusicAudioSource.playOnAwake = false;
+        creditsMusicAudioSource.loop = true;
+        creditsMusicAudioSource.spatialBlend = 0f;
+        creditsMusicAudioSource.clip = creditsMusicClip;
+
+        SceneAudioSource sceneAudioSource = creditsMusicAudioSource.GetComponent<SceneAudioSource>();
+        if (sceneAudioSource == null)
+        {
+            sceneAudioSource = creditsMusicAudioSource.gameObject.AddComponent<SceneAudioSource>();
+        }
+
+        if (sceneAudioSource != null)
+        {
+            sceneAudioSource.SetConfiguredValues(AudioChannelType.BackgroundMusic, 1f);
+        }
+    }
+
+    private void UpdateCreditsMusicPlayback()
+    {
+        EnsureCreditsMusicAudioSource();
+        if (creditsMusicAudioSource == null || creditsMusicAudioSource.clip == null)
+        {
+            return;
+        }
+
+        if (!isCreditsMode)
+        {
+            if (creditsMusicAudioSource.isPlaying)
+            {
+                creditsMusicAudioSource.Stop();
+            }
+
+            return;
+        }
+
+        if (!creditsMusicAudioSource.isPlaying)
+        {
+            creditsMusicAudioSource.Play();
         }
     }
 

@@ -1,31 +1,42 @@
 using UnityEngine;
 
-[DisallowMultipleComponent]
-[RequireComponent(typeof(SpriteRenderer))]
-public class HealthPickup : MonoBehaviour
+public abstract class TriggerSpritePickupBase : MonoBehaviour
 {
-    [SerializeField, Min(1)] private int restoreAmount = 5;
-    [SerializeField, TextArea(2, 4)]
-    private string creditsDescription =
-        "";
+    protected SpriteRenderer PickupRenderer { get; private set; }
 
-    private BoxCollider2D pickupCollider;
-    private SpriteRenderer pickupRenderer;
+    protected Sprite PickupSprite => PickupRenderer != null ? PickupRenderer.sprite : null;
 
-    private void Awake()
+    protected virtual void Awake()
     {
-        pickupRenderer = GetComponent<SpriteRenderer>();
+        PickupRenderer = GetComponent<SpriteRenderer>();
         EnsurePickupCollider();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        TryCollect(other);
+        HandleTriggerEnter(other);
+    }
+
+    protected abstract void HandleTriggerEnter(Collider2D other);
+
+    protected T GetCollectorInParent<T>(Collider2D other) where T : Component
+    {
+        return other != null ? other.GetComponentInParent<T>() : null;
+    }
+
+    protected void CollectAndDestroy(string creditsDescription = null, bool registerCredits = true)
+    {
+        if (registerCredits)
+        {
+            CollectedPickupCreditsState.RegisterCollectedSprite(PickupSprite, creditsDescription);
+        }
+
+        Destroy(gameObject);
     }
 
     private void EnsurePickupCollider()
     {
-        pickupCollider = GetComponent<BoxCollider2D>();
+        BoxCollider2D pickupCollider = GetComponent<BoxCollider2D>();
         if (pickupCollider == null)
         {
             pickupCollider = gameObject.AddComponent<BoxCollider2D>();
@@ -34,24 +45,26 @@ public class HealthPickup : MonoBehaviour
         pickupCollider.isTrigger = true;
         SpriteColliderSizer.FitBoxCollidersToSpriteRenderers(transform);
     }
+}
 
-    private void TryCollect(Collider2D other)
+[DisallowMultipleComponent]
+[RequireComponent(typeof(SpriteRenderer))]
+public class HealthPickup : TriggerSpritePickupBase
+{
+    [SerializeField, Min(1)] private int restoreAmount = 5;
+    [SerializeField, TextArea(2, 4)]
+    private string creditsDescription =
+        "";
+
+    protected override void HandleTriggerEnter(Collider2D other)
     {
-        if (other == null)
-        {
-            return;
-        }
-
-        PlayerHealth playerHealth = other.GetComponentInParent<PlayerHealth>();
+        PlayerHealth playerHealth = GetCollectorInParent<PlayerHealth>(other);
         if (playerHealth == null)
         {
             return;
         }
 
-        CollectedPickupCreditsState.RegisterCollectedSprite(
-            pickupRenderer != null ? pickupRenderer.sprite : null,
-            creditsDescription);
         playerHealth.RestoreHealth(restoreAmount);
-        Destroy(gameObject);
+        CollectAndDestroy(creditsDescription);
     }
 }

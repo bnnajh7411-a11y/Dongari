@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Collider2D))]
@@ -36,7 +35,6 @@ public class PlayerOxygen : MonoBehaviour
     private Collider2D waterCollider;
     private PlayerHealth playerHealth;
     private Canvas oxygenCanvas;
-    private Image oxygenFillImage;
     private RectTransform oxygenFillRectTransform;
     private float oxygenFillBaseWidth;
     private float oxygenFillHeight;
@@ -47,9 +45,7 @@ public class PlayerOxygen : MonoBehaviour
     private void Awake()
     {
         playerCollider = GetComponent<Collider2D>();
-        playerHealth = GetComponent<PlayerHealth>();
-
-        if (playerHealth == null)
+        if (!TryGetComponent(out playerHealth))
         {
             playerHealth = gameObject.AddComponent<PlayerHealth>();
         }
@@ -71,10 +67,14 @@ public class PlayerOxygen : MonoBehaviour
 
         float deltaTime = Time.deltaTime;
         bool isFullySubmerged = IsFullySubmerged();
+        float previousOxygen = CurrentOxygen;
 
         UpdateOxygenLevel(deltaTime, isFullySubmerged);
         UpdateOxygenDepletion(deltaTime);
-        RefreshHud();
+        if (!Mathf.Approximately(previousOxygen, CurrentOxygen))
+        {
+            RefreshHud();
+        }
     }
 
     private void RefreshWaterCollider()
@@ -202,39 +202,20 @@ public class PlayerOxygen : MonoBehaviour
 
     private void EnsureOxygenHud()
     {
-        if (oxygenFillImage != null)
+        if (oxygenFillRectTransform != null)
         {
             return;
         }
 
-        Canvas existingCanvas = null;
-
-        GameObject healthCanvasObject = GameObject.Find(HealthCanvasObjectName);
-        if (healthCanvasObject != null)
+        oxygenCanvas = RuntimeGaugeUiUtility.FindCanvas(HealthCanvasObjectName);
+        createdOwnCanvas = false;
+        if (oxygenCanvas == null)
         {
-            existingCanvas = healthCanvasObject.GetComponent<Canvas>();
-        }
-        if (existingCanvas == null)
-        {
-            GameObject canvasObject = new GameObject(
+            oxygenCanvas = RuntimeGaugeUiUtility.GetOrCreateOverlayCanvas(
+                null,
                 OxygenCanvasObjectName,
-                typeof(Canvas),
-                typeof(CanvasScaler));
-
-            oxygenCanvas = canvasObject.GetComponent<Canvas>();
-            oxygenCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            oxygenCanvas.sortingOrder = 100;
-            createdOwnCanvas = true;
-
-            CanvasScaler canvasScaler = canvasObject.GetComponent<CanvasScaler>();
-            canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            canvasScaler.referenceResolution = new Vector2(1920f, 1080f);
-            canvasScaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
-            canvasScaler.matchWidthOrHeight = 0.5f;
-        }
-        else
-        {
-            oxygenCanvas = existingCanvas;
+                100,
+                out createdOwnCanvas);
         }
 
         if (oxygenCanvas == null)
@@ -242,53 +223,22 @@ public class PlayerOxygen : MonoBehaviour
             return;
         }
 
-        if (GameObject.Find(OxygenGaugeObjectName) != null)
-        {
-            return;
-        }
-
-        Sprite uiSprite = RuntimeUiSpriteUtility.GetWhiteSprite();
-        GameObject gaugeObject = new GameObject(
+        oxygenFillRectTransform = RuntimeGaugeUiUtility.GetOrCreateGaugeFillRect(
+            oxygenCanvas,
             OxygenGaugeObjectName,
-            typeof(RectTransform),
-            typeof(Image));
-
-        gaugeObject.transform.SetParent(oxygenCanvas.transform, false);
-
-        RectTransform gaugeRectTransform = gaugeObject.GetComponent<RectTransform>();
-        gaugeRectTransform.anchorMin = new Vector2(0f, 1f);
-        gaugeRectTransform.anchorMax = new Vector2(0f, 1f);
-        gaugeRectTransform.pivot = new Vector2(0f, 1f);
-        gaugeRectTransform.sizeDelta = gaugeSize;
-        gaugeRectTransform.anchoredPosition = gaugeAnchoredPosition;
-
-        Image backgroundImage = gaugeObject.GetComponent<Image>();
-        backgroundImage.sprite = uiSprite;
-        backgroundImage.type = Image.Type.Simple;
-        backgroundImage.color = showBackgroundFrame ? backgroundColor : Color.clear;
-        backgroundImage.enabled = showBackgroundFrame;
-        backgroundImage.raycastTarget = false;
-
-        GameObject fillObject = new GameObject("Fill", typeof(RectTransform), typeof(Image));
-        fillObject.transform.SetParent(gaugeObject.transform, false);
-
-        RectTransform fillRectTransform = fillObject.GetComponent<RectTransform>();
-        fillRectTransform.anchorMin = new Vector2(0f, 1f);
-        fillRectTransform.anchorMax = new Vector2(0f, 1f);
-        fillRectTransform.pivot = new Vector2(0f, 1f);
-        fillRectTransform.anchoredPosition = new Vector2(3f, -3f);
-        oxygenFillBaseWidth = Mathf.Max(0f, gaugeSize.x - 6f);
-        oxygenFillHeight = Mathf.Max(0f, gaugeSize.y - 6f);
-        fillRectTransform.sizeDelta = new Vector2(oxygenFillBaseWidth, oxygenFillHeight);
-
-        oxygenFillRectTransform = fillRectTransform;
-        oxygenFillImage = fillObject.GetComponent<Image>();
-        oxygenFillImage.sprite = uiSprite;
-        oxygenFillImage.type = Image.Type.Simple;
-        oxygenFillImage.color = oxygenFillColor;
-        oxygenFillImage.raycastTarget = false;
-
-        CreateGaugeLabel(gaugeObject.transform);
+            OxygenLabelObjectName,
+            gaugeSize,
+            gaugeAnchoredPosition,
+            showBackgroundFrame,
+            backgroundColor,
+            oxygenFillColor,
+            gaugeLabel,
+            gaugeLabelOffset,
+            gaugeLabelSize,
+            gaugeLabelFontSize,
+            gaugeLabelColor,
+            out oxygenFillBaseWidth,
+            out oxygenFillHeight);
     }
 
     private void OnDestroy()
@@ -308,28 +258,5 @@ public class PlayerOxygen : MonoBehaviour
 
         float oxygenRatio = Mathf.Approximately(maxOxygen, 0f) ? 0f : CurrentOxygen / maxOxygen;
         oxygenFillRectTransform.sizeDelta = new Vector2(oxygenFillBaseWidth * oxygenRatio, oxygenFillHeight);
-    }
-
-    private void CreateGaugeLabel(Transform parent)
-    {
-        GameObject labelObject = new GameObject(OxygenLabelObjectName, typeof(RectTransform), typeof(Text));
-        labelObject.transform.SetParent(parent, false);
-
-        RectTransform labelRectTransform = labelObject.GetComponent<RectTransform>();
-        labelRectTransform.anchorMin = new Vector2(1f, 0.5f);
-        labelRectTransform.anchorMax = new Vector2(1f, 0.5f);
-        labelRectTransform.pivot = new Vector2(0f, 0.5f);
-        labelRectTransform.anchoredPosition = gaugeLabelOffset;
-        labelRectTransform.sizeDelta = gaugeLabelSize;
-
-        Text labelText = labelObject.GetComponent<Text>();
-        labelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        labelText.fontSize = gaugeLabelFontSize;
-        labelText.color = gaugeLabelColor;
-        labelText.alignment = TextAnchor.MiddleLeft;
-        labelText.horizontalOverflow = HorizontalWrapMode.Overflow;
-        labelText.verticalOverflow = VerticalWrapMode.Overflow;
-        labelText.raycastTarget = false;
-        labelText.text = gaugeLabel;
     }
 }

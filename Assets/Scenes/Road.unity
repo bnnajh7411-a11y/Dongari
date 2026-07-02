@@ -1776,8 +1776,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8dc287f96f1a433d86843038db9dd3ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  moveSpeed: 7
-  runSpeed: 10
+  moveSpeed: 10
+  runSpeed: 16
   jumpForce: 13
   climbSpeed: 4.5
   riseGravityMultiplier: 1.2
@@ -2153,14 +2153,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RoadCarSpawner
   minSpawnInterval: 0.6
   maxSpawnInterval: 1.2
-  minCarSpeed: 10
-  maxCarSpeed: 15
+  minCarSpeed: 15
+  maxCarSpeed: 20
   spawnPadding: 1.25
   verticalPadding: 1
   laneCount: 4
   laneFollowGap: 1.1
   spawnLaneGap: 1.6
-  carScale: 1
+  carScale: 1.2
   colliderWidthFactor: 0.8
   colliderHeightFactor: 0.257
   colliderVerticalOffsetFactor: -0.31

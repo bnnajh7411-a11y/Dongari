@@ -4,15 +4,13 @@ using UnityEngine.UI;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(SpriteRenderer))]
-public class DrainMazePickup : MonoBehaviour
+public class DrainMazePickup : TriggerSpritePickupBase
 {
     private const string DrainSceneName = "Drain";
     private const string MazeItemObjectName = "MiroItem";
 
     private static bool hasRegisteredSceneLoadedHandler;
 
-    private BoxCollider2D pickupCollider;
-    private SpriteRenderer pickupRenderer;
     private bool hasCollected;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -60,45 +58,21 @@ public class DrainMazePickup : MonoBehaviour
         mazeItemObject.AddComponent<DrainMazePickup>();
     }
 
-    private void Awake()
-    {
-        pickupRenderer = GetComponent<SpriteRenderer>();
-        EnsurePickupCollider();
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        TryCollect(other);
-    }
-
-    private void EnsurePickupCollider()
-    {
-        pickupCollider = GetComponent<BoxCollider2D>();
-        if (pickupCollider == null)
-        {
-            pickupCollider = gameObject.AddComponent<BoxCollider2D>();
-        }
-
-        pickupCollider.isTrigger = true;
-        SpriteColliderSizer.FitBoxCollidersToSpriteRenderers(transform);
-    }
-
-    private void TryCollect(Collider2D other)
+    protected override void HandleTriggerEnter(Collider2D other)
     {
         if (hasCollected || other == null)
         {
             return;
         }
 
-        PlayerMovement playerMovement = other.GetComponentInParent<PlayerMovement>();
-        if (playerMovement == null)
+        if (GetCollectorInParent<PlayerMovement>(other) == null)
         {
             return;
         }
 
         hasCollected = true;
-        DrainMazeOverlay.Show(pickupRenderer != null ? pickupRenderer.sprite : null);
-        Destroy(gameObject);
+        DrainMazeOverlay.Show(PickupSprite);
+        CollectAndDestroy(registerCredits: false);
     }
 }
 
@@ -131,7 +105,6 @@ internal sealed class DrainMazeOverlay : MonoBehaviour
     private static DrainMazeOverlay instance;
 
     private Canvas overlayCanvas;
-    private Font builtinFont;
     private RectTransform previewPanelRectTransform;
     private Image previewPanelImage;
     private Image previewImage;
@@ -220,11 +193,6 @@ internal sealed class DrainMazeOverlay : MonoBehaviour
 
     private void EnsureCanvas()
     {
-        if (builtinFont == null)
-        {
-            builtinFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        }
-
         if (overlayCanvas != null)
         {
             return;
@@ -375,7 +343,7 @@ internal sealed class DrainMazeOverlay : MonoBehaviour
             expandedHintTextRectTransform.sizeDelta = new Vector2(640f, ExpandedHintHeight);
 
             expandedHintText = expandedHintTextObject.GetComponent<Text>();
-            expandedHintText.font = builtinFont;
+            expandedHintText.font = RuntimeGaugeUiUtility.GetBuiltinFont();
             expandedHintText.fontSize = ExpandedHintFontSize;
             expandedHintText.alignment = TextAnchor.MiddleCenter;
             expandedHintText.color = Color.white;

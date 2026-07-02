@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -312,85 +311,32 @@ public class PlayerHealth : MonoBehaviour
             return;
         }
 
-        GameObject existingCanvasObject = GameObject.Find(HealthCanvasObjectName);
-        if (existingCanvasObject != null && existingCanvasObject.TryGetComponent(out Canvas existingCanvas))
-        {
-            healthCanvas = existingCanvas;
-        }
-        else
-        {
-            GameObject canvasObject = new GameObject(
-                HealthCanvasObjectName,
-                typeof(Canvas),
-                typeof(CanvasScaler));
-
-            canvasObject.transform.SetParent(transform, false);
-
-            healthCanvas = canvasObject.GetComponent<Canvas>();
-            healthCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            healthCanvas.sortingOrder = 110;
-
-            CanvasScaler canvasScaler = canvasObject.GetComponent<CanvasScaler>();
-            canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            canvasScaler.referenceResolution = new Vector2(1920f, 1080f);
-            canvasScaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
-            canvasScaler.matchWidthOrHeight = 0.5f;
-        }
-
-        if (healthCanvas != null)
-        {
-            healthCanvas.sortingOrder = 110;
-        }
-
-        if (healthCanvas == null || GameObject.Find(HealthGaugeObjectName) != null)
+        healthCanvas = RuntimeGaugeUiUtility.GetOrCreateOverlayCanvas(
+            transform,
+            HealthCanvasObjectName,
+            110,
+            out _);
+        if (healthCanvas == null)
         {
             return;
         }
 
-        Sprite uiSprite = RuntimeUiSpriteUtility.GetWhiteSprite();
-        GameObject gaugeObject = new GameObject(
+        healthFillRectTransform = RuntimeGaugeUiUtility.GetOrCreateGaugeFillRect(
+            healthCanvas,
             HealthGaugeObjectName,
-            typeof(RectTransform),
-            typeof(Image));
-
-        gaugeObject.transform.SetParent(healthCanvas.transform, false);
-
-        RectTransform gaugeRectTransform = gaugeObject.GetComponent<RectTransform>();
-        gaugeRectTransform.anchorMin = new Vector2(0f, 1f);
-        gaugeRectTransform.anchorMax = new Vector2(0f, 1f);
-        gaugeRectTransform.pivot = new Vector2(0f, 1f);
-        gaugeRectTransform.sizeDelta = gaugeSize;
-        gaugeRectTransform.anchoredPosition = gaugeAnchoredPosition;
-
-        Image backgroundImage = gaugeObject.GetComponent<Image>();
-        backgroundImage.sprite = uiSprite;
-        backgroundImage.type = Image.Type.Simple;
-        backgroundImage.color = showBackgroundFrame ? backgroundColor : Color.clear;
-        backgroundImage.enabled = showBackgroundFrame;
-        backgroundImage.raycastTarget = false;
-
-        GameObject fillObject = new GameObject("Fill", typeof(RectTransform), typeof(Image));
-        fillObject.transform.SetParent(gaugeObject.transform, false);
-
-        RectTransform fillRectTransform = fillObject.GetComponent<RectTransform>();
-        fillRectTransform.anchorMin = new Vector2(0f, 1f);
-        fillRectTransform.anchorMax = new Vector2(0f, 1f);
-        fillRectTransform.pivot = new Vector2(0f, 1f);
-        fillRectTransform.anchoredPosition = new Vector2(3f, -3f);
-
-        healthFillBaseWidth = Mathf.Max(0f, gaugeSize.x - 6f);
-        healthFillHeight = Mathf.Max(0f, gaugeSize.y - 6f);
-        fillRectTransform.sizeDelta = new Vector2(healthFillBaseWidth, healthFillHeight);
-
-        healthFillRectTransform = fillRectTransform;
-
-        Image fillImage = fillObject.GetComponent<Image>();
-        fillImage.sprite = uiSprite;
-        fillImage.type = Image.Type.Simple;
-        fillImage.color = healthFillColor;
-        fillImage.raycastTarget = false;
-
-        CreateGaugeLabel(gaugeObject.transform);
+            HealthLabelObjectName,
+            gaugeSize,
+            gaugeAnchoredPosition,
+            showBackgroundFrame,
+            backgroundColor,
+            healthFillColor,
+            gaugeLabel,
+            gaugeLabelOffset,
+            gaugeLabelSize,
+            gaugeLabelFontSize,
+            gaugeLabelColor,
+            out healthFillBaseWidth,
+            out healthFillHeight);
     }
 
     private void SaveCurrentHealth()
@@ -416,28 +362,5 @@ public class PlayerHealth : MonoBehaviour
 
         float healthRatio = maxHealth <= 0 ? 0f : (float)CurrentHealth / maxHealth;
         healthFillRectTransform.sizeDelta = new Vector2(healthFillBaseWidth * healthRatio, healthFillHeight);
-    }
-
-    private void CreateGaugeLabel(Transform parent)
-    {
-        GameObject labelObject = new GameObject(HealthLabelObjectName, typeof(RectTransform), typeof(Text));
-        labelObject.transform.SetParent(parent, false);
-
-        RectTransform labelRectTransform = labelObject.GetComponent<RectTransform>();
-        labelRectTransform.anchorMin = new Vector2(1f, 0.5f);
-        labelRectTransform.anchorMax = new Vector2(1f, 0.5f);
-        labelRectTransform.pivot = new Vector2(0f, 0.5f);
-        labelRectTransform.anchoredPosition = gaugeLabelOffset;
-        labelRectTransform.sizeDelta = gaugeLabelSize;
-
-        Text labelText = labelObject.GetComponent<Text>();
-        labelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        labelText.fontSize = gaugeLabelFontSize;
-        labelText.color = gaugeLabelColor;
-        labelText.alignment = TextAnchor.MiddleLeft;
-        labelText.horizontalOverflow = HorizontalWrapMode.Overflow;
-        labelText.verticalOverflow = VerticalWrapMode.Overflow;
-        labelText.raycastTarget = false;
-        labelText.text = gaugeLabel;
     }
 }

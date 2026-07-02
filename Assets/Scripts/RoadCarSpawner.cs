@@ -20,6 +20,7 @@ public class RoadCarSpawner : MonoBehaviour
     private const float LowerLaneYOffsetPercent = 0.25f;
     private const float BottomLaneExtraYOffsetPercent = 0.10f;
     private const float UpperLaneYOffsetPercent = 0.20f;
+    private static readonly float[] FourLaneFineTuneYOffsetPercents = { -0.20f, -0.13f, -0.11f, -0.14f };
 
 #if UNITY_EDITOR
     private const string EditorCarAssetFolder = "Assets/Sprites";
@@ -34,7 +35,7 @@ public class RoadCarSpawner : MonoBehaviour
     [SerializeField, Min(1)] private int laneCount = 4;
     [SerializeField, Min(0f)] private float laneFollowGap = 1.1f;
     [SerializeField, Min(0f)] private float spawnLaneGap = 1.6f;
-    [SerializeField, Min(0.1f)] private float carScale = 2.5f;
+    [SerializeField, Min(0.1f)] private float carScale = 3.0f;
     [SerializeField, Range(0.1f, 1f)] private float colliderWidthFactor = 0.68f;
     [SerializeField, Range(0.1f, 1f)] private float colliderHeightFactor = 0.12f;
     [SerializeField, Range(-0.5f, 0.5f)] private float colliderVerticalOffsetFactor = -10f;
@@ -531,6 +532,33 @@ public class RoadCarSpawner : MonoBehaviour
         return laneSortingOrder;
     }
 
+    private static float GetFineTuneLaneYOffsetPercent(int laneIndex, int totalLanes)
+    {
+        int clampedLaneIndex = Mathf.Clamp(laneIndex, 0, Mathf.Max(0, totalLanes - 1));
+
+        if (totalLanes == FourLaneFineTuneYOffsetPercents.Length)
+        {
+            return FourLaneFineTuneYOffsetPercents[clampedLaneIndex];
+        }
+
+        if (clampedLaneIndex == 0)
+        {
+            return FourLaneFineTuneYOffsetPercents[0];
+        }
+
+        if (clampedLaneIndex == totalLanes - 1)
+        {
+            return FourLaneFineTuneYOffsetPercents[3];
+        }
+
+        if (clampedLaneIndex >= totalLanes - 2)
+        {
+            return FourLaneFineTuneYOffsetPercents[2];
+        }
+
+        return FourLaneFineTuneYOffsetPercents[1];
+    }
+
     private float GetLaneCenterY(int laneIndex, float minY, float maxY)
     {
         if (minY >= maxY)
@@ -539,23 +567,26 @@ public class RoadCarSpawner : MonoBehaviour
         }
 
         int totalLanes = Mathf.Max(1, laneCount);
-        float laneHeight = (maxY - minY) / totalLanes;
+        float laneRange = maxY - minY;
+        float laneHeight = laneRange / totalLanes;
         int clampedLaneIndex = Mathf.Clamp(laneIndex, 0, totalLanes - 1);
         float laneCenterY = minY + (laneHeight * (clampedLaneIndex + 0.5f));
 
         if (IsLaneRightMoving(clampedLaneIndex))
         {
-            laneCenterY += (maxY - minY) * UpperLaneYOffsetPercent;
+            laneCenterY += laneRange * UpperLaneYOffsetPercent;
         }
         else
         {
-            laneCenterY += (maxY - minY) * LowerLaneYOffsetPercent;
+            laneCenterY += laneRange * LowerLaneYOffsetPercent;
 
             if (clampedLaneIndex == 0)
             {
-                laneCenterY += (maxY - minY) * BottomLaneExtraYOffsetPercent;
+                laneCenterY += laneRange * BottomLaneExtraYOffsetPercent;
             }
         }
+
+        laneCenterY += laneRange * GetFineTuneLaneYOffsetPercent(clampedLaneIndex, totalLanes);
 
         return Mathf.Clamp(laneCenterY, minY, maxY);
     }
