@@ -1,0 +1,767 @@
+fileFormatVersion: 2
+guid: 13ea69101e7175b40b043905ce874323
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8985834619307423998
+    second: Gridient_0
+  - first:
+      213: -8788261647537599698
+    second: Gridient_1
+  - first:
+      213: 2423996176743719254
+    second: Gridient_2
+  - first:
+      213: -5507452345943815795
+    second: Gridient_3
+  - first:
+      213: -6816205338489136935
+    second: Gridient_4
+  - first:
+      213: 4476886244873722537
+    second: Gridient_5
+  - first:
+      213: 4374972289741148857
+    second: Gridient_6
+  - first:
+      213: 2086413973392315663
+    second: Gridient_7
+  - first:
+      213: 1218801023017955267
+    second: Gridient_8
+  - first:
+      213: 8712250016616587736
+    second: Gridient_9
+  - first:
+      213: 2422835663608008517
+    second: Gridient_10
+  - first:
+      213: -9179016597537755424
+    second: Gridient_11
+  - first:
+      213: 4745114089146248834
+    second: Gridient_12
+  - first:
+      213: 7580352888604913705
+    second: Gridient_13
+  - first:
+      213: -6262100272128090587
+    second: Gridient_14
+  - first:
+      213: 128451244392641847
+    second: Gridient_15
+  - first:
+      213: 590032808500752142
+    second: Gridient_16
+  - first:
+      213: -3503267893760274697
+    second: Gridient_17
+  - first:
+      213: 2500140687102917359
+    second: Gridient_18
+  - first:
+      213: -7674193750669274275
+    second: Gridient_19
+  - first:
+      213: 104853637999507255
+    second: Gridient_20
+  - first:
+      213: 5334879880924545745
+    second: Gridient_21
+  - first:
+      213: -1128668299480483911
+    second: Gridient_22
+  - first:
+      213: 3022357910100428058
+    second: Gridient_23
+  - first:
+      213: 8577822069680362303
+    second: Gridient_24
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Gridient_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1000
+        height: 982
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef8f93e2af814bc70800000000000000
+      internalID: 8985834619307423998
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gridient_1
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 951
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e2b05510892d90680800000000000000
+      internalID: -8788261647537599698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gridient_2
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 950
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 651e6bb0ea3c3a120800000000000000
+      internalID: 2423996176743719254
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gridient_3
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 947
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8980a665499193b0800000000000000
+      internalID: -5507452345943815795
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gridient_4
+      rect:
+        serializedVersion: 2
+        x: 676
+        y: 955
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d8db33cb59f761a0800000000000000
+      internalID: -6816205338489136935
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gridient_5
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 951
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9aad785f158112e30800000000000000
+      internalID: 4476886244873722537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gridient_6
+      rect:
+        serializedVersion: 2
+        x: 862
+        y: 950
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b2d2303e1607bc30800000000000000
+      internalID: 4374972289741148857
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gridient_7
+      rect:
+        serializedVersion: 2
+        x: 980
+        y: 956
+        width: 11
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f05d57a547e64fc10800000000000000
+      internalID: 2086413973392315663
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gridient_8
+      rect:
+        serializedVersion: 2
+        x: 992
+        y: 949
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3cf2edca21d0ae010800000000000000
+      internalID: 1218801023017955267
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gridient_9
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 948
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d1a2da0b3128e870800000000000000
+      internalID: 8712250016616587736
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gridient_10
+      rect:
+        serializedVersion: 2
+        x: 99
+        y: 947
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54fc0860334af9120800000000000000
+      internalID: 2422835663608008517
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gridient_11
+      rect:
+        serializedVersion: 2
+        x: 183
+        y: 948
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0eee85c79059d9080800000000000000
+      internalID: -9179016597537755424
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gridient_12
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 948
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28e63469f180ad140800000000000000
+      internalID: 4745114089146248834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gridient_13
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 944
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 920f66d2ac2d23960800000000000000
+      internalID: 7580352888604913705
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gridient_14
+      rect:
+        serializedVersion: 2
+        x: 227
+        y: 937
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 52e9de30bfc8819a0800000000000000
+      internalID: -6262100272128090587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gridient_15
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 949
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 735faf8e9b958c100800000000000000
+      internalID: 128451244392641847
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gridient_16
+      rect:
+        serializedVersion: 2
+        x: 302
+        y: 944
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0f638496b7303800800000000000000
+      internalID: 590032808500752142
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gridient_17
+      rect:
+        serializedVersion: 2
+        x: 318
+        y: 933
+        width: 18
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7fe43676964e16fc0800000000000000
+      internalID: -3503267893760274697
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gridient_18
+      rect:
+        serializedVersion: 2
+        x: 383
+        y: 946
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fea354765b842b220800000000000000
+      internalID: 2500140687102917359
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gridient_19
+      rect:
+        serializedVersion: 2
+        x: 403
+        y: 945
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d53d5d18179cf7590800000000000000
+      internalID: -7674193750669274275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gridient_20
+      rect:
+        serializedVersion: 2
+        x: 449
+        y: 942
+        width: 6
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7373e5604d3847100800000000000000
+      internalID: 104853637999507255
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gridient_21
+      rect:
+        serializedVersion: 2
+        x: 627
+        y: 943
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d2c2ed7cfc490a40800000000000000
+      internalID: 5334879880924545745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gridient_22
+      rect:
+        serializedVersion: 2
+        x: 634
+        y: 945
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b7b83c592a2650f0800000000000000
+      internalID: -1128668299480483911
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gridient_23
+      rect:
+        serializedVersion: 2
+        x: 849
+        y: 949
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a15c0af818291f920800000000000000
+      internalID: 3022357910100428058
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gridient_24
+      rect:
+        serializedVersion: 2
+        x: 947
+        y: 947
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f33ddc1a9bb8a0770800000000000000
+      internalID: 8577822069680362303
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Gridient_0: 8985834619307423998
+      Gridient_1: -8788261647537599698
+      Gridient_10: 2422835663608008517
+      Gridient_11: -9179016597537755424
+      Gridient_12: 4745114089146248834
+      Gridient_13: 7580352888604913705
+      Gridient_14: -6262100272128090587
+      Gridient_15: 128451244392641847
+      Gridient_16: 590032808500752142
+      Gridient_17: -3503267893760274697
+      Gridient_18: 2500140687102917359
+      Gridient_19: -7674193750669274275
+      Gridient_2: 2423996176743719254
+      Gridient_20: 104853637999507255
+      Gridient_21: 5334879880924545745
+      Gridient_22: -1128668299480483911
+      Gridient_23: 3022357910100428058
+      Gridient_24: 8577822069680362303
+      Gridient_3: -5507452345943815795
+      Gridient_4: -6816205338489136935
+      Gridient_5: 4476886244873722537
+      Gridient_6: 4374972289741148857
+      Gridient_7: 2086413973392315663
+      Gridient_8: 1218801023017955267
+      Gridient_9: 8712250016616587736
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
