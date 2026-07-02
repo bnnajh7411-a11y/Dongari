@@ -4570,8 +4570,8 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!61 &1812676437
-BoxCollider2D:
+--- !u!58 &1812676437
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -4604,18 +4604,8 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.06, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.25, y: 1.25}
-    newSize: {x: 0.41666666, y: 0.41666666}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 0.95, y: 0.76}
-  m_EdgeRadius: 0
+  m_Offset: {x: -0.07326323, y: 0}
+  m_Radius: 0.41326326
 --- !u!1 &1873950943
 GameObject:
   m_ObjectHideFlags: 0
@@ -5393,17 +5383,6 @@ PolygonCollider2D:
       - {x: -16.880001, y: 2.884}
       - {x: -16.208, y: 2.3160002}
       - {x: -16.36, y: 1.6760001}
-      - {x: -16.16, y: 1.468}
-      - {x: -15.352001, y: 2.3560002}
-      - {x: -14.328001, y: 1.8040001}
-      - {x: -13.672001, y: 2.4280002}
-      - {x: -12.488001, y: 2.292}
-      - {x: -12.160001, y: 1.5480001}
-      - {x: -12.608001, y: 0.86}
-      - {x: -13.68, y: 0.94000006}
-      - {x: -14.2560005, y: 1.1800001}
-      - {x: -15.176001, y: 0.84400004}
-      - {x: -15.792001, y: 1.0040001}
       - {x: -15.864, y: 0.892}
       - {x: -15.240001, y: 0.716}
       - {x: -14.856001, y: 0.42000002}
