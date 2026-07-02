@@ -5128,12 +5128,12 @@ MonoBehaviour:
   gaugeSize: {x: 320, y: 24}
   gaugeAnchoredPosition: {x: 24, y: -24}
   showBackgroundFrame: 0
-  backgroundColor: {r: 0, g: 0, b: 0, a: 0.55}
+  backgroundColor: {r: 0.6745098, g: 0.6745098, b: 0.6745098, a: 0.55}
   healthFillColor: {r: 0.86, g: 0.2, b: 0.2, a: 1}
   gaugeLabel: "\uCCB4\uB825"
   gaugeLabelOffset: {x: 16, y: 0}
   gaugeLabelSize: {x: 180, y: 28}
-  gaugeLabelFontSize: 20
+  gaugeLabelFontSize: 30
   gaugeLabelColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!61 &2056000003
 BoxCollider2D:

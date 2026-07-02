@@ -31,6 +31,7 @@ internal static class RuntimeGaugeUiUtility
     private const float ReferenceWidth = 1920f;
     private const float ReferenceHeight = 1080f;
     private const float GaugeFillInset = 3f;
+    private const float GaugeScaleMultiplier = 1.05f;
 
     private static Font cachedBuiltinFont;
 
@@ -136,8 +137,9 @@ internal static class RuntimeGaugeUiUtility
         out float fillBaseWidth,
         out float fillHeight)
     {
-        fillBaseWidth = Mathf.Max(0f, gaugeSize.x - (GaugeFillInset * 2f));
-        fillHeight = Mathf.Max(0f, gaugeSize.y - (GaugeFillInset * 2f));
+        Vector2 scaledGaugeSize = gaugeSize * GaugeScaleMultiplier;
+        fillBaseWidth = Mathf.Max(0f, scaledGaugeSize.x - (GaugeFillInset * 2f));
+        fillHeight = Mathf.Max(0f, scaledGaugeSize.y - (GaugeFillInset * 2f));
 
         if (canvas == null)
         {
@@ -148,7 +150,7 @@ internal static class RuntimeGaugeUiUtility
         gaugeRectTransform.anchorMin = new Vector2(0f, 1f);
         gaugeRectTransform.anchorMax = new Vector2(0f, 1f);
         gaugeRectTransform.pivot = new Vector2(0f, 1f);
-        gaugeRectTransform.sizeDelta = gaugeSize;
+        gaugeRectTransform.sizeDelta = scaledGaugeSize;
         gaugeRectTransform.anchoredPosition = gaugeAnchoredPosition;
 
         Image backgroundImage = GetOrAddComponent<Image>(gaugeRectTransform.gameObject);

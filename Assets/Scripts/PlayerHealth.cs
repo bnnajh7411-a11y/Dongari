@@ -312,7 +312,7 @@ public class PlayerHealth : MonoBehaviour
         }
 
         healthCanvas = RuntimeGaugeUiUtility.GetOrCreateOverlayCanvas(
-            transform,
+            null,
             HealthCanvasObjectName,
             110,
             out _);

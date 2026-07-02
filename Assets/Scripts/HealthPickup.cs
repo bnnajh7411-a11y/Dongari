@@ -2,6 +2,19 @@ using UnityEngine;
 
 public abstract class TriggerSpritePickupBase : MonoBehaviour
 {
+    private const string PickupAudioSourceObjectName = "PickupAudioSource";
+    private const string PickupAudioResourcePath = "Audios/Item3";
+
+    private static AudioSource pickupAudioSource;
+    private static AudioClip pickupAudioClip;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetPickupAudioState()
+    {
+        pickupAudioSource = null;
+        pickupAudioClip = null;
+    }
+
     protected SpriteRenderer PickupRenderer { get; private set; }
 
     protected Sprite PickupSprite => PickupRenderer != null ? PickupRenderer.sprite : null;
@@ -31,7 +44,60 @@ public abstract class TriggerSpritePickupBase : MonoBehaviour
             CollectedPickupCreditsState.RegisterCollectedSprite(PickupSprite, creditsDescription);
         }
 
+        PlayPickupSound();
         Destroy(gameObject);
+    }
+
+    private static void PlayPickupSound()
+    {
+        if (pickupAudioClip == null)
+        {
+            pickupAudioClip = Resources.Load<AudioClip>(PickupAudioResourcePath);
+        }
+
+        if (pickupAudioClip == null)
+        {
+            return;
+        }
+
+        AudioSource audioSource = EnsurePickupAudioSource();
+        if (audioSource == null)
+        {
+            return;
+        }
+
+        audioSource.PlayOneShot(pickupAudioClip, AudioSettingsStore.SoundEffectVolume);
+    }
+
+    private static AudioSource EnsurePickupAudioSource()
+    {
+        if (pickupAudioSource != null)
+        {
+            return pickupAudioSource;
+        }
+
+        GameObject existingAudioObject = GameObject.Find(PickupAudioSourceObjectName);
+        if (existingAudioObject != null)
+        {
+            pickupAudioSource = existingAudioObject.GetComponent<AudioSource>();
+        }
+
+        if (pickupAudioSource == null)
+        {
+            GameObject audioObject = new GameObject(PickupAudioSourceObjectName, typeof(AudioSource));
+            DontDestroyOnLoad(audioObject);
+            pickupAudioSource = audioObject.GetComponent<AudioSource>();
+        }
+
+        if (pickupAudioSource == null)
+        {
+            return null;
+        }
+
+        pickupAudioSource.playOnAwake = false;
+        pickupAudioSource.loop = false;
+        pickupAudioSource.spatialBlend = 0f;
+        return pickupAudioSource;
     }
 
     private void EnsurePickupCollider()

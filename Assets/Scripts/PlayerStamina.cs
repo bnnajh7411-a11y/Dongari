@@ -152,7 +152,7 @@ public class PlayerStamina : MonoBehaviour
         }
 
         staminaCanvas = RuntimeGaugeUiUtility.GetOrCreateOverlayCanvas(
-            transform,
+            null,
             StaminaCanvasObjectName,
             105,
             out _);

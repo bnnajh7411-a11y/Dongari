@@ -101,7 +101,7 @@ public class StartSceneController : MonoBehaviour
     [SerializeField] private string buttonLabel = "\uc2dc\uc791";
     [SerializeField] private string reconfigureButtonLabel = "\ud0a4\u0020\uc124\uc815";
     [SerializeField] private string optionButtonLabel = "\uc635\uc158";
-    [SerializeField] private string exitButtonLabel = "\uc885\ub958";
+    [SerializeField] private string exitButtonLabel = "\uc885\ub8cc";
 
     private readonly Dictionary<InputActionType, List<Text>> bindingValueTexts = new Dictionary<InputActionType, List<Text>>();
     private readonly List<Text> statusTexts = new List<Text>();
@@ -180,27 +180,7 @@ public class StartSceneController : MonoBehaviour
 
         BuildAvailableResolutionOptions();
         ApplySavedDisplaySettings();
-        EnsureEventSystem();
-        rootCanvas = EnsureCanvas();
-        if (isPauseMenu)
-        {
-            pauseBackgroundOverlay = EnsurePauseBackgroundOverlay(rootCanvas.transform);
-            SetPauseBackgroundVisible(false);
-        }
-
-        menuButtonsContainer = EnsureMenuButtonsContainer(rootCanvas.transform);
-        EnsureStartButton(menuButtonsContainer.transform);
-        UpdatePrimaryButtonLabel();
-        EnsureReconfigureButton(menuButtonsContainer.transform);
-        EnsureOptionButton(menuButtonsContainer.transform);
-        EnsureExitButton(menuButtonsContainer.transform);
-        EnsureKeyMappingPanel(rootCanvas.transform);
-        EnsureOptionsPanel(rootCanvas.transform);
-        SetKeyMappingPanelVisible(false);
-        SetOptionsPanelVisible(false);
-        RefreshMenuButtons();
-        RefreshBindingValueTexts();
-        UpdateStatusText(DefaultStatusText);
+        EnsureMenuUiAvailable();
 
         if (ShouldPlayStartSceneIntro())
         {
@@ -1570,12 +1550,17 @@ public class StartSceneController : MonoBehaviour
             return;
         }
 
-        EnsureEventSystem();
-        SetKeyMappingPanelVisible(false);
-        SetOptionsPanelVisible(false);
+        ResumeSceneActivity();
+
+        if (IsPauseMenuBlockedScene(scene.name))
+        {
+            return;
+        }
+
+        EnsureMenuUiAvailable();
         SetPauseBackgroundVisible(false);
         SetMenuButtonsVisible(false);
-        ResumeSceneActivity();
+        SetMenuButtonsInteractable(true);
     }
 
     private Font GetBuiltinFont()
@@ -1661,6 +1646,7 @@ public class StartSceneController : MonoBehaviour
             return;
         }
 
+        EnsureMenuUiAvailable();
         shouldLoadSceneAfterConfirm = false;
         RefreshMenuButtons();
         SetKeyMappingPanelVisible(false);
@@ -2120,6 +2106,72 @@ public class StartSceneController : MonoBehaviour
         BackgroundClickCloseHandler handler = clickArea.AddComponent<BackgroundClickCloseHandler>();
         handler.Initialize(closeAction);
         return clickArea;
+    }
+
+    private void EnsureMenuUiAvailable()
+    {
+        if (rootCanvas == null)
+        {
+            ResetMenuUiReferences();
+        }
+
+        EnsureEventSystem();
+        rootCanvas = EnsureCanvas();
+
+        if (isPauseMenu)
+        {
+            pauseBackgroundOverlay = EnsurePauseBackgroundOverlay(rootCanvas.transform);
+            SetPauseBackgroundVisible(false);
+        }
+
+        menuButtonsContainer = EnsureMenuButtonsContainer(rootCanvas.transform);
+        EnsureStartButton(menuButtonsContainer.transform);
+        UpdatePrimaryButtonLabel();
+        EnsureReconfigureButton(menuButtonsContainer.transform);
+        EnsureOptionButton(menuButtonsContainer.transform);
+        EnsureExitButton(menuButtonsContainer.transform);
+        EnsureKeyMappingPanel(rootCanvas.transform);
+        EnsureOptionsPanel(rootCanvas.transform);
+        SetKeyMappingPanelVisible(false);
+        SetOptionsPanelVisible(false);
+        RefreshMenuButtons();
+        RefreshBindingValueTexts();
+        UpdateStatusText(DefaultStatusText);
+    }
+
+    private void ResetMenuUiReferences()
+    {
+        pauseBackgroundOverlay = null;
+        menuButtonsContainer = null;
+        keyMappingPanel = null;
+        optionsPanel = null;
+        optionsAudioContent = null;
+        optionsResolutionContent = null;
+        optionsKeySetupContent = null;
+        bindingScrollRect = null;
+        resolutionOptionsScrollRect = null;
+        optionsBindingScrollRect = null;
+        backgroundMusicSlider = null;
+        soundEffectSlider = null;
+        backgroundMusicValueText = null;
+        soundEffectValueText = null;
+        optionsAudioTabButton = null;
+        optionsResolutionTabButton = null;
+        optionsKeySetupTabButton = null;
+        fullscreenModeButton = null;
+        fullscreenModeCheckboxImage = null;
+        fullscreenModeCheckboxFillImage = null;
+        resolutionToggleButton = null;
+        resolutionToggleButtonText = null;
+        startButton = null;
+        reconfigureButton = null;
+        optionButton = null;
+        exitButton = null;
+        resolutionOptionsContainer = null;
+
+        bindingValueTexts.Clear();
+        statusTexts.Clear();
+        resolutionButtons.Clear();
     }
 
     private void SetActiveOptionsCategory(OptionsCategory category)
