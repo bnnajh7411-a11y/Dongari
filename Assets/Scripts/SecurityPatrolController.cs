@@ -5,7 +5,7 @@ using System.Collections.Generic;
 [DisallowMultipleComponent]
 public class SecurityPatrolController : MonoBehaviour
 {
-    private const string RouteObjectName = "Route";
+    [SerializeField] string RouteObjectName = "Route";
     private const float FacingThreshold = 0.001f;
 
     [SerializeField, Min(0.01f)] private float patrolSpeed = 3f;
@@ -204,7 +204,7 @@ public class SecurityPatrolController : MonoBehaviour
         Vector3 routePosition = EvaluateRoutePosition(patrolT);
         Vector3 movementDelta = routePosition - transform.position;
         SnapToPosition(routePosition);
-        UpdateFacingFromDelta(movementDelta);
+        //UpdateFacingFromDelta(movementDelta);
     }
 
     private void FollowTarget()
@@ -217,7 +217,7 @@ public class SecurityPatrolController : MonoBehaviour
         Vector3 movementDelta = nextPosition - currentPosition;
 
         SnapToPosition(nextPosition);
-        UpdateFacingFromDelta(movementDelta);
+        //UpdateFacingFromDelta(movementDelta);
     }
 
     private float FindClosestRouteT(Vector3 worldPosition)
@@ -288,7 +288,7 @@ public class SecurityPatrolController : MonoBehaviour
             return;
         }
 
-        UpdateFacingFromDelta(EvaluateRouteTangent(t));
+        //UpdateFacingFromDelta(EvaluateRouteTangent(t));
     }
 
     private void UpdateFacingFromDelta(Vector3 delta)
