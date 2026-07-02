@@ -1,5 +1,6 @@
-using System.Collections.Generic;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -18,6 +19,8 @@ public class StartSceneController : MonoBehaviour
     private const string StartSceneName = "Start";
     private const string IntroCutsceneSceneName = "IntroCutscene";
     private const string ResultSceneName = "Result";
+    private const string SceneCanvasObjectName = "Canvas";
+    private const string TitleObjectName = "Title";
     private const string EventSystemObjectName = "EventSystem";
     private const string CanvasObjectName = "StartCanvas";
     private const string PauseCanvasObjectName = "PauseMenuCanvas";
@@ -75,6 +78,8 @@ public class StartSceneController : MonoBehaviour
     private const float ResolutionBottomPadding = 20f;
     private const float ResolutionMinimumContentHeight = 220f;
     private const float OptionsCategoryContentLift = 64f;
+    private const float TitleFadeDuration = 2f;
+    private const float ButtonsRevealDelay = 0f;
 
     private static readonly KeyCode[] RebindableKeys =
     {
@@ -134,6 +139,7 @@ public class StartSceneController : MonoBehaviour
     private Image fullscreenModeCheckboxFillImage;
     private Button resolutionToggleButton;
     private Text resolutionToggleButtonText;
+    private Graphic startTitleGraphic;
     private GameObject resolutionOptionsContainer;
     private bool isWaitingForBinding;
     private bool isRefreshingAudioControls;
@@ -144,6 +150,7 @@ public class StartSceneController : MonoBehaviour
     private InputActionType pendingBindingAction;
     private OptionsCategory activeOptionsCategory = OptionsCategory.Audio;
     private int selectedResolutionIndex = -1;
+    private Color startTitleVisibleColor;
 
     public static void EnsurePauseMenuInstance()
     {
@@ -195,11 +202,26 @@ public class StartSceneController : MonoBehaviour
         RefreshBindingValueTexts();
         UpdateStatusText(DefaultStatusText);
 
+        if (ShouldPlayStartSceneIntro())
+        {
+            PrepareStartSceneIntro();
+        }
+
         if (isPauseMenu)
         {
             SceneManager.sceneLoaded += HandleSceneLoaded;
             SetMenuButtonsVisible(false);
         }
+    }
+
+    private void Start()
+    {
+        if (!ShouldPlayStartSceneIntro())
+        {
+            return;
+        }
+
+        StartCoroutine(PlayStartSceneIntroSequence());
     }
 
     private void OnDestroy()
@@ -214,6 +236,87 @@ public class StartSceneController : MonoBehaviour
             SceneManager.sceneLoaded -= HandleSceneLoaded;
             ResumeSceneActivity();
         }
+    }
+
+    private bool ShouldPlayStartSceneIntro()
+    {
+        return !isPauseMenu && SceneManager.GetActiveScene().name == StartSceneName;
+    }
+
+    private void PrepareStartSceneIntro()
+    {
+        startTitleGraphic = FindStartTitleGraphic();
+        if (startTitleGraphic != null)
+        {
+            startTitleVisibleColor = startTitleGraphic.color;
+            SetStartTitleAlpha(0f);
+        }
+
+        SetMenuButtonsVisible(false);
+        SetMenuButtonsInteractable(false);
+    }
+
+    private IEnumerator PlayStartSceneIntroSequence()
+    {
+        yield return FadeStartTitleIn();
+        yield return new WaitForSecondsRealtime(ButtonsRevealDelay);
+
+        RefreshMenuButtons();
+        SetMenuButtonsVisible(true);
+        SetMenuButtonsInteractable(true);
+    }
+
+    private IEnumerator FadeStartTitleIn()
+    {
+        if (startTitleGraphic == null)
+        {
+            yield return new WaitForSecondsRealtime(TitleFadeDuration);
+            yield break;
+        }
+
+        float elapsed = 0f;
+        while (elapsed < TitleFadeDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            SetStartTitleAlpha(elapsed / TitleFadeDuration);
+            yield return null;
+        }
+
+        SetStartTitleAlpha(1f);
+    }
+
+    private Graphic FindStartTitleGraphic()
+    {
+        GameObject canvasObject = GameObject.Find(SceneCanvasObjectName);
+        if (canvasObject == null)
+        {
+            return null;
+        }
+
+        Transform titleTransform = canvasObject.transform.Find(TitleObjectName);
+        if (titleTransform == null)
+        {
+            return null;
+        }
+
+        if (titleTransform.TryGetComponent(out Graphic titleGraphic))
+        {
+            return titleGraphic;
+        }
+
+        return titleTransform.GetComponentInChildren<Graphic>(true);
+    }
+
+    private void SetStartTitleAlpha(float normalizedAlpha)
+    {
+        if (startTitleGraphic == null)
+        {
+            return;
+        }
+
+        Color titleColor = startTitleVisibleColor;
+        titleColor.a *= Mathf.Clamp01(normalizedAlpha);
+        startTitleGraphic.color = titleColor;
     }
 
     private void Update()
