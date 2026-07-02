@@ -208,7 +208,7 @@ GameObject:
   - component: {fileID: 169886339}
   - component: {fileID: 169886338}
   m_Layer: 0
-  m_Name: "806084_\uACE0\uC18D\uB3C4\uB85C \uC18C\uB9AC"
+  m_Name: BGM
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

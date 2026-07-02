@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 219067}
   - component: {fileID: 219066}
   m_Layer: 0
-  m_Name: "\uC808\uBCBD\uC5D0\uC11C \uB3CC \uB5A8\uC5B4\uC9C0\uB294"
+  m_Name: BGM
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -147,7 +147,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: 0a985dc8d220fe04abd2e75b98964f80, type: 3}
+  m_Resource: {fileID: 8300000, guid: a0e7f868fc4c3224db10f974a9cfbbcc, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -5309,7 +5309,7 @@ MonoBehaviour:
   fallGravityScale: 0.8
   hazardDamage: 1
   hazardLifetime: 20
-  hazardColor: {r: 0.38679248, g: 0.3777273, b: 0.31928626, a: 1}
+  hazardColor: {r: 0.5921569, g: 0.5882353, b: 0.5803922, a: 1}
   sortingOrder: 5
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
