@@ -43,10 +43,10 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private bool showBackgroundFrame = false;
     [SerializeField] private Color backgroundColor = new Color(0f, 0f, 0f, 0.55f);
     [SerializeField] private Color healthFillColor = new Color(0.86f, 0.2f, 0.2f, 1f);
-    [SerializeField] private string gaugeLabel = "체력";
+    [SerializeField] private string gaugeLabel = "\uccb4\ub825";
     [SerializeField] private Vector2 gaugeLabelOffset = new Vector2(16f, 0f);
     [SerializeField] private Vector2 gaugeLabelSize = new Vector2(180f, 28f);
-    [SerializeField] private int gaugeLabelFontSize = 20;
+    [SerializeField] private int gaugeLabelFontSize = 30;
     [SerializeField] private Color gaugeLabelColor = Color.white;
 
     public int CurrentHealth { get; private set; }

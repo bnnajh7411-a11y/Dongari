@@ -113,7 +113,7 @@ internal sealed class DrainMazeOverlay : MonoBehaviour
     private const string ExpandedPanelObjectName = "ExpandedPanel";
     private const string ExpandedImageObjectName = "ExpandedImage";
     private const string ExpandedHintTextObjectName = "ExpandedHintText";
-    private const string ExpandedHintText = "아무 곳이나 클릭하여 닫기";
+    private const string ExpandedHintText = "\uc544\ubb34\u0020\uacf3\uc774\ub098\u0020\ud074\ub9ad\ud558\uc5ec\u0020\ub2eb\uae30";
     private const int OverlaySortingOrder = 115;
     private const float ReferenceWidth = 1920f;
     private const float ReferenceHeight = 1080f;

@@ -24,10 +24,10 @@ public class PlayerOxygen : MonoBehaviour
     [SerializeField] private bool showBackgroundFrame = false;
     [SerializeField] private Color backgroundColor = new Color(0f, 0f, 0f, 0.55f);
     [SerializeField] private Color oxygenFillColor = new Color(0.2f, 0.8f, 1f, 1f);
-    [SerializeField] private string gaugeLabel = "산소도";
+    [SerializeField] private string gaugeLabel = "\uc0b0\uc18c\ub3c4";
     [SerializeField] private Vector2 gaugeLabelOffset = new Vector2(16f, 0f);
     [SerializeField] private Vector2 gaugeLabelSize = new Vector2(180f, 28f);
-    [SerializeField] private int gaugeLabelFontSize = 20;
+    [SerializeField] private int gaugeLabelFontSize = 30;
     [SerializeField] private Color gaugeLabelColor = Color.white;
 
     public float CurrentOxygen { get; private set; }

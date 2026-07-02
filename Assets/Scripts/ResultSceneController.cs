@@ -18,9 +18,9 @@ public class ResultSceneController : MonoBehaviour
     private const string BodyObjectName = "Body";
     private const string ButtonObjectName = "StartButton";
     private const string GameOverTitleText = "GAME OVER";
-    private const string CreditsBodyText = "안전한 곳에 도착했습니다";
+    private const string CreditsBodyText = "\uc548\uc804\ud55c\u0020\uacf3\uc5d0\u0020\ub3c4\ucc29\ud588\uc2b5\ub2c8\ub2e4\u000d";
     private const string EmptyBodyText = "";
-    private const string StartButtonText = "타이틀로";
+    private const string StartButtonText = "\ud0c0\uc774\ud2c0\ub85c";
     private const float CreditsScrollSpeed = 82f;
     private const float CreditsScrollPadding = 56f;
     private const float CreditsItemSize = 118f;

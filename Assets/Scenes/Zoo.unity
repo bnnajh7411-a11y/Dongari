@@ -224,7 +224,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StaminaPickup
   restoreAmount: 10
-  creditsDescription: "\uB2E4\uC2DC \uB2EC\uB9B4 \uD798\uC744 \uB418\uCC3E\uC558\uC2B5\uB2C8\uB2E4."
+  creditsDescription: \ub2e4\uc2dc\u0020\ub2ec\ub9b4\u0020\ud798\uc744\u0020\ub418\ucc3e\uc558\uc2b5\ub2c8\ub2e4\u002e
 --- !u!1 &379055929
 GameObject:
   m_ObjectHideFlags: 0
@@ -1015,8 +1015,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthPickup
   restoreAmount: 5
-  creditsDescription: "\uC0C1\uCC98\uB97C \uCD94\uC2A4\uB974\uACE0 \uB2E4\uC2DC \uB098\uC544\uAC08
-    \uD798\uC744 \uC5BB\uC5C8\uC2B5\uB2C8\uB2E4."
+  creditsDescription: \uc0c1\ucc98\ub97c\u0020\ucd94\uc2a4\ub974\uace0\u0020\ub2e4\uc2dc\u0020\ub098\uc544\uac08\u0020\ud798\uc744\u0020\uc5bb\uc5c8\uc2b5\ub2c8\ub2e4\u002e
 --- !u!1 &1439972884
 GameObject:
   m_ObjectHideFlags: 0
@@ -1048,7 +1047,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StaminaPickup
   restoreAmount: 10
-  creditsDescription: "\uB2E4\uC2DC \uB2EC\uB9B4 \uD798\uC744 \uB418\uCC3E\uC558\uC2B5\uB2C8\uB2E4."
+  creditsDescription: \ub2e4\uc2dc\u0020\ub2ec\ub9b4\u0020\ud798\uc744\u0020\ub418\ucc3e\uc558\uc2b5\ub2c8\ub2e4\u002e
 --- !u!212 &1439972886
 SpriteRenderer:
   serializedVersion: 2

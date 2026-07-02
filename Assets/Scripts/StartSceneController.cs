@@ -25,7 +25,7 @@ public class StartSceneController : MonoBehaviour
     private const string PauseBackgroundOverlayObjectName = "PauseBackgroundOverlay";
     private const string MenuButtonsContainerObjectName = "MenuButtonsContainer";
     private const string ButtonObjectName = "StartButton";
-    private const string PauseResumeButtonLabel = "계속하기";
+    private const string PauseResumeButtonLabel = "\uacc4\uc18d\ud558\uae30";
     private const string ReconfigureButtonObjectName = "ReconfigureButton";
     private const string OptionButtonObjectName = "OptionButton";
     private const string ExitButtonObjectName = "ExitButton";
@@ -93,10 +93,10 @@ public class StartSceneController : MonoBehaviour
     [SerializeField] private string sceneToLoad = "Zoo";
     [SerializeField] private bool playIntroCutsceneBeforeFirstScene = true;
     [SerializeField] private string cutsceneSceneToLoad = IntroCutsceneSceneName;
-    [SerializeField] private string buttonLabel = "시작";
-    [SerializeField] private string reconfigureButtonLabel = "키 설정";
-    [SerializeField] private string optionButtonLabel = "옵션";
-    [SerializeField] private string exitButtonLabel = "종료";
+    [SerializeField] private string buttonLabel = "\uc2dc\uc791";
+    [SerializeField] private string reconfigureButtonLabel = "\ud0a4\u0020\uc124\uc815";
+    [SerializeField] private string optionButtonLabel = "\uc635\uc158";
+    [SerializeField] private string exitButtonLabel = "\uc885\ub958";
 
     private readonly Dictionary<InputActionType, List<Text>> bindingValueTexts = new Dictionary<InputActionType, List<Text>>();
     private readonly List<Text> statusTexts = new List<Text>();
@@ -268,7 +268,7 @@ public class StartSceneController : MonoBehaviour
 
         if (TryFindActionUsingKey(pressedKey, pendingBindingAction, out InputActionType duplicateAction))
         {
-            UpdateStatusText($"{PlayerInputBindings.GetKeyDisplayName(pressedKey)} 키는 이미 {PlayerInputBindings.GetActionLabel(duplicateAction)}에 사용 중입니다.");
+            UpdateStatusText($"{PlayerInputBindings.GetKeyDisplayName(pressedKey)} \ud0a4\ub294\u0020\uc774\ubbf8 {PlayerInputBindings.GetActionLabel(duplicateAction)}\uc5d0\u0020\uc0ac\uc6a9\u0020\uc911\uc785\ub2c8\ub2e4\u002e");
             return;
         }
 
@@ -281,10 +281,10 @@ public class StartSceneController : MonoBehaviour
 
         isWaitingForBinding = false;
         RefreshBindingValueTexts();
-        string updateMessage = $"{PlayerInputBindings.GetActionLabel(pendingBindingAction)} 키가 {PlayerInputBindings.GetKeyDisplayName(pressedKey)}(으)로 설정되었습니다.";
+        string updateMessage = $"{PlayerInputBindings.GetActionLabel(pendingBindingAction)} \ud0a4\ub294 {PlayerInputBindings.GetKeyDisplayName(pressedKey)}(으)로 \uc124\uc815\ub418\uc5c8\uc2b5\ub2c8\ub2e4.";
         if (shouldAutoSaveOptionBindings)
         {
-            updateMessage += " 변경 사항이 저장되었습니다.";
+            updateMessage += " \uac31\uccb3 \uc0ac\uc6a9\uc774 \uc800\uc7a5\ub418\uc5c8\uc2b5\ub2c8\ub2e4.";
         }
 
         UpdateStatusText(updateMessage);
@@ -544,7 +544,7 @@ public class StartSceneController : MonoBehaviour
         CreateTextElement(
             windowObject.transform,
             "OptionsTitle",
-            "옵션",
+            "\uc635\uc158",
             42,
             FontStyle.Bold,
             TextAnchor.MiddleCenter,
@@ -557,14 +557,14 @@ public class StartSceneController : MonoBehaviour
         optionsAudioTabButton = CreateOptionsTabButton(
             windowObject.transform,
             "OptionsAudioTabButton",
-            "오디오",
+            "\uc624\ub514\uc624",
             new Vector2(-250f, -132f));
         optionsAudioTabButton.onClick.AddListener(() => SetActiveOptionsCategory(OptionsCategory.Audio));
 
         optionsResolutionTabButton = CreateOptionsTabButton(
             windowObject.transform,
             "OptionsResolutionTabButton",
-            "해상도",
+            "\ud574\uc0c1\ub3c4",
             new Vector2(0f, -132f));
         optionsResolutionTabButton.onClick.AddListener(() => SetActiveOptionsCategory(OptionsCategory.Resolution));
 
@@ -591,7 +591,7 @@ public class StartSceneController : MonoBehaviour
         Button closeButton = CreateButton(
             windowObject.transform,
             "OptionsCloseButton",
-            "닫기",
+            "\ub2eb\uae30",
             OptionsCloseButtonPosition,
             new Vector2(240f, 64f),
             new Color(0.16f, 0.44f, 0.25f, 1f));
@@ -647,7 +647,7 @@ public class StartSceneController : MonoBehaviour
         CreateTextElement(
             windowObject.transform,
             "Title",
-            "키 설정",
+            "\ud0a4 \uc124\uc815",
             38,
             FontStyle.Bold,
             TextAnchor.MiddleCenter,
@@ -682,7 +682,7 @@ public class StartSceneController : MonoBehaviour
         Button cancelButton = CreateButton(
             windowObject.transform,
             "CancelButton",
-            "취소",
+            "\ucd08\ucf54",
             CancelButtonPosition,
             new Vector2(220f, 64f),
             new Color(0.52f, 0.57f, 0.52f, 1f));
@@ -692,7 +692,7 @@ public class StartSceneController : MonoBehaviour
         Button confirmButton = CreateButton(
             windowObject.transform,
             "ConfirmButton",
-            "확인",
+            "\ud655\uc778",
             ConfirmButtonPosition,
             new Vector2(220f, 64f),
             new Color(0.16f, 0.44f, 0.25f, 1f));
@@ -790,7 +790,7 @@ public class StartSceneController : MonoBehaviour
         CreateTextElement(
             contentObject.transform,
             "OptionsAudioHeading",
-            "오디오 설정",
+            "\uc624\ub514\uc624 \uc124\uc815",
             34,
             FontStyle.Bold,
             TextAnchor.MiddleCenter,
@@ -804,7 +804,7 @@ public class StartSceneController : MonoBehaviour
         CreateAudioSliderRow(
             contentObject.transform,
             "OptionsBackgroundMusic",
-            "배경 음악",
+            "\ubc30\uacbd\uc74c",
             46f + OptionsCategoryContentLift,
             out backgroundMusicSlider,
             out backgroundMusicValueText);
@@ -812,7 +812,7 @@ public class StartSceneController : MonoBehaviour
         CreateAudioSliderRow(
             contentObject.transform,
             "OptionsSoundEffect",
-            "효과음",
+            "\ud658\uacbd\uc74c",
             -36f + OptionsCategoryContentLift,
             out soundEffectSlider,
             out soundEffectValueText);
@@ -849,7 +849,7 @@ public class StartSceneController : MonoBehaviour
         CreateTextElement(
             contentObject.transform,
             "OptionsResolutionHeading",
-            "해상도",
+            "\ud574\uc0c1\ub3c4",
             34,
             FontStyle.Bold,
             TextAnchor.MiddleCenter,
@@ -863,7 +863,7 @@ public class StartSceneController : MonoBehaviour
         CreateTextElement(
             contentObject.transform,
             "OptionsDisplayModeLabel",
-            "화면 모드",
+            "\ud654\uba74\u0020\ubaa8\ub4dc",
             24,
             FontStyle.Bold,
             TextAnchor.MiddleCenter,
@@ -876,7 +876,7 @@ public class StartSceneController : MonoBehaviour
         fullscreenModeButton = CreateButton(
             contentObject.transform,
             "FullscreenModeButton",
-            "전체화면",
+            "\uc804\uccb4\ud654\uba74",
             new Vector2(0f, 42f + OptionsCategoryContentLift),
             new Vector2(280f, 56f),
             new Color(1f, 1f, 1f, 0f));
@@ -889,7 +889,7 @@ public class StartSceneController : MonoBehaviour
         CreateTextElement(
             contentObject.transform,
             "OptionsResolutionListLabel",
-            "해상도 선택",
+            "\ud574\uc0c1\ub3c4\u0020\uc120\ud0dd",
             24,
             FontStyle.Bold,
             TextAnchor.MiddleCenter,
@@ -955,7 +955,7 @@ public class StartSceneController : MonoBehaviour
         CreateTextElement(
             contentObject.transform,
             "OptionsKeySetupHeading",
-            "키 설정",
+            "\ud0a4\u0020\uc124\uc815",
             34,
             FontStyle.Bold,
             TextAnchor.MiddleCenter,
@@ -1651,11 +1651,11 @@ public class StartSceneController : MonoBehaviour
                     continue;
                 }
 
-                bindingValueText.text = "키 입력...";
+                bindingValueText.text = "\ud0a4\u0020\uc785\ub825...";
             }
         }
 
-        UpdateStatusText($"{PlayerInputBindings.GetActionLabel(action)}에 사용할 키를 눌러주세요.");
+        UpdateStatusText($"{PlayerInputBindings.GetActionLabel(action)}\uc5d0\u0020\uc0ac\uc6a9\ud560\u0020\ud0a4\ub97c\u0020\ub20c\ub7ec\uc8fc\uc138\uc694.");
     }
 
     private void CancelPendingRebind()
@@ -1674,7 +1674,7 @@ public class StartSceneController : MonoBehaviour
     {
         if (isWaitingForBinding)
         {
-            UpdateStatusText("현재 키 선택을 먼저 완료해 주세요.");
+            UpdateStatusText("\ud604\uc7ac\u0020\ud0a4\u0020\uc120\ud0dd\uc744\u0020\uba3c\uc800\u0020\uc644\ub8cc\ud574\u0020\uc8fc\uc138\uc694.");
             return;
         }
 
@@ -1761,7 +1761,7 @@ public class StartSceneController : MonoBehaviour
             fullscreenModeCheckboxImage,
             fullscreenModeCheckboxFillImage,
             isFullscreenEnabled,
-            "전체화면");
+            "\uc804\uccb4\ud654\uba74");
 
         for (int i = 0; i < resolutionButtons.Count; i++)
         {
@@ -1912,7 +1912,7 @@ public class StartSceneController : MonoBehaviour
             fullscreenModeCheckboxImage,
             fullscreenModeCheckboxFillImage,
             isFullscreenEnabled,
-            "전체화면");
+            "\uc804\uccb4\ud654\uba74");
         for (int i = 0; i < resolutionButtons.Count; i++)
         {
             UpdateResolutionButtonAppearance(resolutionButtons[i], i == selectedResolutionIndex);
@@ -2401,10 +2401,10 @@ public class StartSceneController : MonoBehaviour
 
     private void NormalizeMenuLabels()
     {
-        buttonLabel = NormalizeLegacyLabel(buttonLabel, "START", "시작");
-        reconfigureButtonLabel = NormalizeLegacyLabel(reconfigureButtonLabel, "KEY SETUP", "키 설정");
-        optionButtonLabel = NormalizeLegacyLabel(optionButtonLabel, "OPTION", "옵션");
-        exitButtonLabel = NormalizeLegacyLabel(exitButtonLabel, "EXIT", "종료");
+        buttonLabel = NormalizeLegacyLabel(buttonLabel, "START", "\uc2dc\uc791");
+        reconfigureButtonLabel = NormalizeLegacyLabel(reconfigureButtonLabel, "KEY SETUP", "\ud0a4 \uc124\uc815");
+        optionButtonLabel = NormalizeLegacyLabel(optionButtonLabel, "OPTION", "\uc694\uc57d");
+        exitButtonLabel = NormalizeLegacyLabel(exitButtonLabel, "EXIT", "\uc885\ub8cc");
     }
 
     private string NormalizeLegacyLabel(string currentValue, string legacyEnglishValue, string localizedValue)

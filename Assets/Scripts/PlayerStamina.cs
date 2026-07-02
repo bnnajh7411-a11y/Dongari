@@ -28,10 +28,10 @@ public class PlayerStamina : MonoBehaviour
     [SerializeField] private bool showBackgroundFrame = false;
     [SerializeField] private Color backgroundColor = new Color(0f, 0f, 0f, 0.55f);
     [SerializeField] private Color staminaFillColor = new Color(0.2f, 0.8f, 0.35f, 1f);
-    [SerializeField] private string gaugeLabel = "스태미나";
+    [SerializeField] private string gaugeLabel = "\uc2a4\ud0dc\ubbf8\ub098";
     [SerializeField] private Vector2 gaugeLabelOffset = new Vector2(16f, 0f);
     [SerializeField] private Vector2 gaugeLabelSize = new Vector2(180f, 28f);
-    [SerializeField] private int gaugeLabelFontSize = 20;
+    [SerializeField] private int gaugeLabelFontSize = 30;
     [SerializeField] private Color gaugeLabelColor = Color.white;
 
     public float CurrentStamina { get; private set; }
