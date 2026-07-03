@@ -513,6 +513,7 @@ public class PlayerMovement : MonoBehaviour
         isZooScene = activeSceneName == ZooSceneName;
         isWaterScene = activeSceneName == ArtificialRiverSceneName;
         rb.bodyType = isTopDownScene ? RigidbodyType2D.Kinematic : baseBodyType;
+        rb.useFullKinematicContacts = isTopDownScene;
         rb.gravityScale = isTopDownScene ? 0f : baseGravityScale;
         rb.linearVelocity = Vector2.zero;
     }
@@ -1218,7 +1219,19 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        rb.linearVelocity = movementInput * currentSpeed;
+        Vector2 desiredDelta = movementInput * currentSpeed * Time.fixedDeltaTime;
+        Vector2 resolvedDelta = ResolveRoadMovement(desiredDelta);
+
+        if (resolvedDelta.sqrMagnitude <= Mathf.Epsilon)
+        {
+            rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
+        rb.MovePosition(rb.position + resolvedDelta);
+        rb.linearVelocity = Time.fixedDeltaTime > 0f
+            ? resolvedDelta / Time.fixedDeltaTime
+            : Vector2.zero;
     }
 
     private void ApplyZooTopDownMovement(Vector2 movementInput, float currentSpeed)
@@ -1257,11 +1270,40 @@ public class PlayerMovement : MonoBehaviour
             return desiredDelta;
         }
 
+        return ResolveMovementWithCast(desiredDelta, zooBoundaryFilter);
+    }
+
+    private Vector2 ResolveRoadMovement(Vector2 desiredDelta)
+    {
+        if (playerCollider == null || desiredDelta.sqrMagnitude <= Mathf.Epsilon)
+        {
+            return desiredDelta;
+        }
+
+        ContactFilter2D roadCollisionFilter = new ContactFilter2D
+        {
+            useLayerMask = true,
+            useTriggers = false,
+            useDepth = false,
+            useOutsideDepth = false
+        };
+        roadCollisionFilter.SetLayerMask(Physics2D.GetLayerCollisionMask(gameObject.layer));
+
+        return ResolveMovementWithCast(desiredDelta, roadCollisionFilter);
+    }
+
+    private Vector2 ResolveMovementWithCast(Vector2 desiredDelta, ContactFilter2D contactFilter)
+    {
+        if (playerCollider == null || desiredDelta.sqrMagnitude <= Mathf.Epsilon)
+        {
+            return desiredDelta;
+        }
+
         Vector2 direction = desiredDelta.normalized;
         float travelDistance = desiredDelta.magnitude;
         int hitCount = playerCollider.Cast(
             direction,
-            zooBoundaryFilter,
+            contactFilter,
             zooBoundaryHits,
             travelDistance + ZooBoundarySkinWidth);
 

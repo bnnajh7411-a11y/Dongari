@@ -100,7 +100,7 @@ internal sealed class DrainMazeOverlay : MonoBehaviour
     private const float ExpandedInnerPadding = 0f;
     private const int ExpandedHintFontSize = 30;
     private const float ExpandedHintBottomMargin = 18f;
-    private const float ExpandedHintHeight = 40f;
+    private const float ExpandedHintHeight = 400f;
 
     private static DrainMazeOverlay instance;
 
