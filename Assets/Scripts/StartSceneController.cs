@@ -77,7 +77,6 @@ public class StartSceneController : MonoBehaviour
     private const float ResolutionTopPadding = 20f;
     private const float ResolutionBottomPadding = 20f;
     private const float ResolutionMinimumContentHeight = 220f;
-    private const float OptionsCategoryContentLift = 64f;
     private const float TitleFadeDuration = 2f;
     private const float ButtonsRevealDelay = 0f;
 
@@ -364,11 +363,7 @@ public class StartSceneController : MonoBehaviour
 
         isWaitingForBinding = false;
         RefreshBindingValueTexts();
-        string updateMessage = $"{PlayerInputBindings.GetActionLabel(pendingBindingAction)} \ud0a4\ub294 {PlayerInputBindings.GetKeyDisplayName(pressedKey)}(으)로 \uc124\uc815\ub418\uc5c8\uc2b5\ub2c8\ub2e4.";
-        if (shouldAutoSaveOptionBindings)
-        {
-            updateMessage += " \uac31\uccb3 \uc0ac\uc6a9\uc774 \uc800\uc7a5\ub418\uc5c8\uc2b5\ub2c8\ub2e4.";
-        }
+        string updateMessage = $"{PlayerInputBindings.GetKeyDisplayName(pressedKey)}(으)로 \uc124\uc815\ub418\uc5c8\uc2b5\ub2c8\ub2e4.";
 
         UpdateStatusText(updateMessage);
     }
@@ -817,14 +812,14 @@ public class StartSceneController : MonoBehaviour
         slider = CreateSlider(
             rowObject.transform,
             $"{objectPrefix}Slider",
-            new Vector2(90f, 0f),
+            new Vector2(-10f, 0f),
             new Vector2(280f, 26f));
 
         valueText = CreateTextElement(
             rowObject.transform,
             $"{objectPrefix}Value",
             "100%",
-            22,
+            30,
             FontStyle.Bold,
             TextAnchor.MiddleCenter,
             new Vector2(1f, 0.5f),
@@ -853,7 +848,7 @@ public class StartSceneController : MonoBehaviour
         Text label = tabButton.GetComponentInChildren<Text>();
         if (label != null)
         {
-            label.fontSize = 24;
+            label.fontSize = 30;
         }
 
         return tabButton;
@@ -888,15 +883,15 @@ public class StartSceneController : MonoBehaviour
             contentObject.transform,
             "OptionsBackgroundMusic",
             "\ubc30\uacbd\uc74c",
-            46f + OptionsCategoryContentLift,
+            110f,
             out backgroundMusicSlider,
             out backgroundMusicValueText);
 
         CreateAudioSliderRow(
             contentObject.transform,
             "OptionsSoundEffect",
-            "\ud658\uacbd\uc74c",
-            -36f + OptionsCategoryContentLift,
+            "\ud6a8\uacfc\uc74c",
+            28f,
             out soundEffectSlider,
             out soundEffectValueText);
 
@@ -952,7 +947,7 @@ public class StartSceneController : MonoBehaviour
             TextAnchor.MiddleCenter,
             new Vector2(0.5f, 0.5f),
             new Vector2(0.5f, 0.5f),
-            new Vector2(0f, 96f + OptionsCategoryContentLift),
+            new Vector2(0f, 160f),
             new Vector2(320f, 40f),
             new Color(0.14f, 0.22f, 0.16f, 1f));
 
@@ -960,7 +955,7 @@ public class StartSceneController : MonoBehaviour
             contentObject.transform,
             "FullscreenModeButton",
             "\uc804\uccb4\ud654\uba74",
-            new Vector2(0f, 42f + OptionsCategoryContentLift),
+            new Vector2(0f, 106f),
             new Vector2(280f, 56f),
             new Color(1f, 1f, 1f, 0f));
         fullscreenModeButton.onClick.AddListener(HandleDisplayModeButtonPressed);
@@ -978,7 +973,7 @@ public class StartSceneController : MonoBehaviour
             TextAnchor.MiddleCenter,
             new Vector2(0.5f, 0.5f),
             new Vector2(0.5f, 0.5f),
-            new Vector2(0f, -26f + OptionsCategoryContentLift),
+            new Vector2(0f, 38f),
             new Vector2(420f, 40f),
             new Color(0.14f, 0.22f, 0.16f, 1f));
 
@@ -986,7 +981,7 @@ public class StartSceneController : MonoBehaviour
             contentObject.transform,
             "ResolutionToggleButton",
             string.Empty,
-            new Vector2(0f, -84f + OptionsCategoryContentLift),
+            new Vector2(0f, -20f),
             new Vector2(340f, 52f),
             new Color(0.72f, 0.82f, 0.72f, 1f));
         resolutionToggleButton.onClick.AddListener(ToggleResolutionOptionsList);
@@ -999,7 +994,7 @@ public class StartSceneController : MonoBehaviour
         resolutionContainerRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
         resolutionContainerRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
         resolutionContainerRectTransform.pivot = new Vector2(0.5f, 0.5f);
-        resolutionContainerRectTransform.anchoredPosition = new Vector2(0f, -206f + OptionsCategoryContentLift);
+        resolutionContainerRectTransform.anchoredPosition = new Vector2(0f, -142f);
         resolutionContainerRectTransform.sizeDelta = new Vector2(560f, 240f);
 
         RectTransform resolutionContentTransform = CreateBindingScrollArea(
@@ -1053,8 +1048,8 @@ public class StartSceneController : MonoBehaviour
         RectTransform bindingContentTransform = CreateBindingScrollArea(
             contentObject.transform,
             "OptionsKeyBinding",
-            new Vector2(0f, -10f + OptionsCategoryContentLift),
-            new Vector2(780f, 380f),
+            new Vector2(0f, 54f),
+            new Vector2(780f, 490f),
             out optionsBindingScrollRect);
 
         for (int i = 0; i < actions.Count; i++)
@@ -1068,12 +1063,12 @@ public class StartSceneController : MonoBehaviour
             contentObject.transform,
             "OptionsStatusText",
             DefaultStatusText,
-            18,
+            25,
             FontStyle.Italic,
             TextAnchor.MiddleCenter,
             new Vector2(0.5f, 0f),
             new Vector2(0.5f, 0f),
-            new Vector2(0f, 28f + OptionsCategoryContentLift),
+            new Vector2(0f, 50f),
             new Vector2(720f, 48f),
             new Color(0.2f, 0.28f, 0.23f, 1f));
         statusTexts.Add(optionsStatusText);
@@ -1483,7 +1478,7 @@ public class StartSceneController : MonoBehaviour
         handleRectTransform.sizeDelta = new Vector2(24f, 24f);
 
         Image handleImage = handleObject.GetComponent<Image>();
-        handleImage.color = new Color(0.96f, 0.98f, 0.92f, 1f);
+        handleImage.color = new Color(0.16f, 0.44f, 0.25f, 1f);
 
         Slider slider = sliderObject.GetComponent<Slider>();
         slider.targetGraphic = handleImage;
@@ -1513,7 +1508,7 @@ public class StartSceneController : MonoBehaviour
         label.text = labelText;
         label.alignment = TextAnchor.MiddleCenter;
         label.color = Color.white;
-        label.fontSize = 28;
+        label.fontSize = 30;
         label.fontStyle = FontStyle.Bold;
         label.raycastTarget = false;
         return label;
@@ -1844,7 +1839,10 @@ public class StartSceneController : MonoBehaviour
 
     private void RefreshResolutionControls()
     {
-        selectedResolutionIndex = FindClosestResolutionOptionIndex(Screen.width, Screen.height);
+        if (selectedResolutionIndex < 0 || selectedResolutionIndex >= availableResolutionOptions.Count)
+        {
+            selectedResolutionIndex = FindClosestResolutionOptionIndex(Screen.width, Screen.height);
+        }
         UpdateDisplayModeButtonAppearance(
             fullscreenModeButton,
             fullscreenModeCheckboxImage,
@@ -2407,7 +2405,7 @@ public class StartSceneController : MonoBehaviour
         }
 
         label.alignment = TextAnchor.MiddleLeft;
-        label.fontSize = 24;
+        label.fontSize = 30;
 
         RectTransform labelRectTransform = label.GetComponent<RectTransform>();
         if (labelRectTransform != null)
