@@ -449,30 +449,32 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        if (isContacting)
+        if (!isContacting)
         {
-            if (greenAlgaeContactColliders.Add(other))
-            {
-                if (Random.value < 0.5f)
-                {
-                    TryMovePlayerToGreenAlgaeLeftEnd(other);
-                }
-            }
-
+            greenAlgaeContactColliders.Remove(other);
             return;
         }
 
-        greenAlgaeContactColliders.Remove(other);
+        if (!greenAlgaeContactColliders.Add(other))
+        {
+            return;
+        }
+
+        if (Random.value < 0.5f)
+        {
+            TryShiftPlayerLeftFromGreenAlgaeContact();
+        }
     }
 
-    private void TryMovePlayerToGreenAlgaeLeftEnd(Collider2D greenAlgaeCollider)
+    private void TryShiftPlayerLeftFromGreenAlgaeContact()
     {
-        if (greenAlgaeCollider == null || rb == null || playerCollider == null)
+        if (rb == null)
         {
             return;
         }
 
-        Vector2 targetPosition = rb.position + (Vector2.left * GreenAlgaeLeftMoveDistance);
+        Vector2 targetPosition = rb.position;
+        targetPosition.x -= GreenAlgaeLeftMoveDistance;
         targetPosition.x = Mathf.Max(targetPosition.x, GreenAlgaeMinXPosition);
 
         rb.position = targetPosition;

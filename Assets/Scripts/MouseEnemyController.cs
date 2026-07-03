@@ -16,7 +16,7 @@ public class MouseEnemyController : MonoBehaviour
     [SerializeField, Min(1)] private int contactDamage = 1;
 
     private SpriteRenderer spriteRenderer;
-    private Rigidbody2D rigidbody2D;
+    private Rigidbody2D rb;
     private BoxCollider2D bodyCollider;
     private Bounds movementBounds;
     private bool hasMovementBounds;
@@ -40,14 +40,14 @@ public class MouseEnemyController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (GamePauseState.IsPaused || rigidbody2D == null || !hasMovementBounds)
+        if (GamePauseState.IsPaused || rb == null || !hasMovementBounds)
         {
             return;
         }
 
         float minX = GetMinX();
         float maxX = GetMaxX();
-        Vector2 currentPosition = rigidbody2D.position;
+        Vector2 currentPosition = rb.position;
         float nextX = currentPosition.x + (movementDirection * moveSpeed * Time.fixedDeltaTime);
 
         if (nextX >= maxX)
@@ -63,7 +63,7 @@ public class MouseEnemyController : MonoBehaviour
             UpdateFacing();
         }
 
-        rigidbody2D.MovePosition(new Vector2(nextX, currentPosition.y));
+        rb.MovePosition(new Vector2(nextX, currentPosition.y));
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -78,17 +78,17 @@ public class MouseEnemyController : MonoBehaviour
 
     private void EnsurePhysicsComponents()
     {
-        rigidbody2D = GetComponent<Rigidbody2D>();
-        if (rigidbody2D == null)
+        rb = GetComponent<Rigidbody2D>();
+        if (rb == null)
         {
-            rigidbody2D = gameObject.AddComponent<Rigidbody2D>();
+            rb = gameObject.AddComponent<Rigidbody2D>();
         }
 
-        rigidbody2D.bodyType = RigidbodyType2D.Kinematic;
-        rigidbody2D.gravityScale = 0f;
-        rigidbody2D.freezeRotation = true;
-        rigidbody2D.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-        rigidbody2D.interpolation = RigidbodyInterpolation2D.Interpolate;
+        rb.bodyType = RigidbodyType2D.Kinematic;
+        rb.gravityScale = 0f;
+        rb.freezeRotation = true;
+        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        rb.interpolation = RigidbodyInterpolation2D.Interpolate;
 
         bodyCollider = GetComponent<BoxCollider2D>();
         if (bodyCollider == null)
@@ -193,14 +193,14 @@ public class MouseEnemyController : MonoBehaviour
 
     private void SnapIntoRange()
     {
-        if (rigidbody2D == null || !hasMovementBounds)
+        if (rb == null || !hasMovementBounds)
         {
             return;
         }
 
-        Vector2 currentPosition = rigidbody2D.position;
+        Vector2 currentPosition = rb.position;
         currentPosition.x = Mathf.Clamp(currentPosition.x, GetMinX(), GetMaxX());
-        rigidbody2D.position = currentPosition;
+        rb.position = currentPosition;
     }
 
     private float GetMinX()
