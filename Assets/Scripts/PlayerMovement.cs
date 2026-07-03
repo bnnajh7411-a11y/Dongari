@@ -460,7 +460,7 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        if (Random.value < 0.5f)
+        if (Random.value < 0.25f)
         {
             TryShiftPlayerLeftFromGreenAlgaeContact();
         }
