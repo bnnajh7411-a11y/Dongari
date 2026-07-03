@@ -33,6 +33,8 @@ public class PlayerMovement : MonoBehaviour
     private const float ArtificialRiverBubbleVerticalScatter = 0.1f;
     private const int ArtificialRiverBubbleSpriteTextureSize = 48;
     private const float ArtificialRiverBubbleSpriteEdgeSoftness = 2f;
+    private const float GreenAlgaeLeftMoveDistance = 10f;
+    private const float GreenAlgaeMinXPosition = -21f;
     private const float ZooBoundarySkinWidth = 0.02f;
     private const int ZooBoundaryHitCapacity = 16;
     private static readonly string[] ArtificialRiverColliderObjectNames =
@@ -97,6 +99,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 artificialRiverEntryWaterTargetPosition;
     private Vector2 artificialRiverEntryPreviousPosition;
     private readonly HashSet<Collider2D> groundColliders = new HashSet<Collider2D>();
+    private readonly HashSet<Collider2D> greenAlgaeContactColliders = new HashSet<Collider2D>();
     private readonly HashSet<Collider2D> nextColliders = new HashSet<Collider2D>();
     private readonly HashSet<Collider2D> ropeColliders = new HashSet<Collider2D>();
     private readonly HashSet<Collider2D> wallColliders = new HashSet<Collider2D>();
@@ -157,6 +160,7 @@ public class PlayerMovement : MonoBehaviour
         AudioSettingsStore.VolumesChanged -= HandleVolumesChanged;
         StopUnderwaterMovementSound();
         ResetMovementSpeedModifier();
+        greenAlgaeContactColliders.Clear();
         nextArtificialRiverBubbleSpawnTime = 0f;
     }
 
@@ -385,6 +389,7 @@ public class PlayerMovement : MonoBehaviour
         UpdateNextContacts(other, isContacting);
         UpdateRopeContacts(other, isContacting);
         UpdateWaterContacts(other, isContacting);
+        UpdateGreenAlgaeContacts(other, isContacting);
 
         if (isContacting)
         {
@@ -435,6 +440,44 @@ public class PlayerMovement : MonoBehaviour
         }
 
         ApplyTemporaryMovementSpeedMultiplier(GreenAlgaeSlowMultiplier, GreenAlgaeSlowDuration);
+    }
+
+    private void UpdateGreenAlgaeContacts(Collider2D other, bool isContacting)
+    {
+        if (!IsGreenAlgaeCollider(other))
+        {
+            return;
+        }
+
+        if (isContacting)
+        {
+            if (greenAlgaeContactColliders.Add(other))
+            {
+                if (Random.value < 0.5f)
+                {
+                    TryMovePlayerToGreenAlgaeLeftEnd(other);
+                }
+            }
+
+            return;
+        }
+
+        greenAlgaeContactColliders.Remove(other);
+    }
+
+    private void TryMovePlayerToGreenAlgaeLeftEnd(Collider2D greenAlgaeCollider)
+    {
+        if (greenAlgaeCollider == null || rb == null || playerCollider == null)
+        {
+            return;
+        }
+
+        Vector2 targetPosition = rb.position + (Vector2.left * GreenAlgaeLeftMoveDistance);
+        targetPosition.x = Mathf.Max(targetPosition.x, GreenAlgaeMinXPosition);
+
+        rb.position = targetPosition;
+        rb.linearVelocity = Vector2.zero;
+        jumpRequested = false;
     }
 
     private bool IsNextCollider(Collider2D other)
