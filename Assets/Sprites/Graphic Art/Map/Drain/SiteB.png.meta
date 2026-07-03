@@ -115,10 +115,10 @@ TextureImporter:
       name: SiteB_0
       rect:
         serializedVersion: 2
-        x: 7
-        y: 3250
-        width: 2541
-        height: 1670
+        x: 5
+        y: 3259
+        width: 2582
+        height: 1696
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -137,10 +137,10 @@ TextureImporter:
       name: SiteB_1
       rect:
         serializedVersion: 2
-        x: 1075
-        y: 46
-        width: 4877
-        height: 3402
+        x: 1090
+        y: 0
+        width: 4910
+        height: 3458
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -159,10 +159,10 @@ TextureImporter:
       name: SiteB_2
       rect:
         serializedVersion: 2
-        x: 1622
-        y: 1701
-        width: 2814
-        height: 2430
+        x: 1647
+        y: 1682
+        width: 2861
+        height: 2470
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -181,10 +181,10 @@ TextureImporter:
       name: SiteB_3
       rect:
         serializedVersion: 2
-        x: 2885
-        y: 2913
-        width: 3100
-        height: 1692
+        x: 2932
+        y: 2916
+        width: 3068
+        height: 1719
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -203,10 +203,10 @@ TextureImporter:
       name: SiteB_4
       rect:
         serializedVersion: 2
-        x: 4699
-        y: 3328
-        width: 1103
-        height: 1557
+        x: 4778
+        y: 3338
+        width: 1120
+        height: 1582
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
