@@ -32,6 +32,30 @@ TextureImporter:
   - first:
       213: -4202975322805537213
     second: SiteA_9
+  - first:
+      213: 8941053086250294564
+    second: SiteA_10
+  - first:
+      213: -8088472724598607875
+    second: SiteA_11
+  - first:
+      213: 1863341733220997282
+    second: SiteA_12
+  - first:
+      213: -3128166490370495969
+    second: SiteA_13
+  - first:
+      213: 6931014683882282212
+    second: SiteA_14
+  - first:
+      213: 1452608567665602961
+    second: SiteA_15
+  - first:
+      213: -2737551598126262117
+    second: SiteA_16
+  - first:
+      213: -5642248425160026298
+    second: SiteA_17
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -99,7 +123,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 8192
+    maxTextureSize: 16384
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 3
@@ -130,10 +154,10 @@ TextureImporter:
       name: SiteA_0
       rect:
         serializedVersion: 2
-        x: 282
-        y: 3459
-        width: 44
-        height: 24
+        x: 269
+        y: 3912
+        width: 50
+        height: 27
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -152,10 +176,10 @@ TextureImporter:
       name: SiteA_1
       rect:
         serializedVersion: 2
-        x: 426
-        y: 321
-        width: 5271
-        height: 4655
+        x: 434
+        y: 311
+        width: 6051
+        height: 5342
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -174,10 +198,10 @@ TextureImporter:
       name: SiteA_2
       rect:
         serializedVersion: 2
-        x: 34
-        y: 2782
-        width: 587
-        height: 314
+        x: 5032
+        y: 3681
+        width: 2967
+        height: 1950
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -196,10 +220,10 @@ TextureImporter:
       name: SiteA_3
       rect:
         serializedVersion: 2
-        x: 1117
-        y: 8
-        width: 1862
-        height: 3407
+        x: 6279
+        y: 0
+        width: 5696
+        height: 3912
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -218,10 +242,10 @@ TextureImporter:
       name: SiteA_4
       rect:
         serializedVersion: 2
-        x: 30
-        y: 784
-        width: 638
-        height: 364
+        x: 6918
+        y: 1872
+        width: 3286
+        height: 2837
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -240,10 +264,10 @@ TextureImporter:
       name: SiteA_5
       rect:
         serializedVersion: 2
-        x: 2838
-        y: 0
-        width: 1146
-        height: 1961
+        x: 8393
+        y: 3288
+        width: 3607
+        height: 1975
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -262,10 +286,10 @@ TextureImporter:
       name: SiteA_6
       rect:
         serializedVersion: 2
-        x: 301
-        y: 643
-        width: 44
-        height: 24
+        x: 10512
+        y: 3773
+        width: 1287
+        height: 1818
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -284,10 +308,10 @@ TextureImporter:
       name: SiteA_7
       rect:
         serializedVersion: 2
-        x: 75
-        y: 35
-        width: 397
-        height: 129
+        x: 0
+        y: 3136
+        width: 658
+        height: 361
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -306,10 +330,10 @@ TextureImporter:
       name: SiteA_8
       rect:
         serializedVersion: 2
-        x: 3543
-        y: 40
-        width: 724
-        height: 103
+        x: 1228
+        y: 0
+        width: 2136
+        height: 3863
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -328,10 +352,10 @@ TextureImporter:
       name: SiteA_9
       rect:
         serializedVersion: 2
-        x: 4344
-        y: 36
-        width: 582
-        height: 97
+        x: 0
+        y: 842
+        width: 712
+        height: 418
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -342,6 +366,182 @@ TextureImporter:
       bones: []
       spriteID: 346717456380ca5c0800000000000000
       internalID: -4202975322805537213
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SiteA_10
+      rect:
+        serializedVersion: 2
+        x: 3203
+        y: 0
+        width: 1316
+        height: 2193
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 42ddbd30960051c70800000000000000
+      internalID: 8941053086250294564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SiteA_11
+      rect:
+        serializedVersion: 2
+        x: 9642
+        y: 0
+        width: 682
+        height: 933
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dff2dda59e8ffbf80800000000000000
+      internalID: -8088472724598607875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SiteA_12
+      rect:
+        serializedVersion: 2
+        x: 291
+        y: 680
+        width: 50
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a85cc71f6bebd910800000000000000
+      internalID: 1863341733220997282
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SiteA_13
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 0
+        width: 408
+        height: 130
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f1aaf2796258694d0800000000000000
+      internalID: -3128166490370495969
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SiteA_14
+      rect:
+        serializedVersion: 2
+        x: 3540
+        y: 0
+        width: 86
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ecd1d50229ef2060800000000000000
+      internalID: 6931014683882282212
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SiteA_15
+      rect:
+        serializedVersion: 2
+        x: 4029
+        y: 0
+        width: 799
+        height: 106
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 191b569cbc3b82410800000000000000
+      internalID: 1452608567665602961
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SiteA_16
+      rect:
+        serializedVersion: 2
+        x: 4954
+        y: 0
+        width: 625
+        height: 94
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b98916f5353420ad0800000000000000
+      internalID: -2737551598126262117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SiteA_17
+      rect:
+        serializedVersion: 2
+        x: 10412
+        y: 0
+        width: 217
+        height: 166
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64754d383f4b2b1b0800000000000000
+      internalID: -5642248425160026298
       vertices: []
       indices: 
       edges: []
@@ -362,6 +562,14 @@ TextureImporter:
     nameFileIdTable:
       SiteA_0: -8700580168569445442
       SiteA_1: -292880678985412831
+      SiteA_10: 8941053086250294564
+      SiteA_11: -8088472724598607875
+      SiteA_12: 1863341733220997282
+      SiteA_13: -3128166490370495969
+      SiteA_14: 6931014683882282212
+      SiteA_15: 1452608567665602961
+      SiteA_16: -2737551598126262117
+      SiteA_17: -5642248425160026298
       SiteA_2: 45799638490482871
       SiteA_3: 3216308808160822696
       SiteA_4: -4197010562273272983
