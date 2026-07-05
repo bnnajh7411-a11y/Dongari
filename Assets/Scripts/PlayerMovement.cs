@@ -34,6 +34,7 @@ public class PlayerMovement : MonoBehaviour
     private const int ArtificialRiverBubbleSpriteTextureSize = 48;
     private const float ArtificialRiverBubbleSpriteEdgeSoftness = 2f;
     private const float GreenAlgaeLeftMoveDistance = 10f;
+    private const float GreenAlgaePushbackDuration = 0.45f;
     private const float GreenAlgaeMinXPosition = -21f;
     private const float ZooBoundarySkinWidth = 0.02f;
     private const int ZooBoundaryHitCapacity = 16;
@@ -113,6 +114,10 @@ public class PlayerMovement : MonoBehaviour
     private bool isArtificialRiverEntrySequenceActive;
     private float artificialRiverEntryElapsed;
     private float nextArtificialRiverBubbleSpawnTime;
+    private bool isGreenAlgaePushbackActive;
+    private float greenAlgaePushbackElapsed;
+    private float greenAlgaePushbackDistance;
+    private float greenAlgaePushbackAppliedOffset;
 
     public float HorizontalInput => horizontalInput;
     public float VerticalInput => verticalInput;
@@ -161,6 +166,7 @@ public class PlayerMovement : MonoBehaviour
         StopUnderwaterMovementSound();
         ResetMovementSpeedModifier();
         greenAlgaeContactColliders.Clear();
+        ResetGreenAlgaePushback();
         nextArtificialRiverBubbleSpawnTime = 0f;
     }
 
@@ -226,7 +232,9 @@ public class PlayerMovement : MonoBehaviour
         {
             jumpRequested = false;
             ApplyWaterMovement();
-            UpdateArtificialRiverBubbleTrail(HasMovementInputValue() ? rb.linearVelocity : Vector2.zero);
+            ApplyGreenAlgaePushback();
+            UpdateArtificialRiverBubbleTrail(
+                HasMovementInputValue() || isGreenAlgaePushbackActive ? rb.linearVelocity : Vector2.zero);
             ConsumeRunStamina();
             return;
         }
@@ -473,12 +481,17 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        Vector2 targetPosition = rb.position;
-        targetPosition.x -= GreenAlgaeLeftMoveDistance;
-        targetPosition.x = Mathf.Max(targetPosition.x, GreenAlgaeMinXPosition);
+        float availablePushbackDistance = Mathf.Max(0f, rb.position.x - GreenAlgaeMinXPosition);
+        float pushbackDistance = Mathf.Min(GreenAlgaeLeftMoveDistance, availablePushbackDistance);
+        if (pushbackDistance <= Mathf.Epsilon)
+        {
+            return;
+        }
 
-        rb.position = targetPosition;
-        rb.linearVelocity = Vector2.zero;
+        greenAlgaePushbackElapsed = 0f;
+        greenAlgaePushbackDistance = pushbackDistance;
+        greenAlgaePushbackAppliedOffset = 0f;
+        isGreenAlgaePushbackActive = true;
         jumpRequested = false;
     }
 
@@ -1443,6 +1456,46 @@ public class PlayerMovement : MonoBehaviour
         rb.linearVelocity = new Vector2(horizontalInput * currentSpeed, verticalSpeed);
     }
 
+    private void ApplyGreenAlgaePushback()
+    {
+        if (!isGreenAlgaePushbackActive || rb == null)
+        {
+            return;
+        }
+
+        if (GreenAlgaePushbackDuration <= 0f || greenAlgaePushbackDistance <= Mathf.Epsilon)
+        {
+            ResetGreenAlgaePushback();
+            return;
+        }
+
+        greenAlgaePushbackElapsed = Mathf.Min(
+            GreenAlgaePushbackDuration,
+            greenAlgaePushbackElapsed + Time.fixedDeltaTime);
+
+        float progress = greenAlgaePushbackElapsed / GreenAlgaePushbackDuration;
+        float targetOffset = Mathf.SmoothStep(0f, greenAlgaePushbackDistance, progress);
+        float frameOffset = targetOffset - greenAlgaePushbackAppliedOffset;
+
+        if (frameOffset > Mathf.Epsilon)
+        {
+            float allowedOffset = Mathf.Min(frameOffset, Mathf.Max(0f, rb.position.x - GreenAlgaeMinXPosition));
+            if (allowedOffset > Mathf.Epsilon)
+            {
+                rb.MovePosition(rb.position + (Vector2.left * allowedOffset));
+                rb.linearVelocity = new Vector2(
+                    rb.linearVelocity.x - (allowedOffset / Mathf.Max(Time.fixedDeltaTime, Mathf.Epsilon)),
+                    rb.linearVelocity.y);
+                greenAlgaePushbackAppliedOffset += allowedOffset;
+            }
+        }
+
+        if (progress >= 1f || rb.position.x <= GreenAlgaeMinXPosition + 0.001f)
+        {
+            ResetGreenAlgaePushback();
+        }
+    }
+
     private void UpdateUnderwaterMovementSound()
     {
         if (!ShouldPlayUnderwaterMovementSound())
@@ -1613,5 +1666,13 @@ public class PlayerMovement : MonoBehaviour
         }
 
         movementSpeedMultiplier = 1f;
+    }
+
+    private void ResetGreenAlgaePushback()
+    {
+        isGreenAlgaePushbackActive = false;
+        greenAlgaePushbackElapsed = 0f;
+        greenAlgaePushbackDistance = 0f;
+        greenAlgaePushbackAppliedOffset = 0f;
     }
 }
