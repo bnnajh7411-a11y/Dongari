@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -15,6 +16,7 @@ public class RoadCarSpawner : MonoBehaviour
     private const string CarResourcesPath = "RoadCars";
     private const string CollisionAudioResourcesPath = "Audios/K드라마 효과음 (1342)";
     private const string CollisionAudioSourceObjectName = "RoadCarImpactAudioSource";
+    private const int PlayerSortingOrderOffset = 1;
     private const int SecondFromBottomLaneIndex = 1;
     private const int SecondFromBottomLaneSortingOrderOffset = 2;
     private const float LowerLaneYOffsetPercent = 0.25f;
@@ -50,6 +52,7 @@ public class RoadCarSpawner : MonoBehaviour
     private Collider2D groundCollider;
     private AudioClip collisionSoundClip;
     private AudioSource collisionSoundSource;
+    private SpriteRenderer playerSpriteRenderer;
     private float nextSpawnTime;
     private float carZPosition;
 
@@ -83,7 +86,7 @@ public class RoadCarSpawner : MonoBehaviour
     private void Awake()
     {
         TryAssignGroundCollider();
-        CacheCarZPosition();
+        CachePlayerRendering();
         EnsurePlayerHealthOnPlayer();
         LoadCollisionSound();
         EnsureCollisionAudioSource();
@@ -133,10 +136,13 @@ public class RoadCarSpawner : MonoBehaviour
         }
     }
 
-    private void CacheCarZPosition()
+    private void CachePlayerRendering()
     {
         GameObject playerObject = GameObject.Find(PlayerObjectName);
         carZPosition = playerObject != null ? playerObject.transform.position.z : 0f;
+        playerSpriteRenderer = playerObject != null
+            ? playerObject.GetComponentInChildren<SpriteRenderer>()
+            : null;
     }
 
     private void EnsurePlayerHealthOnPlayer()
@@ -305,6 +311,7 @@ public class RoadCarSpawner : MonoBehaviour
 
         SpriteRenderer spriteRenderer = carObject.AddComponent<SpriteRenderer>();
         spriteRenderer.sprite = sprite;
+        ApplyPlayerSortingLayer(spriteRenderer);
         spriteRenderer.sortingOrder = GetSortingOrderForLane(laneIndex);
         spriteRenderer.flipX = !movesRight;
 
@@ -524,12 +531,29 @@ public class RoadCarSpawner : MonoBehaviour
     private int GetSortingOrderForLane(int laneIndex)
     {
         int laneSortingOrder = sortingOrder;
+        if (playerSpriteRenderer != null)
+        {
+            laneSortingOrder = Mathf.Max(
+                laneSortingOrder,
+                playerSpriteRenderer.sortingOrder + PlayerSortingOrderOffset);
+        }
+
         if (laneIndex == SecondFromBottomLaneIndex)
         {
             laneSortingOrder += SecondFromBottomLaneSortingOrderOffset;
         }
 
         return laneSortingOrder;
+    }
+
+    private void ApplyPlayerSortingLayer(SpriteRenderer spriteRenderer)
+    {
+        if (spriteRenderer == null || playerSpriteRenderer == null)
+        {
+            return;
+        }
+
+        spriteRenderer.sortingLayerID = playerSpriteRenderer.sortingLayerID;
     }
 
     private static float GetFineTuneLaneYOffsetPercent(int laneIndex, int totalLanes)
@@ -614,16 +638,31 @@ public class RoadCarSpawner : MonoBehaviour
 [RequireComponent(typeof(Collider2D), typeof(Rigidbody2D))]
 public class RoadCar : MonoBehaviour
 {
+    private const float ExhaustParticleLifetime = 0.55f;
+    private const float ExhaustParticleSpawnInterval = 0.05f;
+    private const float ExhaustParticleMinSpeed = 0.75f;
+    private const float ExhaustParticleSpawnOffsetMultiplier = 0.92f;
+    private const float ExhaustParticleBottomOffsetMultiplier = 0.55f;
+    private const float ExhaustParticleSideScatter = 0.18f;
+    private const float ExhaustParticleRearScatter = 0.12f;
+    private const float ExhaustParticleDriftSpeed = 1.45f;
+    private const int ExhaustParticleSpriteTextureSize = 48;
+    private const float ExhaustParticleSpriteEdgeSoftness = 2f;
+
     private RoadCarSpawner owner;
     private Rigidbody2D cachedBody;
+    private SpriteRenderer cachedSpriteRenderer;
     private float halfWidth;
+    private float halfHeight;
     private float roadLeftEdgeX;
     private float roadRightEdgeX;
     private float baseMoveSpeed;
     private float followGap;
+    private float nextExhaustParticleSpawnTime;
     private int damage = 1;
     private int laneIndex = -1;
     private bool movesRight;
+    private static Sprite exhaustParticleSprite;
 
     public bool IsActiveOnRoad => gameObject.activeInHierarchy;
     public float RearEdgeX => movesRight ? transform.position.x - halfWidth : transform.position.x + halfWidth;
@@ -653,7 +692,9 @@ public class RoadCar : MonoBehaviour
 
         if (TryGetComponent(out SpriteRenderer spriteRenderer))
         {
+            cachedSpriteRenderer = spriteRenderer;
             halfWidth = spriteRenderer.bounds.extents.x;
+            halfHeight = spriteRenderer.bounds.extents.y;
         }
 
         owner?.RegisterCar(this, laneIndex);
@@ -673,6 +714,7 @@ public class RoadCar : MonoBehaviour
         }
 
         UpdateRoadSpeed();
+        UpdateExhaustTrail();
 
         if (movesRight)
         {
@@ -745,5 +787,164 @@ public class RoadCar : MonoBehaviour
         }
 
         cachedBody.linearVelocity = new Vector2(movesRight ? targetSpeed : -targetSpeed, 0f);
+    }
+
+    private void UpdateExhaustTrail()
+    {
+        if (cachedBody == null
+            || cachedSpriteRenderer == null
+            || Time.time < nextExhaustParticleSpawnTime)
+        {
+            return;
+        }
+
+        Vector2 movementVector = cachedBody.linearVelocity;
+        if (movementVector.sqrMagnitude < ExhaustParticleMinSpeed * ExhaustParticleMinSpeed)
+        {
+            return;
+        }
+
+        SpawnExhaustParticle(movementVector.normalized);
+        nextExhaustParticleSpawnTime = Time.time + ExhaustParticleSpawnInterval;
+    }
+
+    private void SpawnExhaustParticle(Vector2 movementDirection)
+    {
+        Sprite particleSprite = GetExhaustParticleSprite();
+        if (particleSprite == null)
+        {
+            return;
+        }
+
+        Vector2 backwardsDirection = movementDirection.sqrMagnitude > Mathf.Epsilon
+            ? -movementDirection.normalized
+            : Vector2.left;
+        Vector2 lateralDirection = new Vector2(-backwardsDirection.y, backwardsDirection.x);
+        Vector2 scatterOffset =
+            (lateralDirection * Random.Range(-ExhaustParticleSideScatter, ExhaustParticleSideScatter))
+            + (backwardsDirection * Random.Range(-ExhaustParticleRearScatter, ExhaustParticleRearScatter));
+        Vector2 spawnPosition = (Vector2)transform.position
+            + (backwardsDirection * Mathf.Max(0.32f, halfWidth * ExhaustParticleSpawnOffsetMultiplier))
+            + (Vector2.down * Mathf.Max(0.18f, halfHeight * ExhaustParticleBottomOffsetMultiplier))
+            + scatterOffset;
+        float particleScale = Random.Range(0.48f, 0.84f);
+
+        GameObject particleObject = new GameObject("RoadCarExhaustParticle", typeof(Transform), typeof(SpriteRenderer));
+        particleObject.transform.position = new Vector3(spawnPosition.x, spawnPosition.y, transform.position.z + 0.01f);
+        particleObject.transform.localScale = Vector3.one * particleScale;
+
+        SpriteRenderer particleRenderer = particleObject.GetComponent<SpriteRenderer>();
+        particleRenderer.sprite = particleSprite;
+        particleRenderer.color = new Color(0.18f, 0.18f, 0.18f, Random.Range(0.45f, 0.72f));
+        particleRenderer.sortingLayerID = cachedSpriteRenderer.sortingLayerID;
+        particleRenderer.sortingOrder = cachedSpriteRenderer.sortingOrder;
+
+        Vector2 driftDirection = (
+            (backwardsDirection * Random.Range(0.45f, 0.95f))
+            + (lateralDirection * Random.Range(-0.75f, 0.75f))).normalized;
+        float driftSpeed = Random.Range(ExhaustParticleDriftSpeed * 0.8f, ExhaustParticleDriftSpeed * 1.25f);
+
+        IEnumerator exhaustRoutine = AnimateExhaustParticle(
+            particleObject.transform,
+            particleRenderer,
+            driftDirection * driftSpeed,
+            particleScale);
+        if (owner != null)
+        {
+            owner.StartCoroutine(exhaustRoutine);
+        }
+        else
+        {
+            StartCoroutine(exhaustRoutine);
+        }
+    }
+
+    private IEnumerator AnimateExhaustParticle(
+        Transform particleTransform,
+        SpriteRenderer particleRenderer,
+        Vector2 driftVelocity,
+        float initialScale)
+    {
+        if (particleTransform == null || particleRenderer == null)
+        {
+            yield break;
+        }
+
+        Color initialColor = particleRenderer.color;
+        float elapsed = 0f;
+
+        while (elapsed < ExhaustParticleLifetime)
+        {
+            if (particleTransform == null || particleRenderer == null)
+            {
+                yield break;
+            }
+
+            elapsed += Time.deltaTime;
+            float progress = Mathf.Clamp01(elapsed / ExhaustParticleLifetime);
+            particleTransform.position += (Vector3)(driftVelocity * Time.deltaTime);
+            particleTransform.localScale = Vector3.one * Mathf.Lerp(initialScale, initialScale * 1.9f, progress);
+
+            Color nextColor = initialColor;
+            nextColor.a = Mathf.Lerp(initialColor.a, 0f, progress);
+            particleRenderer.color = nextColor;
+            yield return null;
+        }
+
+        if (particleTransform != null)
+        {
+            Destroy(particleTransform.gameObject);
+        }
+    }
+
+    private static Sprite GetExhaustParticleSprite()
+    {
+        if (exhaustParticleSprite != null)
+        {
+            return exhaustParticleSprite;
+        }
+
+        Texture2D texture = new Texture2D(
+            ExhaustParticleSpriteTextureSize,
+            ExhaustParticleSpriteTextureSize,
+            TextureFormat.RGBA32,
+            false)
+        {
+            name = "RoadCarExhaustParticleTexture",
+            filterMode = FilterMode.Bilinear,
+            wrapMode = TextureWrapMode.Clamp,
+            hideFlags = HideFlags.HideAndDontSave
+        };
+
+        Color32[] pixels = new Color32[ExhaustParticleSpriteTextureSize * ExhaustParticleSpriteTextureSize];
+        float center = (ExhaustParticleSpriteTextureSize - 1f) * 0.5f;
+        float radius = center - 1f;
+
+        for (int y = 0; y < ExhaustParticleSpriteTextureSize; y++)
+        {
+            for (int x = 0; x < ExhaustParticleSpriteTextureSize; x++)
+            {
+                float dx = x - center;
+                float dy = y - center;
+                float distance = Mathf.Sqrt(dx * dx + dy * dy);
+                float alpha = Mathf.Clamp01((radius - distance) / ExhaustParticleSpriteEdgeSoftness);
+                alpha = Mathf.SmoothStep(0f, 1f, alpha);
+                pixels[(y * ExhaustParticleSpriteTextureSize) + x] = new Color(1f, 1f, 1f, alpha);
+            }
+        }
+
+        texture.SetPixels32(pixels);
+        texture.Apply(false, true);
+
+        exhaustParticleSprite = Sprite.Create(
+            texture,
+            new Rect(0f, 0f, ExhaustParticleSpriteTextureSize, ExhaustParticleSpriteTextureSize),
+            new Vector2(0.5f, 0.5f),
+            ExhaustParticleSpriteTextureSize,
+            0u,
+            SpriteMeshType.FullRect);
+        exhaustParticleSprite.name = "RoadCarExhaustParticleSprite";
+        exhaustParticleSprite.hideFlags = HideFlags.HideAndDontSave;
+        return exhaustParticleSprite;
     }
 }
