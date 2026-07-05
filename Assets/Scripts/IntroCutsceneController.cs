@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -12,6 +13,7 @@ public class IntroCutsceneController : MonoBehaviour
     private const string CanvasObjectName = "CutsceneCanvas";
     private const string SkipButtonObjectName = "SkipButton";
     private const string SkipButtonLabelObjectName = "Label";
+    private const float VideoPrepareTimeoutSeconds = 5f;
 
     private static string pendingNextSceneName;
 
@@ -27,6 +29,7 @@ public class IntroCutsceneController : MonoBehaviour
     private Canvas cutsceneCanvas;
     private Button skipButton;
     private VideoPlayer videoPlayer;
+    private Coroutine videoPrepareTimeoutCoroutine;
     private bool isLoadingNextScene;
     private bool isUsingVideoPlayback;
 
@@ -38,6 +41,7 @@ public class IntroCutsceneController : MonoBehaviour
     private void Awake()
     {
         cutsceneCamera = EnsureMainCamera();
+        PrimeVideoPlayerForManualPlayback();
         EnsureEventSystem();
         cutsceneCanvas = EnsureCanvas();
         skipButton = EnsureSkipButton(cutsceneCanvas.transform);
@@ -98,6 +102,14 @@ public class IntroCutsceneController : MonoBehaviour
 
         videoPlayer.clip = introVideoClip;
         videoPlayer.Prepare();
+
+        if (videoPlayer.isPrepared)
+        {
+            HandleVideoPrepared(videoPlayer);
+            return;
+        }
+
+        RestartVideoPrepareTimeout();
     }
 
     private bool ShouldAdvanceCutscene()
@@ -209,6 +221,16 @@ public class IntroCutsceneController : MonoBehaviour
         return canvas;
     }
 
+    private void PrimeVideoPlayerForManualPlayback()
+    {
+        if (introVideoClip == null)
+        {
+            return;
+        }
+
+        videoPlayer = EnsureVideoPlayer();
+    }
+
     private VideoPlayer EnsureVideoPlayer()
     {
         if (videoPlayer == null)
@@ -302,6 +324,7 @@ public class IntroCutsceneController : MonoBehaviour
             return;
         }
 
+        CancelVideoPrepareTimeout();
         source.Play();
     }
 
@@ -328,6 +351,7 @@ public class IntroCutsceneController : MonoBehaviour
 
     private void FallbackAfterVideoFailure()
     {
+        CancelVideoPrepareTimeout();
         StopVideoPlayback();
         isUsingVideoPlayback = false;
 
@@ -336,6 +360,8 @@ public class IntroCutsceneController : MonoBehaviour
 
     private void StopVideoPlayback()
     {
+        CancelVideoPrepareTimeout();
+
         if (videoPlayer == null)
         {
             return;
@@ -357,6 +383,44 @@ public class IntroCutsceneController : MonoBehaviour
         videoPlayer.prepareCompleted -= HandleVideoPrepared;
         videoPlayer.loopPointReached -= HandleVideoPlaybackFinished;
         videoPlayer.errorReceived -= HandleVideoErrorReceived;
+    }
+
+    private void RestartVideoPrepareTimeout()
+    {
+        CancelVideoPrepareTimeout();
+        videoPrepareTimeoutCoroutine = StartCoroutine(VideoPrepareTimeoutRoutine());
+    }
+
+    private void CancelVideoPrepareTimeout()
+    {
+        if (videoPrepareTimeoutCoroutine == null)
+        {
+            return;
+        }
+
+        StopCoroutine(videoPrepareTimeoutCoroutine);
+        videoPrepareTimeoutCoroutine = null;
+    }
+
+    private IEnumerator VideoPrepareTimeoutRoutine()
+    {
+        yield return new WaitForSecondsRealtime(VideoPrepareTimeoutSeconds);
+
+        if (isLoadingNextScene || !isUsingVideoPlayback || videoPlayer == null)
+        {
+            videoPrepareTimeoutCoroutine = null;
+            yield break;
+        }
+
+        if (videoPlayer.isPrepared || videoPlayer.isPlaying)
+        {
+            videoPrepareTimeoutCoroutine = null;
+            yield break;
+        }
+
+        videoPrepareTimeoutCoroutine = null;
+        Debug.LogError("Intro cutscene video preparation timed out.", this);
+        FallbackAfterVideoFailure();
     }
 
     private ColorBlock CreateButtonColors(Color normalColor)
