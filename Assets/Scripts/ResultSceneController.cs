@@ -33,9 +33,9 @@ public class ResultSceneController : MonoBehaviour
     private const float CreditsItemTextVerticalPadding = 14f;
     private const int CreditsItemTextFontSize = 30;
     private const float FooterRevealDuration = 0.45f;
+    private const int CanvasSortingOrder = 250;
 
     private Canvas rootCanvas;
-    private Font builtinFont;
     private AudioSource creditsMusicAudioSource;
     private AudioClip creditsMusicClip;
     private Image backgroundImage;
@@ -272,27 +272,16 @@ public class ResultSceneController : MonoBehaviour
 
     private Canvas EnsureCanvas()
     {
-        GameObject existingCanvasObject = GameObject.Find(CanvasObjectName);
-        if (existingCanvasObject != null && existingCanvasObject.TryGetComponent(out Canvas existingCanvas))
-        {
-            return existingCanvas;
-        }
-
-        GameObject canvasObject = new GameObject(
+        bool createdCanvas;
+        Canvas canvas = RuntimeGaugeUiUtility.GetOrCreateOverlayCanvas(
+            null,
             CanvasObjectName,
-            typeof(Canvas),
-            typeof(CanvasScaler),
-            typeof(GraphicRaycaster));
-
-        Canvas canvas = canvasObject.GetComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = 250;
-
-        CanvasScaler canvasScaler = canvasObject.GetComponent<CanvasScaler>();
-        canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        canvasScaler.referenceResolution = new Vector2(1920f, 1080f);
-        canvasScaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
-        canvasScaler.matchWidthOrHeight = 0.5f;
+            CanvasSortingOrder,
+            out createdCanvas);
+        if (canvas != null && canvas.GetComponent<GraphicRaycaster>() == null)
+        {
+            canvas.gameObject.AddComponent<GraphicRaycaster>();
+        }
 
         return canvas;
     }
@@ -342,10 +331,7 @@ public class ResultSceneController : MonoBehaviour
         imageObject.transform.SetParent(parent, false);
 
         RectTransform imageRectTransform = imageObject.GetComponent<RectTransform>();
-        imageRectTransform.anchorMin = Vector2.zero;
-        imageRectTransform.anchorMax = Vector2.one;
-        imageRectTransform.offsetMin = Vector2.zero;
-        imageRectTransform.offsetMax = Vector2.zero;
+        ConfigureStretchRect(imageRectTransform, Vector2.zero, Vector2.zero);
 
         Image image = imageObject.GetComponent<Image>();
         image.sprite = sprite;
@@ -364,11 +350,13 @@ public class ResultSceneController : MonoBehaviour
         panelObject.transform.SetParent(parent, false);
 
         RectTransform panelRectTransform = panelObject.GetComponent<RectTransform>();
-        panelRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-        panelRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-        panelRectTransform.pivot = new Vector2(0.5f, 0.5f);
-        panelRectTransform.sizeDelta = new Vector2(760f, 560f);
-        panelRectTransform.anchoredPosition = Vector2.zero;
+        ConfigureAnchoredRect(
+            panelRectTransform,
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            Vector2.zero,
+            new Vector2(760f, 560f));
 
         Image panel = panelObject.GetComponent<Image>();
         panel.sprite = sprite;
@@ -390,11 +378,13 @@ public class ResultSceneController : MonoBehaviour
         viewportObject.transform.SetParent(parent, false);
 
         RectTransform viewportRectTransform = viewportObject.GetComponent<RectTransform>();
-        viewportRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-        viewportRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-        viewportRectTransform.pivot = new Vector2(0.5f, 0.5f);
-        viewportRectTransform.anchoredPosition = new Vector2(0f, 18f);
-        viewportRectTransform.sizeDelta = new Vector2(500f, 220f);
+        ConfigureAnchoredRect(
+            viewportRectTransform,
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0f, 18f),
+            new Vector2(500f, 220f));
 
         Image viewportImage = viewportObject.GetComponent<Image>();
         viewportImage.color = new Color(0f, 0f, 0f, 0f);
@@ -408,11 +398,13 @@ public class ResultSceneController : MonoBehaviour
         contentObject.transform.SetParent(parent, false);
 
         RectTransform contentRectTransform = contentObject.GetComponent<RectTransform>();
-        contentRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-        contentRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-        contentRectTransform.pivot = new Vector2(0.5f, 0.5f);
-        contentRectTransform.anchoredPosition = Vector2.zero;
-        contentRectTransform.sizeDelta = new Vector2(500f, 220f);
+        ConfigureAnchoredRect(
+            contentRectTransform,
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            Vector2.zero,
+            new Vector2(500f, 220f));
         return contentRectTransform;
     }
 
@@ -425,11 +417,13 @@ public class ResultSceneController : MonoBehaviour
         footerObject.transform.SetParent(parent, false);
 
         RectTransform rectTransform = footerObject.GetComponent<RectTransform>();
-        rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-        rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-        rectTransform.pivot = new Vector2(0.5f, 0.5f);
-        rectTransform.anchoredPosition = new Vector2(0f, -190f);
-        rectTransform.sizeDelta = new Vector2(480f, 150f);
+        ConfigureAnchoredRect(
+            rectTransform,
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0f, -190f),
+            new Vector2(480f, 150f));
 
         footerCanvasGroup = footerObject.GetComponent<CanvasGroup>();
         return rectTransform;
@@ -448,14 +442,16 @@ public class ResultSceneController : MonoBehaviour
         textObject.transform.SetParent(parent, false);
 
         RectTransform textRectTransform = textObject.GetComponent<RectTransform>();
-        textRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-        textRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-        textRectTransform.pivot = new Vector2(0.5f, 0.5f);
-        textRectTransform.anchoredPosition = anchoredPosition;
-        textRectTransform.sizeDelta = sizeDelta;
+        ConfigureAnchoredRect(
+            textRectTransform,
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            anchoredPosition,
+            sizeDelta);
 
         Text text = textObject.GetComponent<Text>();
-        text.font = GetBuiltinFont();
+        text.font = RuntimeGaugeUiUtility.GetBuiltinFont();
         text.fontSize = fontSize;
         text.fontStyle = fontStyle;
         text.alignment = alignment;
@@ -476,11 +472,13 @@ public class ResultSceneController : MonoBehaviour
         buttonObject.transform.SetParent(parent, false);
 
         RectTransform buttonRectTransform = buttonObject.GetComponent<RectTransform>();
-        buttonRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-        buttonRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-        buttonRectTransform.pivot = new Vector2(0.5f, 0.5f);
-        buttonRectTransform.sizeDelta = new Vector2(230f, 68f);
-        buttonRectTransform.anchoredPosition = anchoredPosition;
+        ConfigureAnchoredRect(
+            buttonRectTransform,
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            anchoredPosition,
+            new Vector2(230f, 68f));
 
         Image buttonImage = buttonObject.GetComponent<Image>();
         buttonImage.sprite = sprite;
@@ -512,20 +510,19 @@ public class ResultSceneController : MonoBehaviour
         {
             if (isCreditsDisplay)
             {
-                panelRectTransform.anchorMin = Vector2.zero;
-                panelRectTransform.anchorMax = Vector2.one;
+                ConfigureStretchRect(panelRectTransform, Vector2.zero, Vector2.zero);
                 panelRectTransform.pivot = new Vector2(0.5f, 0.5f);
-                panelRectTransform.offsetMin = Vector2.zero;
-                panelRectTransform.offsetMax = Vector2.zero;
                 panelRectTransform.anchoredPosition = Vector2.zero;
             }
             else
             {
-                panelRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-                panelRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-                panelRectTransform.pivot = new Vector2(0.5f, 0.5f);
-                panelRectTransform.sizeDelta = new Vector2(760f, 560f);
-                panelRectTransform.anchoredPosition = Vector2.zero;
+                ConfigureAnchoredRect(
+                    panelRectTransform,
+                    new Vector2(0.5f, 0.5f),
+                    new Vector2(0.5f, 0.5f),
+                    new Vector2(0.5f, 0.5f),
+                    Vector2.zero,
+                    new Vector2(760f, 560f));
             }
         }
 
@@ -533,19 +530,23 @@ public class ResultSceneController : MonoBehaviour
         {
             if (isCreditsDisplay)
             {
-                titleRectTransform.anchorMin = new Vector2(0.5f, 1f);
-                titleRectTransform.anchorMax = new Vector2(0.5f, 1f);
-                titleRectTransform.pivot = new Vector2(0.5f, 0.5f);
-                titleRectTransform.anchoredPosition = new Vector2(0f, -72f);
-                titleRectTransform.sizeDelta = new Vector2(760f, 72f);
+                ConfigureAnchoredRect(
+                    titleRectTransform,
+                    new Vector2(0.5f, 1f),
+                    new Vector2(0.5f, 1f),
+                    new Vector2(0.5f, 0.5f),
+                    new Vector2(0f, -72f),
+                    new Vector2(760f, 72f));
             }
             else
             {
-                titleRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-                titleRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-                titleRectTransform.pivot = new Vector2(0.5f, 0.5f);
-                titleRectTransform.anchoredPosition = new Vector2(0f, 186f);
-                titleRectTransform.sizeDelta = new Vector2(640f, 90f);
+                ConfigureAnchoredRect(
+                    titleRectTransform,
+                    new Vector2(0.5f, 0.5f),
+                    new Vector2(0.5f, 0.5f),
+                    new Vector2(0.5f, 0.5f),
+                    new Vector2(0f, 186f),
+                    new Vector2(640f, 90f));
             }
         }
 
@@ -553,19 +554,21 @@ public class ResultSceneController : MonoBehaviour
         {
             if (isCreditsDisplay)
             {
-                creditsViewportRectTransform.anchorMin = new Vector2(0f, 0f);
-                creditsViewportRectTransform.anchorMax = new Vector2(1f, 1f);
+                ConfigureStretchRect(
+                    creditsViewportRectTransform,
+                    new Vector2(220f, 0f),
+                    new Vector2(-220f, 0f));
                 creditsViewportRectTransform.pivot = new Vector2(0.5f, 0.5f);
-                creditsViewportRectTransform.offsetMin = new Vector2(220f, 0f);
-                creditsViewportRectTransform.offsetMax = new Vector2(-220f, 0f);
             }
             else
             {
-                creditsViewportRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-                creditsViewportRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-                creditsViewportRectTransform.pivot = new Vector2(0.5f, 0.5f);
-                creditsViewportRectTransform.anchoredPosition = new Vector2(0f, 18f);
-                creditsViewportRectTransform.sizeDelta = new Vector2(500f, 220f);
+                ConfigureAnchoredRect(
+                    creditsViewportRectTransform,
+                    new Vector2(0.5f, 0.5f),
+                    new Vector2(0.5f, 0.5f),
+                    new Vector2(0.5f, 0.5f),
+                    new Vector2(0f, 18f),
+                    new Vector2(500f, 220f));
             }
         }
 
@@ -573,19 +576,23 @@ public class ResultSceneController : MonoBehaviour
         {
             if (isCreditsDisplay)
             {
-                footerRectTransform.anchorMin = new Vector2(0.5f, 0f);
-                footerRectTransform.anchorMax = new Vector2(0.5f, 0f);
-                footerRectTransform.pivot = new Vector2(0.5f, 0.5f);
-                footerRectTransform.anchoredPosition = new Vector2(0f, 94f);
-                footerRectTransform.sizeDelta = new Vector2(480f, 150f);
+                ConfigureAnchoredRect(
+                    footerRectTransform,
+                    new Vector2(0.5f, 0f),
+                    new Vector2(0.5f, 0f),
+                    new Vector2(0.5f, 0.5f),
+                    new Vector2(0f, 94f),
+                    new Vector2(480f, 150f));
             }
             else
             {
-                footerRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-                footerRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-                footerRectTransform.pivot = new Vector2(0.5f, 0.5f);
-                footerRectTransform.anchoredPosition = new Vector2(0f, -190f);
-                footerRectTransform.sizeDelta = new Vector2(480f, 150f);
+                ConfigureAnchoredRect(
+                    footerRectTransform,
+                    new Vector2(0.5f, 0.5f),
+                    new Vector2(0.5f, 0.5f),
+                    new Vector2(0.5f, 0.5f),
+                    new Vector2(0f, -190f),
+                    new Vector2(480f, 150f));
             }
         }
     }
@@ -712,7 +719,7 @@ public class ResultSceneController : MonoBehaviour
             return 0f;
         }
 
-        Font font = GetBuiltinFont();
+        Font font = RuntimeGaugeUiUtility.GetBuiltinFont();
         if (font == null)
         {
             return 0f;
@@ -767,21 +774,25 @@ public class ResultSceneController : MonoBehaviour
         itemObject.transform.SetParent(creditsContentRectTransform, false);
 
         RectTransform itemRectTransform = itemObject.GetComponent<RectTransform>();
-        itemRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-        itemRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-        itemRectTransform.pivot = new Vector2(0.5f, 0.5f);
-        itemRectTransform.anchoredPosition = anchoredPosition;
-        itemRectTransform.sizeDelta = new Vector2(viewportWidth, itemHeight);
+        ConfigureAnchoredRect(
+            itemRectTransform,
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            anchoredPosition,
+            new Vector2(viewportWidth, itemHeight));
 
         GameObject imageObject = new GameObject("Image", typeof(RectTransform), typeof(Image));
         imageObject.transform.SetParent(itemObject.transform, false);
 
         RectTransform imageRectTransform = imageObject.GetComponent<RectTransform>();
-        imageRectTransform.anchorMin = new Vector2(0f, 0.5f);
-        imageRectTransform.anchorMax = new Vector2(0f, 0.5f);
-        imageRectTransform.pivot = new Vector2(0f, 0.5f);
-        imageRectTransform.anchoredPosition = new Vector2(CreditsItemHorizontalPadding, 0f);
-        imageRectTransform.sizeDelta = new Vector2(CreditsItemSize, CreditsItemSize);
+        ConfigureAnchoredRect(
+            imageRectTransform,
+            new Vector2(0f, 0.5f),
+            new Vector2(0f, 0.5f),
+            new Vector2(0f, 0.5f),
+            new Vector2(CreditsItemHorizontalPadding, 0f),
+            new Vector2(CreditsItemSize, CreditsItemSize));
 
         Image itemImage = imageObject.GetComponent<Image>();
         itemImage.sprite = entry.Sprite;
@@ -793,16 +804,16 @@ public class ResultSceneController : MonoBehaviour
         descriptionObject.transform.SetParent(itemObject.transform, false);
 
         RectTransform descriptionRectTransform = descriptionObject.GetComponent<RectTransform>();
-        descriptionRectTransform.anchorMin = new Vector2(0f, 0.5f);
-        descriptionRectTransform.anchorMax = new Vector2(0f, 0.5f);
-        descriptionRectTransform.pivot = new Vector2(0f, 0.5f);
-        descriptionRectTransform.anchoredPosition = new Vector2(
-            CreditsItemHorizontalPadding + CreditsItemSize + CreditsItemTextSpacing,
-            0f);
-        descriptionRectTransform.sizeDelta = new Vector2(GetCreditItemTextWidth(viewportWidth), itemHeight);
+        ConfigureAnchoredRect(
+            descriptionRectTransform,
+            new Vector2(0f, 0.5f),
+            new Vector2(0f, 0.5f),
+            new Vector2(0f, 0.5f),
+            new Vector2(CreditsItemHorizontalPadding + CreditsItemSize + CreditsItemTextSpacing, 0f),
+            new Vector2(GetCreditItemTextWidth(viewportWidth), itemHeight));
 
         Text descriptionText = descriptionObject.GetComponent<Text>();
-        descriptionText.font = GetBuiltinFont();
+        descriptionText.font = RuntimeGaugeUiUtility.GetBuiltinFont();
         descriptionText.fontSize = CreditsItemTextFontSize;
         descriptionText.fontStyle = FontStyle.Normal;
         descriptionText.alignment = TextAnchor.MiddleLeft;
@@ -852,15 +863,30 @@ public class ResultSceneController : MonoBehaviour
         }
     }
 
-    private Font GetBuiltinFont()
+    private static void ConfigureAnchoredRect(
+        RectTransform rectTransform,
+        Vector2 anchorMin,
+        Vector2 anchorMax,
+        Vector2 pivot,
+        Vector2 anchoredPosition,
+        Vector2 sizeDelta)
     {
-        if (builtinFont != null)
-        {
-            return builtinFont;
-        }
+        rectTransform.anchorMin = anchorMin;
+        rectTransform.anchorMax = anchorMax;
+        rectTransform.pivot = pivot;
+        rectTransform.anchoredPosition = anchoredPosition;
+        rectTransform.sizeDelta = sizeDelta;
+    }
 
-        builtinFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        return builtinFont;
+    private static void ConfigureStretchRect(
+        RectTransform rectTransform,
+        Vector2 offsetMin,
+        Vector2 offsetMax)
+    {
+        rectTransform.anchorMin = Vector2.zero;
+        rectTransform.anchorMax = Vector2.one;
+        rectTransform.offsetMin = offsetMin;
+        rectTransform.offsetMax = offsetMax;
     }
 
     private static ColorBlock CreateButtonColors(Color normalColor)

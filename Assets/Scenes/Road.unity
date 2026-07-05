@@ -564,7 +564,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StaminaPickup
   restoreAmount: 10
-  creditsDescription: \uc804\uae30\ucc28\ub97c\u0020\ud0c0\uc694
+  creditsDescription: \ud0c4\uc18c\u0020\ubc30\ucd9c\uc744\u0020\uc904\uc774\uae30\u0020\uc704\ud574\u0020\uc804\uae30\ucc28\ub97c\u0020\uc774\uc6a9\ud574\uc694
 --- !u!212 &415304432
 SpriteRenderer:
   serializedVersion: 2
@@ -2122,7 +2122,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StaminaPickup
   restoreAmount: 10
-  creditsDescription: \uc804\uae30\ucc28\ub97c\u0020\ud0c0\uc694
+  creditsDescription: \ud0c4\uc18c\u0020\ubc30\ucd9c\uc744\u0020\uc904\uc774\uae30\u0020\uc704\ud574\u0020\uc804\uae30\ucc28\ub97c\u0020\uc774\uc6a9\ud574\uc694
 --- !u!212 &1779905813
 SpriteRenderer:
   serializedVersion: 2
