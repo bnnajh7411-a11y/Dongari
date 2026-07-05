@@ -38,6 +38,9 @@ public class PlayerMovement : MonoBehaviour
     private const float GreenAlgaeMinXPosition = -21f;
     private const float ZooBoundarySkinWidth = 0.02f;
     private const int ZooBoundaryHitCapacity = 16;
+    private const int MovementCastIterations = 3;
+    private const float MovementMinDistance = 0.0001f;
+    private const float MovementSurfaceSeparation = 0.001f;
     private static readonly string[] ArtificialRiverColliderObjectNames =
     {
         GreenAlgaeObjectName,
@@ -1357,6 +1360,87 @@ public class PlayerMovement : MonoBehaviour
             return desiredDelta;
         }
 
+        if (playerCollider is CircleCollider2D circleCollider)
+        {
+            return ResolveMovementWithCircleCast(desiredDelta, contactFilter, circleCollider);
+        }
+
+        return ResolveMovementWithSingleCast(desiredDelta, contactFilter);
+    }
+
+    private Vector2 ResolveMovementWithCircleCast(
+        Vector2 desiredDelta,
+        ContactFilter2D contactFilter,
+        CircleCollider2D circleCollider)
+    {
+        float radius = GetWorldCircleRadius(circleCollider);
+        if (radius <= Mathf.Epsilon)
+        {
+            return ResolveMovementWithSingleCast(desiredDelta, contactFilter);
+        }
+
+        Vector2 currentCenter = circleCollider.bounds.center;
+        Vector2 resolvedDelta = Vector2.zero;
+        Vector2 remainingDelta = desiredDelta;
+
+        for (int iteration = 0; iteration < MovementCastIterations; iteration++)
+        {
+            if (remainingDelta.sqrMagnitude <= MovementMinDistance * MovementMinDistance)
+            {
+                break;
+            }
+
+            Vector2 direction = remainingDelta.normalized;
+            float travelDistance = remainingDelta.magnitude;
+            int hitCount = Physics2D.CircleCast(
+                currentCenter,
+                radius,
+                direction,
+                contactFilter,
+                zooBoundaryHits,
+                travelDistance + ZooBoundarySkinWidth);
+
+            if (!TryGetNearestBlockingHit(hitCount, out RaycastHit2D nearestHit))
+            {
+                resolvedDelta += remainingDelta;
+                return resolvedDelta;
+            }
+
+            float allowedDistance = Mathf.Min(
+                travelDistance,
+                Mathf.Max(0f, nearestHit.distance - ZooBoundarySkinWidth));
+            Vector2 moveDelta = direction * allowedDistance;
+
+            if (moveDelta.sqrMagnitude > MovementMinDistance * MovementMinDistance)
+            {
+                currentCenter += moveDelta;
+                resolvedDelta += moveDelta;
+            }
+
+            Vector2 remainingAfterBlock = remainingDelta - moveDelta;
+            Vector2 slideDelta =
+                remainingAfterBlock - (Vector2.Dot(remainingAfterBlock, nearestHit.normal) * nearestHit.normal);
+            if (slideDelta.sqrMagnitude <= MovementMinDistance * MovementMinDistance)
+            {
+                break;
+            }
+
+            Vector2 separationDelta = nearestHit.normal * MovementSurfaceSeparation;
+            currentCenter += separationDelta;
+            resolvedDelta += separationDelta;
+            remainingDelta = slideDelta;
+        }
+
+        return resolvedDelta;
+    }
+
+    private Vector2 ResolveMovementWithSingleCast(Vector2 desiredDelta, ContactFilter2D contactFilter)
+    {
+        if (playerCollider == null || desiredDelta.sqrMagnitude <= Mathf.Epsilon)
+        {
+            return desiredDelta;
+        }
+
         Vector2 direction = desiredDelta.normalized;
         float travelDistance = desiredDelta.magnitude;
         int hitCount = playerCollider.Cast(
@@ -1365,19 +1449,32 @@ public class PlayerMovement : MonoBehaviour
             zooBoundaryHits,
             travelDistance + ZooBoundarySkinWidth);
 
-        if (hitCount <= 0)
+        if (!TryGetNearestBlockingHit(hitCount, out RaycastHit2D nearestHit))
         {
             return desiredDelta;
         }
 
         float allowedDistance = travelDistance;
-        RaycastHit2D nearestHit = default;
+        allowedDistance = Mathf.Min(
+            allowedDistance,
+            Mathf.Max(0f, nearestHit.distance - ZooBoundarySkinWidth));
+
+        Vector2 blockedDelta = direction * allowedDistance;
+        Vector2 remainingDelta = desiredDelta - blockedDelta;
+        Vector2 slideDelta = remainingDelta - (Vector2.Dot(remainingDelta, nearestHit.normal) * nearestHit.normal);
+        return blockedDelta + slideDelta;
+    }
+
+    private bool TryGetNearestBlockingHit(int hitCount, out RaycastHit2D nearestHit)
+    {
+        nearestHit = default;
         bool hasHit = false;
 
         for (int i = 0; i < hitCount; i++)
         {
             RaycastHit2D hit = zooBoundaryHits[i];
-            if (hit.collider == null)
+            Collider2D hitCollider = hit.collider;
+            if (hitCollider == null || hitCollider == playerCollider || hitCollider.transform.IsChildOf(transform))
             {
                 continue;
             }
@@ -1387,21 +1484,21 @@ public class PlayerMovement : MonoBehaviour
                 nearestHit = hit;
                 hasHit = true;
             }
-
-            allowedDistance = Mathf.Min(
-                allowedDistance,
-                Mathf.Max(0f, hit.distance - ZooBoundarySkinWidth));
         }
 
-        if (!hasHit)
+        return hasHit;
+    }
+
+    private static float GetWorldCircleRadius(CircleCollider2D circleCollider)
+    {
+        if (circleCollider == null)
         {
-            return desiredDelta;
+            return 0f;
         }
 
-        Vector2 blockedDelta = direction * allowedDistance;
-        Vector2 remainingDelta = desiredDelta - blockedDelta;
-        Vector2 slideDelta = remainingDelta - (Vector2.Dot(remainingDelta, nearestHit.normal) * nearestHit.normal);
-        return blockedDelta + slideDelta;
+        Vector3 lossyScale = circleCollider.transform.lossyScale;
+        float maxScale = Mathf.Max(Mathf.Abs(lossyScale.x), Mathf.Abs(lossyScale.y));
+        return circleCollider.radius * maxScale;
     }
 
     private void EnsureZooBoundaryFilter()

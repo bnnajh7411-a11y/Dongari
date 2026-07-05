@@ -1593,13 +1593,12 @@ public class StartSceneController : MonoBehaviour
             return;
         }
 
-        if (PlayerInputBindings.IsConfigured)
+        if (!PlayerInputBindings.IsConfigured)
         {
-            LoadScene();
-            return;
+            PlayerInputBindings.SaveAndMarkConfigured();
         }
 
-        OpenKeyMappingPanel(true);
+        LoadScene();
     }
 
     private void HandleReconfigureButtonPressed()
