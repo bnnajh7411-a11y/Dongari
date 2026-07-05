@@ -39,6 +39,9 @@ public class StartSceneController : MonoBehaviour
     private const string OptionsPanelObjectName = "OptionsPanel";
     private const string OptionsBackgroundClickAreaObjectName = "OptionsBackgroundClickArea";
     private const string OptionsWindowObjectName = "OptionsWindow";
+    private const string ExitConfirmationPanelObjectName = "ExitConfirmationPanel";
+    private const string ExitConfirmationBackgroundClickAreaObjectName = "ExitConfirmationBackgroundClickArea";
+    private const string ExitConfirmationWindowObjectName = "ExitConfirmationWindow";
     private const string ResolutionBackgroundClickAreaObjectName = "ResolutionBackgroundClickArea";
     private const string KeyBindingScrollAreaObjectName = "KeyBindingScrollArea";
     private const string KeyBindingViewportObjectName = "KeyBindingViewport";
@@ -53,6 +56,7 @@ public class StartSceneController : MonoBehaviour
     private static readonly Vector2 KeyBindingStatusPosition = new Vector2(0f, 28f);
     private static readonly Vector2 CancelButtonPosition = new Vector2(-150f, 96f);
     private static readonly Vector2 ConfirmButtonPosition = new Vector2(150f, 96f);
+    private static readonly Vector2 ExitConfirmationWindowSize = new Vector2(720f, 360f);
     private static readonly Vector2 OptionsWindowSize = new Vector2(980f, 880f);
     private static readonly Vector2 OptionsCloseButtonPosition = new Vector2(0f, 58f);
     private static readonly Vector2Int[] CommonResolutionOptions =
@@ -120,6 +124,7 @@ public class StartSceneController : MonoBehaviour
     private GameObject pauseBackgroundOverlay;
     private GameObject keyMappingPanel;
     private GameObject optionsPanel;
+    private GameObject exitConfirmationPanel;
     private GameObject optionsAudioContent;
     private GameObject optionsResolutionContent;
     private GameObject optionsKeySetupContent;
@@ -315,6 +320,12 @@ public class StartSceneController : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.Escape))
             {
+                if (exitConfirmationPanel != null && exitConfirmationPanel.activeSelf)
+                {
+                    CloseExitConfirmationPanel();
+                    return;
+                }
+
                 if (keyMappingPanel != null && keyMappingPanel.activeSelf)
                 {
                     CloseKeyMappingPanel();
@@ -330,6 +341,14 @@ public class StartSceneController : MonoBehaviour
                 TogglePauseMenu();
                 return;
             }
+        }
+
+        if (exitConfirmationPanel != null
+            && exitConfirmationPanel.activeSelf
+            && Input.GetKeyDown(KeyCode.Escape))
+        {
+            CloseExitConfirmationPanel();
+            return;
         }
 
         if (!isWaitingForBinding)
@@ -776,6 +795,98 @@ public class StartSceneController : MonoBehaviour
             new Color(0.16f, 0.44f, 0.25f, 1f));
         SetBottomAnchoredRect(confirmButton.GetComponent<RectTransform>());
         confirmButton.onClick.AddListener(ConfirmKeyMappingAndLoadScene);
+    }
+
+    private void EnsureExitConfirmationPanel(Transform parent)
+    {
+        if (exitConfirmationPanel != null)
+        {
+            return;
+        }
+
+        exitConfirmationPanel = new GameObject(
+            ExitConfirmationPanelObjectName,
+            typeof(RectTransform),
+            typeof(Image));
+
+        exitConfirmationPanel.transform.SetParent(parent, false);
+
+        RectTransform panelRectTransform = exitConfirmationPanel.GetComponent<RectTransform>();
+        panelRectTransform.anchorMin = Vector2.zero;
+        panelRectTransform.anchorMax = Vector2.one;
+        panelRectTransform.offsetMin = Vector2.zero;
+        panelRectTransform.offsetMax = Vector2.zero;
+
+        Image panelOverlay = exitConfirmationPanel.GetComponent<Image>();
+        panelOverlay.color = new Color(0f, 0f, 0f, 0.72f);
+        panelOverlay.raycastTarget = false;
+        CreateBackgroundClickCloseArea(
+            exitConfirmationPanel.transform,
+            ExitConfirmationBackgroundClickAreaObjectName,
+            CloseExitConfirmationPanel);
+
+        GameObject windowObject = new GameObject(
+            ExitConfirmationWindowObjectName,
+            typeof(RectTransform),
+            typeof(Image));
+
+        windowObject.transform.SetParent(exitConfirmationPanel.transform, false);
+
+        RectTransform windowRectTransform = windowObject.GetComponent<RectTransform>();
+        windowRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        windowRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        windowRectTransform.pivot = new Vector2(0.5f, 0.5f);
+        windowRectTransform.sizeDelta = ExitConfirmationWindowSize;
+        windowRectTransform.anchoredPosition = Vector2.zero;
+
+        Image windowImage = windowObject.GetComponent<Image>();
+        windowImage.color = new Color(0.95f, 0.96f, 0.9f, 1f);
+
+        CreateTextElement(
+            windowObject.transform,
+            "ExitConfirmationTitle",
+            "게임 종료",
+            40,
+            FontStyle.Bold,
+            TextAnchor.MiddleCenter,
+            new Vector2(0.5f, 1f),
+            new Vector2(0.5f, 1f),
+            new Vector2(0f, -62f),
+            new Vector2(420f, 56f),
+            new Color(0.13f, 0.2f, 0.14f, 1f));
+
+        CreateTextElement(
+            windowObject.transform,
+            "ExitConfirmationMessage",
+            "게임을 종료하시겠습니까?",
+            28,
+            FontStyle.Normal,
+            TextAnchor.MiddleCenter,
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0f, 18f),
+            new Vector2(540f, 72f),
+            new Color(0.16f, 0.22f, 0.17f, 1f));
+
+        Button cancelButton = CreateButton(
+            windowObject.transform,
+            "ExitConfirmationCancelButton",
+            "아니요",
+            CancelButtonPosition,
+            new Vector2(220f, 64f),
+            new Color(0.52f, 0.57f, 0.52f, 1f));
+        SetBottomAnchoredRect(cancelButton.GetComponent<RectTransform>());
+        cancelButton.onClick.AddListener(CloseExitConfirmationPanel);
+
+        Button confirmButton = CreateButton(
+            windowObject.transform,
+            "ExitConfirmationConfirmButton",
+            "종료",
+            ConfirmButtonPosition,
+            new Vector2(220f, 64f),
+            new Color(0.68f, 0.25f, 0.22f, 1f));
+        SetBottomAnchoredRect(confirmButton.GetComponent<RectTransform>());
+        confirmButton.onClick.AddListener(ConfirmExitGame);
     }
 
     private void CreateAudioSliderRow(
@@ -1555,6 +1666,7 @@ public class StartSceneController : MonoBehaviour
         EnsureMenuUiAvailable();
         SetPauseBackgroundVisible(false);
         SetMenuButtonsVisible(false);
+        SetExitConfirmationPanelVisible(false);
         SetMenuButtonsInteractable(true);
     }
 
@@ -1613,6 +1725,11 @@ public class StartSceneController : MonoBehaviour
 
     private void HandleExitButtonPressed()
     {
+        OpenExitConfirmationPanel();
+    }
+
+    private void ConfirmExitGame()
+    {
         ResumeSceneActivity();
 
 #if UNITY_EDITOR
@@ -1645,6 +1762,7 @@ public class StartSceneController : MonoBehaviour
         RefreshMenuButtons();
         SetKeyMappingPanelVisible(false);
         SetOptionsPanelVisible(false);
+        SetExitConfirmationPanelVisible(false);
         SetPauseBackgroundVisible(true);
         SetMenuButtonsVisible(true);
         SetMenuButtonsInteractable(true);
@@ -1662,6 +1780,7 @@ public class StartSceneController : MonoBehaviour
         shouldLoadSceneAfterConfirm = false;
         SetKeyMappingPanelVisible(false);
         SetOptionsPanelVisible(false);
+        SetExitConfirmationPanelVisible(false);
         SetMenuButtonsVisible(false);
         SetPauseBackgroundVisible(false);
         ResumeSceneActivity();
@@ -1701,6 +1820,12 @@ public class StartSceneController : MonoBehaviour
         SetMenuButtonsInteractable(false);
     }
 
+    private void OpenExitConfirmationPanel()
+    {
+        SetExitConfirmationPanelVisible(true);
+        SetMenuButtonsInteractable(false);
+    }
+
     private void CloseKeyMappingPanel()
     {
         CancelPendingRebind();
@@ -1714,6 +1839,13 @@ public class StartSceneController : MonoBehaviour
     {
         CancelPendingRebind();
         SetOptionsPanelVisible(false);
+        RefreshMenuButtons();
+        SetMenuButtonsInteractable(true);
+    }
+
+    private void CloseExitConfirmationPanel()
+    {
+        SetExitConfirmationPanelVisible(false);
         RefreshMenuButtons();
         SetMenuButtonsInteractable(true);
     }
@@ -2076,6 +2208,14 @@ public class StartSceneController : MonoBehaviour
         }
     }
 
+    private void SetExitConfirmationPanelVisible(bool isVisible)
+    {
+        if (exitConfirmationPanel != null)
+        {
+            exitConfirmationPanel.SetActive(isVisible);
+        }
+    }
+
     private GameObject CreateBackgroundClickCloseArea(Transform parent, string objectName, Action closeAction)
     {
         if (parent == null || closeAction == null)
@@ -2129,8 +2269,10 @@ public class StartSceneController : MonoBehaviour
         EnsureExitButton(menuButtonsContainer.transform);
         EnsureKeyMappingPanel(rootCanvas.transform);
         EnsureOptionsPanel(rootCanvas.transform);
+        EnsureExitConfirmationPanel(rootCanvas.transform);
         SetKeyMappingPanelVisible(false);
         SetOptionsPanelVisible(false);
+        SetExitConfirmationPanelVisible(false);
         RefreshMenuButtons();
         RefreshBindingValueTexts();
         UpdateStatusText(DefaultStatusText);
@@ -2142,6 +2284,7 @@ public class StartSceneController : MonoBehaviour
         menuButtonsContainer = null;
         keyMappingPanel = null;
         optionsPanel = null;
+        exitConfirmationPanel = null;
         optionsAudioContent = null;
         optionsResolutionContent = null;
         optionsKeySetupContent = null;
