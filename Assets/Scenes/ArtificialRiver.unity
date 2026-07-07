@@ -2323,15 +2323,15 @@ SpriteRenderer:
   m_SortingLayer: 2
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: fa7f1ab4d521844449e4b692591ff420, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 2}
+  m_Size: {x: 120, y: 46.466667}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!4 &424229155
 Transform:
@@ -2363,12 +2363,12 @@ MonoBehaviour:
   viewMode: 0
   playStartClips: 1
   sideView:
-    idle: {fileID: 7400000, guid: 3143ba9c5f7a24044b7a06022ceabba2, type: 2}
-    walkStart: {fileID: 7400000, guid: f849e3711bea6de40a540113c99cfec2, type: 2}
-    walk: {fileID: 7400000, guid: acafb8f8b8c5c8a4680a8e6b6786818e, type: 2}
-    runStart: {fileID: 7400000, guid: b6fb0c767ea287343bd5ca0cd57f62d3, type: 2}
-    run: {fileID: 7400000, guid: b664d196b25ecda43ad203fc36e9edae, type: 2}
-    jump: {fileID: 7400000, guid: b7dd62b45fcf6f94bb3a9b7eb09ee4cf, type: 2}
+    idle: {fileID: 7400000, guid: b23dc3baa58cf094daba3d5705fbedd3, type: 2}
+    walkStart: {fileID: 7400000, guid: ecc0c29a01e015e4d91a5bf7697ab7c6, type: 2}
+    walk: {fileID: 7400000, guid: ecc0c29a01e015e4d91a5bf7697ab7c6, type: 2}
+    runStart: {fileID: 7400000, guid: 3347a5b7bb2603940afec615370f4c41, type: 2}
+    run: {fileID: 7400000, guid: 3347a5b7bb2603940afec615370f4c41, type: 2}
+    jump: {fileID: 7400000, guid: 3347a5b7bb2603940afec615370f4c41, type: 2}
   topView:
     down:
       idle: {fileID: 0}
@@ -2410,7 +2410,7 @@ Animator:
   m_GameObject: {fileID: 424229150}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 6bd6fe9f67ef4ea4386bab85041fd5e9, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -2460,8 +2460,8 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.25, y: 1.25}
-    newSize: {x: 1, y: 2}
+    oldSize: {x: 120, y: 46.466667}
+    newSize: {x: 120, y: 46.466667}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
