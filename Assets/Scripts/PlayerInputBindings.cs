@@ -48,7 +48,7 @@ public static class PlayerInputBindings
         { InputActionType.MoveRight, KeyCode.D },
         { InputActionType.Run, KeyCode.LeftShift },
         { InputActionType.Jump, KeyCode.Space },
-        { InputActionType.Interact, KeyCode.Z }
+        { InputActionType.Interact, KeyCode.Return }
     };
 
     private static readonly Dictionary<InputActionType, KeyCode> CachedBindings = new Dictionary<InputActionType, KeyCode>();

@@ -5308,8 +5308,8 @@ MonoBehaviour:
   damageFlashColor: {r: 1, g: 0, b: 0, a: 1}
   gaugeSize: {x: 320, y: 24}
   gaugeAnchoredPosition: {x: 24, y: -24}
-  showBackgroundFrame: 0
-  backgroundColor: {r: 0.6745098, g: 0.6745098, b: 0.6745098, a: 0.55}
+  showBackgroundFrame: 1
+  backgroundColor: {r: 0, g: 0, b: 0, a: 0.55}
   healthFillColor: {r: 0.86, g: 0.2, b: 0.2, a: 1}
   gaugeLabel: "\uCCB4\uB825"
   gaugeLabelOffset: {x: 16, y: 0}
