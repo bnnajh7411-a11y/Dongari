@@ -20,8 +20,8 @@ public class IntroCutsceneController : MonoBehaviour
     [SerializeField] private string fallbackNextSceneName = "Zoo";
     [SerializeField] private string skipButtonLabel = "SKIP";
     [SerializeField] private Color backgroundColor = Color.black;
-    [SerializeField] private Color skipButtonColor = new Color(0f, 0f, 0f, 0.72f);
-    [SerializeField] private Color skipButtonTextColor = Color.white;
+    [SerializeField] private Color skipButtonColor = new Color(0.18f, 0.19f, 0.22f, 0.64f);
+    [SerializeField] private Color skipButtonTextColor = new Color(0.97f, 0.98f, 1f, 1f);
     [SerializeField] private VideoClip introVideoClip;
 
     private Font builtinFont;
@@ -277,6 +277,10 @@ public class IntroCutsceneController : MonoBehaviour
         Image buttonImage = buttonObject.AddComponent<Image>();
         buttonImage.color = skipButtonColor;
 
+        Outline buttonOutline = buttonObject.AddComponent<Outline>();
+        buttonOutline.effectColor = new Color(1f, 1f, 1f, 0.12f);
+        buttonOutline.effectDistance = new Vector2(1.5f, -1.5f);
+
         Button button = buttonObject.AddComponent<Button>();
         button.targetGraphic = buttonImage;
         button.transition = Selectable.Transition.ColorTint;
@@ -427,10 +431,18 @@ public class IntroCutsceneController : MonoBehaviour
     {
         ColorBlock colors = ColorBlock.defaultColorBlock;
         colors.normalColor = normalColor;
-        colors.highlightedColor = Color.Lerp(normalColor, Color.white, 0.12f);
-        colors.pressedColor = Color.Lerp(normalColor, Color.black, 0.16f);
+        colors.highlightedColor = new Color(
+            Mathf.Lerp(normalColor.r, 1f, 0.12f),
+            Mathf.Lerp(normalColor.g, 1f, 0.12f),
+            Mathf.Lerp(normalColor.b, 1f, 0.12f),
+            normalColor.a);
+        colors.pressedColor = new Color(
+            normalColor.r * 0.9f,
+            normalColor.g * 0.9f,
+            normalColor.b * 0.9f,
+            normalColor.a);
         colors.selectedColor = colors.highlightedColor;
-        colors.disabledColor = new Color(normalColor.r, normalColor.g, normalColor.b, 0.35f);
+        colors.disabledColor = new Color(normalColor.r, normalColor.g, normalColor.b, normalColor.a * 0.45f);
         colors.colorMultiplier = 1f;
         colors.fadeDuration = 0.08f;
         return colors;

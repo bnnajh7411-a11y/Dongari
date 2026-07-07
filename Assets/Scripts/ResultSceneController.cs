@@ -34,6 +34,11 @@ public class ResultSceneController : MonoBehaviour
     private const int CreditsItemTextFontSize = 30;
     private const float FooterRevealDuration = 0.45f;
     private const int CanvasSortingOrder = 250;
+    private static readonly Color GlassButtonColor = new Color(0.18f, 0.19f, 0.22f, 0.64f);
+    private static readonly Color GlassPanelColor = new Color(0.14f, 0.15f, 0.18f, 0.76f);
+    private static readonly Color GlassTextColor = new Color(0.97f, 0.98f, 1f, 1f);
+    private static readonly Color GlassMutedTextColor = new Color(0.9f, 0.93f, 0.98f, 0.92f);
+    private static readonly Color GlassOutlineColor = new Color(1f, 1f, 1f, 0.12f);
 
     private Canvas rootCanvas;
     private AudioSource creditsMusicAudioSource;
@@ -133,19 +138,21 @@ public class ResultSceneController : MonoBehaviour
         {
             backgroundImage.color = isCreditsMode
                 ? new Color(0.03f, 0.03f, 0.05f, 1f)
-                : new Color(0.19f, 0.08f, 0.09f, 1f);
+                : new Color(0.08f, 0.09f, 0.11f, 1f);
         }
 
         if (panelImage != null)
         {
             panelImage.color = isCreditsMode
                 ? new Color(0f, 0f, 0f, 0f)
-                : new Color(0.24f, 0.13f, 0.15f, 0.94f);
+                : GlassPanelColor;
         }
 
         if (panelOutline != null)
         {
             panelOutline.enabled = !isCreditsMode;
+            panelOutline.effectColor = GlassOutlineColor;
+            panelOutline.effectDistance = new Vector2(2f, -2f);
         }
 
         if (titleText != null)
@@ -153,15 +160,15 @@ public class ResultSceneController : MonoBehaviour
             titleText.gameObject.SetActive(!isCreditsMode);
             titleText.text = GameOverTitleText;
             titleText.fontSize = 46;
-            titleText.color = new Color(0.98f, 0.92f, 0.92f, 1f);
+            titleText.color = GlassTextColor;
         }
 
         if (bodyText != null)
         {
             bodyText.text = isCreditsMode ? CreditsBodyText : EmptyBodyText;
             bodyText.color = isCreditsMode
-                ? new Color(0.95f, 0.95f, 0.91f, 1f)
-                : new Color(0.98f, 0.92f, 0.92f, 1f);
+                ? GlassTextColor
+                : GlassMutedTextColor;
             bodyText.fontSize = isCreditsMode ? 56 : 28;
         }
 
@@ -363,8 +370,8 @@ public class ResultSceneController : MonoBehaviour
         panel.type = Image.Type.Simple;
 
         Outline outline = panelObject.GetComponent<Outline>();
-        outline.effectColor = new Color(0f, 0f, 0f, 0.16f);
-        outline.effectDistance = new Vector2(3f, -3f);
+        outline.effectColor = GlassOutlineColor;
+        outline.effectDistance = new Vector2(2f, -2f);
         return panel;
     }
 
@@ -468,7 +475,8 @@ public class ResultSceneController : MonoBehaviour
             ButtonObjectName,
             typeof(RectTransform),
             typeof(Image),
-            typeof(Button));
+            typeof(Button),
+            typeof(Outline));
         buttonObject.transform.SetParent(parent, false);
 
         RectTransform buttonRectTransform = buttonObject.GetComponent<RectTransform>();
@@ -483,7 +491,11 @@ public class ResultSceneController : MonoBehaviour
         Image buttonImage = buttonObject.GetComponent<Image>();
         buttonImage.sprite = sprite;
         buttonImage.type = Image.Type.Simple;
-        buttonImage.color = new Color(0.18f, 0.43f, 0.27f, 1f);
+        buttonImage.color = GlassButtonColor;
+
+        Outline buttonOutline = buttonObject.GetComponent<Outline>();
+        buttonOutline.effectColor = GlassOutlineColor;
+        buttonOutline.effectDistance = new Vector2(1.5f, -1.5f);
 
         Button button = buttonObject.GetComponent<Button>();
         button.targetGraphic = buttonImage;
@@ -499,7 +511,7 @@ public class ResultSceneController : MonoBehaviour
             FontStyle.Bold,
             TextAnchor.MiddleCenter);
         label.text = StartButtonText;
-        label.color = Color.white;
+        label.color = GlassTextColor;
 
         return button;
     }
@@ -893,10 +905,18 @@ public class ResultSceneController : MonoBehaviour
     {
         ColorBlock colors = ColorBlock.defaultColorBlock;
         colors.normalColor = normalColor;
-        colors.highlightedColor = Color.Lerp(normalColor, Color.white, 0.14f);
-        colors.pressedColor = Color.Lerp(normalColor, Color.black, 0.18f);
+        colors.highlightedColor = new Color(
+            Mathf.Lerp(normalColor.r, 1f, 0.12f),
+            Mathf.Lerp(normalColor.g, 1f, 0.12f),
+            Mathf.Lerp(normalColor.b, 1f, 0.12f),
+            normalColor.a);
+        colors.pressedColor = new Color(
+            normalColor.r * 0.9f,
+            normalColor.g * 0.9f,
+            normalColor.b * 0.9f,
+            normalColor.a);
         colors.selectedColor = colors.highlightedColor;
-        colors.disabledColor = new Color(0.35f, 0.35f, 0.35f, 0.7f);
+        colors.disabledColor = new Color(normalColor.r, normalColor.g, normalColor.b, normalColor.a * 0.45f);
         return colors;
     }
 }

@@ -83,6 +83,12 @@ public class StartSceneController : MonoBehaviour
     private const float ResolutionMinimumContentHeight = 220f;
     private const float TitleFadeDuration = 2f;
     private const float ButtonsRevealDelay = 0f;
+    private static readonly Color MenuButtonBackgroundColor = new Color(0.18f, 0.19f, 0.22f, 0.64f);
+    private static readonly Color MenuPanelBackgroundColor = new Color(0.14f, 0.15f, 0.18f, 0.74f);
+    private static readonly Color MenuBackdropColor = new Color(0f, 0f, 0f, 0.46f);
+    private static readonly Color MenuButtonLabelColor = new Color(0.97f, 0.98f, 1f, 1f);
+    private static readonly Color MenuMutedLabelColor = new Color(0.88f, 0.92f, 0.97f, 0.9f);
+    private static readonly Color MenuOutlineColor = new Color(1f, 1f, 1f, 0.12f);
 
     private static readonly KeyCode[] RebindableKeys =
     {
@@ -436,6 +442,10 @@ public class StartSceneController : MonoBehaviour
         if (existingOverlayTransform != null)
         {
             existingOverlayTransform.SetAsFirstSibling();
+            if (existingOverlayTransform.TryGetComponent(out Image existingOverlayImage))
+            {
+                existingOverlayImage.color = MenuBackdropColor;
+            }
             return existingOverlayTransform.gameObject;
         }
 
@@ -453,7 +463,7 @@ public class StartSceneController : MonoBehaviour
         overlayRectTransform.offsetMax = Vector2.zero;
 
         Image overlayImage = overlayObject.GetComponent<Image>();
-        overlayImage.color = new Color(1f, 1f, 1f, 0.52f);
+        overlayImage.color = MenuBackdropColor;
         overlayImage.raycastTarget = false;
 
         overlayObject.SetActive(false);
@@ -491,6 +501,7 @@ public class StartSceneController : MonoBehaviour
             {
                 startButton.onClick.RemoveListener(HandleStartButtonPressed);
                 startButton.onClick.AddListener(HandleStartButtonPressed);
+                ApplyMenuButtonAppearance(startButton);
             }
 
             return;
@@ -502,7 +513,7 @@ public class StartSceneController : MonoBehaviour
             buttonLabel,
             Vector2.zero,
             new Vector2(280f, 80f),
-            new Color(0.16f, 0.44f, 0.25f, 1f));
+            MenuButtonBackgroundColor);
         startButton.onClick.AddListener(HandleStartButtonPressed);
     }
 
@@ -517,6 +528,7 @@ public class StartSceneController : MonoBehaviour
                 reconfigureButton.onClick.RemoveListener(HandleReconfigureButtonPressed);
                 reconfigureButton.onClick.AddListener(HandleReconfigureButtonPressed);
                 SetButtonLabel(reconfigureButton, reconfigureButtonLabel);
+                ApplyMenuButtonAppearance(reconfigureButton);
             }
 
             return;
@@ -528,14 +540,8 @@ public class StartSceneController : MonoBehaviour
             reconfigureButtonLabel,
             Vector2.zero,
             new Vector2(280f, 68f),
-            new Color(0.74f, 0.81f, 0.72f, 1f));
+            MenuButtonBackgroundColor);
         reconfigureButton.onClick.AddListener(HandleReconfigureButtonPressed);
-
-        Text label = reconfigureButton.GetComponentInChildren<Text>();
-        if (label != null)
-        {
-            label.color = new Color(0.12f, 0.22f, 0.16f, 1f);
-        }
     }
 
     private void EnsureOptionButton(Transform parent)
@@ -549,6 +555,7 @@ public class StartSceneController : MonoBehaviour
                 optionButton.onClick.RemoveListener(HandleOptionButtonPressed);
                 optionButton.onClick.AddListener(HandleOptionButtonPressed);
                 SetButtonLabel(optionButton, optionButtonLabel);
+                ApplyMenuButtonAppearance(optionButton);
             }
 
             return;
@@ -560,14 +567,8 @@ public class StartSceneController : MonoBehaviour
             optionButtonLabel,
             Vector2.zero,
             new Vector2(280f, 68f),
-            new Color(0.84f, 0.74f, 0.46f, 1f));
+            MenuButtonBackgroundColor);
         optionButton.onClick.AddListener(HandleOptionButtonPressed);
-
-        Text label = optionButton.GetComponentInChildren<Text>();
-        if (label != null)
-        {
-            label.color = new Color(0.18f, 0.16f, 0.09f, 1f);
-        }
     }
 
     private void EnsureExitButton(Transform parent)
@@ -581,6 +582,7 @@ public class StartSceneController : MonoBehaviour
                 exitButton.onClick.RemoveListener(HandleExitButtonPressed);
                 exitButton.onClick.AddListener(HandleExitButtonPressed);
                 SetButtonLabel(exitButton, exitButtonLabel);
+                ApplyMenuButtonAppearance(exitButton);
             }
 
             return;
@@ -592,7 +594,7 @@ public class StartSceneController : MonoBehaviour
             exitButtonLabel,
             Vector2.zero,
             new Vector2(280f, 68f),
-            new Color(0.71f, 0.35f, 0.3f, 1f));
+            MenuButtonBackgroundColor);
         exitButton.onClick.AddListener(HandleExitButtonPressed);
     }
 
@@ -617,14 +619,15 @@ public class StartSceneController : MonoBehaviour
         panelRectTransform.offsetMax = Vector2.zero;
 
         Image panelOverlay = optionsPanel.GetComponent<Image>();
-        panelOverlay.color = new Color(0f, 0f, 0f, 0.72f);
+        panelOverlay.color = MenuBackdropColor;
         panelOverlay.raycastTarget = false;
         CreateBackgroundClickCloseArea(optionsPanel.transform, OptionsBackgroundClickAreaObjectName, CloseOptionsPanel);
 
         GameObject windowObject = new GameObject(
             OptionsWindowObjectName,
             typeof(RectTransform),
-            typeof(Image));
+            typeof(Image),
+            typeof(Outline));
 
         windowObject.transform.SetParent(optionsPanel.transform, false);
 
@@ -636,7 +639,10 @@ public class StartSceneController : MonoBehaviour
         windowRectTransform.anchoredPosition = Vector2.zero;
 
         Image windowImage = windowObject.GetComponent<Image>();
-        windowImage.color = new Color(0.95f, 0.96f, 0.9f, 1f);
+        windowImage.color = MenuPanelBackgroundColor;
+        Outline windowOutline = windowObject.GetComponent<Outline>();
+        windowOutline.effectColor = MenuOutlineColor;
+        windowOutline.effectDistance = new Vector2(2f, -2f);
 
         CreateTextElement(
             windowObject.transform,
@@ -649,7 +655,7 @@ public class StartSceneController : MonoBehaviour
             new Vector2(0.5f, 1f),
             new Vector2(0f, -56f),
             new Vector2(620f, 60f),
-            new Color(0.13f, 0.2f, 0.14f, 1f));
+            MenuButtonLabelColor);
 
         optionsAudioTabButton = CreateOptionsTabButton(
             windowObject.transform,
@@ -691,7 +697,7 @@ public class StartSceneController : MonoBehaviour
             "\ub2eb\uae30",
             OptionsCloseButtonPosition,
             new Vector2(240f, 64f),
-            new Color(0.16f, 0.44f, 0.25f, 1f));
+            MenuButtonBackgroundColor);
         SetBottomAnchoredRect(closeButton.GetComponent<RectTransform>());
         closeButton.onClick.AddListener(CloseOptionsPanel);
         contentRootObject.transform.SetAsLastSibling();
@@ -720,14 +726,15 @@ public class StartSceneController : MonoBehaviour
         panelRectTransform.offsetMax = Vector2.zero;
 
         Image panelOverlay = keyMappingPanel.GetComponent<Image>();
-        panelOverlay.color = new Color(0f, 0f, 0f, 0.72f);
+        panelOverlay.color = MenuBackdropColor;
         panelOverlay.raycastTarget = false;
         CreateBackgroundClickCloseArea(keyMappingPanel.transform, KeyMappingBackgroundClickAreaObjectName, CloseKeyMappingPanel);
 
         GameObject windowObject = new GameObject(
             KeyMappingWindowObjectName,
             typeof(RectTransform),
-            typeof(Image));
+            typeof(Image),
+            typeof(Outline));
 
         windowObject.transform.SetParent(keyMappingPanel.transform, false);
 
@@ -739,7 +746,10 @@ public class StartSceneController : MonoBehaviour
         windowRectTransform.anchoredPosition = Vector2.zero;
 
         Image windowImage = windowObject.GetComponent<Image>();
-        windowImage.color = new Color(0.95f, 0.96f, 0.9f, 1f);
+        windowImage.color = MenuPanelBackgroundColor;
+        Outline windowOutline = windowObject.GetComponent<Outline>();
+        windowOutline.effectColor = MenuOutlineColor;
+        windowOutline.effectDistance = new Vector2(2f, -2f);
 
         CreateTextElement(
             windowObject.transform,
@@ -752,7 +762,7 @@ public class StartSceneController : MonoBehaviour
             new Vector2(0.5f, 1f),
             new Vector2(0f, -60f),
             new Vector2(760f, 60f),
-            new Color(0.13f, 0.2f, 0.14f, 1f));
+            MenuButtonLabelColor);
 
         IReadOnlyList<InputActionType> actions = PlayerInputBindings.Actions;
         RectTransform bindingContentTransform = CreateBindingScrollArea(windowObject.transform);
@@ -773,7 +783,7 @@ public class StartSceneController : MonoBehaviour
             new Vector2(0.5f, 0f),
             KeyBindingStatusPosition,
             new Vector2(760f, 60f),
-            new Color(0.2f, 0.28f, 0.23f, 1f));
+            MenuMutedLabelColor);
         statusTexts.Add(keyMappingStatusText);
 
         Button cancelButton = CreateButton(
@@ -782,7 +792,7 @@ public class StartSceneController : MonoBehaviour
             "\ucd08\ucf54",
             CancelButtonPosition,
             new Vector2(220f, 64f),
-            new Color(0.52f, 0.57f, 0.52f, 1f));
+            MenuButtonBackgroundColor);
         SetBottomAnchoredRect(cancelButton.GetComponent<RectTransform>());
         cancelButton.onClick.AddListener(CloseKeyMappingPanel);
 
@@ -792,7 +802,7 @@ public class StartSceneController : MonoBehaviour
             "\ud655\uc778",
             ConfirmButtonPosition,
             new Vector2(220f, 64f),
-            new Color(0.16f, 0.44f, 0.25f, 1f));
+            MenuButtonBackgroundColor);
         SetBottomAnchoredRect(confirmButton.GetComponent<RectTransform>());
         confirmButton.onClick.AddListener(ConfirmKeyMappingAndLoadScene);
     }
@@ -818,7 +828,7 @@ public class StartSceneController : MonoBehaviour
         panelRectTransform.offsetMax = Vector2.zero;
 
         Image panelOverlay = exitConfirmationPanel.GetComponent<Image>();
-        panelOverlay.color = new Color(0f, 0f, 0f, 0.72f);
+        panelOverlay.color = MenuBackdropColor;
         panelOverlay.raycastTarget = false;
         CreateBackgroundClickCloseArea(
             exitConfirmationPanel.transform,
@@ -828,7 +838,8 @@ public class StartSceneController : MonoBehaviour
         GameObject windowObject = new GameObject(
             ExitConfirmationWindowObjectName,
             typeof(RectTransform),
-            typeof(Image));
+            typeof(Image),
+            typeof(Outline));
 
         windowObject.transform.SetParent(exitConfirmationPanel.transform, false);
 
@@ -840,7 +851,10 @@ public class StartSceneController : MonoBehaviour
         windowRectTransform.anchoredPosition = Vector2.zero;
 
         Image windowImage = windowObject.GetComponent<Image>();
-        windowImage.color = new Color(0.95f, 0.96f, 0.9f, 1f);
+        windowImage.color = MenuPanelBackgroundColor;
+        Outline windowOutline = windowObject.GetComponent<Outline>();
+        windowOutline.effectColor = MenuOutlineColor;
+        windowOutline.effectDistance = new Vector2(2f, -2f);
 
         CreateTextElement(
             windowObject.transform,
@@ -853,7 +867,7 @@ public class StartSceneController : MonoBehaviour
             new Vector2(0.5f, 1f),
             new Vector2(0f, -62f),
             new Vector2(420f, 56f),
-            new Color(0.13f, 0.2f, 0.14f, 1f));
+            MenuButtonLabelColor);
 
         CreateTextElement(
             windowObject.transform,
@@ -866,7 +880,7 @@ public class StartSceneController : MonoBehaviour
             new Vector2(0.5f, 0.5f),
             new Vector2(0f, 18f),
             new Vector2(540f, 72f),
-            new Color(0.16f, 0.22f, 0.17f, 1f));
+            MenuMutedLabelColor);
 
         Button cancelButton = CreateButton(
             windowObject.transform,
@@ -874,7 +888,7 @@ public class StartSceneController : MonoBehaviour
             "아니요",
             CancelButtonPosition,
             new Vector2(220f, 64f),
-            new Color(0.52f, 0.57f, 0.52f, 1f));
+            MenuButtonBackgroundColor);
         SetBottomAnchoredRect(cancelButton.GetComponent<RectTransform>());
         cancelButton.onClick.AddListener(CloseExitConfirmationPanel);
 
@@ -884,7 +898,7 @@ public class StartSceneController : MonoBehaviour
             "종료",
             ConfirmButtonPosition,
             new Vector2(220f, 64f),
-            new Color(0.68f, 0.25f, 0.22f, 1f));
+            MenuButtonBackgroundColor);
         SetBottomAnchoredRect(confirmButton.GetComponent<RectTransform>());
         confirmButton.onClick.AddListener(ConfirmExitGame);
     }
@@ -918,7 +932,7 @@ public class StartSceneController : MonoBehaviour
             new Vector2(0f, 0.5f),
             new Vector2(110f, 0f),
             new Vector2(220f, 44f),
-            new Color(0.14f, 0.22f, 0.16f, 1f));
+            MenuMutedLabelColor);
 
         slider = CreateSlider(
             rowObject.transform,
@@ -937,7 +951,7 @@ public class StartSceneController : MonoBehaviour
             new Vector2(1f, 0.5f),
             new Vector2(-56f, 0f),
             new Vector2(96f, 40f),
-            new Color(0.14f, 0.22f, 0.16f, 1f));
+            MenuMutedLabelColor);
     }
 
     private Button CreateOptionsTabButton(
@@ -952,7 +966,7 @@ public class StartSceneController : MonoBehaviour
             labelText,
             anchoredPosition,
             new Vector2(240f, 62f),
-            new Color(0.72f, 0.77f, 0.68f, 1f));
+            MenuButtonBackgroundColor);
 
         SetTopAnchoredRect(tabButton.GetComponent<RectTransform>());
 
@@ -987,7 +1001,7 @@ public class StartSceneController : MonoBehaviour
             new Vector2(0.5f, 1f),
             new Vector2(0f, -38f),
             new Vector2(620f, 52f),
-            new Color(0.13f, 0.2f, 0.14f, 1f));
+            MenuMutedLabelColor);
         HideOptionsCategoryHeading(contentObject.transform, "OptionsAudioHeading");
 
         CreateAudioSliderRow(
@@ -1046,7 +1060,7 @@ public class StartSceneController : MonoBehaviour
             new Vector2(0.5f, 1f),
             new Vector2(0f, -38f),
             new Vector2(620f, 52f),
-            new Color(0.13f, 0.2f, 0.14f, 1f));
+            MenuMutedLabelColor);
         HideOptionsCategoryHeading(contentObject.transform, "OptionsResolutionHeading");
 
         CreateTextElement(
@@ -1060,7 +1074,7 @@ public class StartSceneController : MonoBehaviour
             new Vector2(0.5f, 0.5f),
             new Vector2(0f, 160f),
             new Vector2(320f, 40f),
-            new Color(0.14f, 0.22f, 0.16f, 1f));
+            MenuButtonLabelColor);
 
         fullscreenModeButton = CreateButton(
             contentObject.transform,
@@ -1068,7 +1082,7 @@ public class StartSceneController : MonoBehaviour
             "\uc804\uccb4\ud654\uba74",
             new Vector2(0f, 106f),
             new Vector2(280f, 56f),
-            new Color(1f, 1f, 1f, 0f));
+            MenuButtonBackgroundColor);
         fullscreenModeButton.onClick.AddListener(HandleDisplayModeButtonPressed);
         ConfigureDisplayModeCheckboxButton(
             fullscreenModeButton,
@@ -1086,7 +1100,7 @@ public class StartSceneController : MonoBehaviour
             new Vector2(0.5f, 0.5f),
             new Vector2(0f, 38f),
             new Vector2(420f, 40f),
-            new Color(0.14f, 0.22f, 0.16f, 1f));
+            MenuButtonLabelColor);
 
         resolutionToggleButton = CreateButton(
             contentObject.transform,
@@ -1094,7 +1108,7 @@ public class StartSceneController : MonoBehaviour
             string.Empty,
             new Vector2(0f, -20f),
             new Vector2(340f, 52f),
-            new Color(0.72f, 0.82f, 0.72f, 1f));
+            MenuButtonBackgroundColor);
         resolutionToggleButton.onClick.AddListener(ToggleResolutionOptionsList);
         resolutionToggleButtonText = resolutionToggleButton.GetComponentInChildren<Text>();
 
@@ -1152,7 +1166,7 @@ public class StartSceneController : MonoBehaviour
             new Vector2(0.5f, 1f),
             new Vector2(0f, -38f),
             new Vector2(620f, 52f),
-            new Color(0.13f, 0.2f, 0.14f, 1f));
+            MenuMutedLabelColor);
         HideOptionsCategoryHeading(contentObject.transform, "OptionsKeySetupHeading");
 
         IReadOnlyList<InputActionType> actions = PlayerInputBindings.Actions;
@@ -1181,7 +1195,7 @@ public class StartSceneController : MonoBehaviour
             new Vector2(0.5f, 0f),
             new Vector2(0f, 50f),
             new Vector2(720f, 48f),
-            new Color(0.2f, 0.28f, 0.23f, 1f));
+            MenuMutedLabelColor);
         statusTexts.Add(optionsStatusText);
 
         return contentObject;
@@ -1214,7 +1228,7 @@ public class StartSceneController : MonoBehaviour
             GetResolutionLabel(resolution),
             Vector2.zero,
             new Vector2(360f, 44f),
-            new Color(0.72f, 0.82f, 0.72f, 1f));
+            MenuButtonBackgroundColor);
         resolutionButtons.Add(resolutionButton);
 
         int capturedIndex = optionIndex;
@@ -1296,7 +1310,7 @@ public class StartSceneController : MonoBehaviour
         scrollAreaRectTransform.sizeDelta = sizeDelta;
 
         Image scrollAreaImage = scrollAreaObject.GetComponent<Image>();
-        scrollAreaImage.color = new Color(0.86f, 0.89f, 0.82f, 0.7f);
+        scrollAreaImage.color = MenuPanelBackgroundColor;
 
         GameObject viewportObject = new GameObject(
             viewportObjectName,
@@ -1315,7 +1329,7 @@ public class StartSceneController : MonoBehaviour
             -viewportPadding);
 
         Image viewportImage = viewportObject.GetComponent<Image>();
-        viewportImage.color = new Color(1f, 1f, 1f, 0.02f);
+        viewportImage.color = new Color(1f, 1f, 1f, 0.03f);
 
         GameObject contentObject = new GameObject(contentObjectName, typeof(RectTransform));
         contentObject.transform.SetParent(viewportObject.transform, false);
@@ -1347,7 +1361,7 @@ public class StartSceneController : MonoBehaviour
             -viewportPadding);
 
         Image scrollbarImage = scrollbarObject.GetComponent<Image>();
-        scrollbarImage.color = new Color(0.28f, 0.36f, 0.28f, 0.32f);
+        scrollbarImage.color = new Color(1f, 1f, 1f, 0.12f);
 
         GameObject slidingAreaObject = new GameObject("SlidingArea", typeof(RectTransform));
         slidingAreaObject.transform.SetParent(scrollbarObject.transform, false);
@@ -1368,7 +1382,7 @@ public class StartSceneController : MonoBehaviour
         handleRectTransform.offsetMax = Vector2.zero;
 
         Image handleImage = handleObject.GetComponent<Image>();
-        handleImage.color = new Color(0.5f, 0.66f, 0.49f, 0.98f);
+        handleImage.color = new Color(0.78f, 0.9f, 0.96f, 0.86f);
 
         createdScrollRect = scrollAreaObject.GetComponent<ScrollRect>();
         createdScrollRect.viewport = viewportRectTransform;
@@ -1430,7 +1444,7 @@ public class StartSceneController : MonoBehaviour
             new Vector2(0f, 0.5f),
             new Vector2(120f, 0f),
             new Vector2(220f, 44f),
-            new Color(0.14f, 0.22f, 0.16f, 1f));
+            MenuMutedLabelColor);
 
         Button bindingButton = CreateButton(
             rowObject.transform,
@@ -1438,7 +1452,7 @@ public class StartSceneController : MonoBehaviour
             PlayerInputBindings.GetKeyDisplayName(action),
             new Vector2(180f, 0f),
             new Vector2(260f, 46f),
-            new Color(0.72f, 0.82f, 0.72f, 1f));
+            MenuButtonBackgroundColor);
 
         Text bindingButtonText = bindingButton.GetComponentInChildren<Text>();
         if (bindingButtonText != null)
@@ -1502,7 +1516,8 @@ public class StartSceneController : MonoBehaviour
             objectName,
             typeof(RectTransform),
             typeof(Image),
-            typeof(Button));
+            typeof(Button),
+            typeof(Outline));
 
         buttonObject.transform.SetParent(parent, false);
 
@@ -1515,6 +1530,10 @@ public class StartSceneController : MonoBehaviour
 
         Image buttonImage = buttonObject.GetComponent<Image>();
         buttonImage.color = backgroundColor;
+
+        Outline buttonOutline = buttonObject.GetComponent<Outline>();
+        buttonOutline.effectColor = MenuOutlineColor;
+        buttonOutline.effectDistance = new Vector2(1.5f, -1.5f);
 
         Button button = buttonObject.GetComponent<Button>();
         button.targetGraphic = buttonImage;
@@ -1550,7 +1569,7 @@ public class StartSceneController : MonoBehaviour
         backgroundRectTransform.offsetMax = Vector2.zero;
 
         Image backgroundImage = backgroundObject.GetComponent<Image>();
-        backgroundImage.color = new Color(0.72f, 0.77f, 0.7f, 1f);
+        backgroundImage.color = new Color(1f, 1f, 1f, 0.08f);
 
         GameObject fillAreaObject = new GameObject("Fill Area", typeof(RectTransform));
         fillAreaObject.transform.SetParent(sliderObject.transform, false);
@@ -1589,7 +1608,7 @@ public class StartSceneController : MonoBehaviour
         handleRectTransform.sizeDelta = new Vector2(24f, 24f);
 
         Image handleImage = handleObject.GetComponent<Image>();
-        handleImage.color = new Color(0.16f, 0.44f, 0.25f, 1f);
+        handleImage.color = new Color(0.88f, 0.95f, 1f, 0.9f);
 
         Slider slider = sliderObject.GetComponent<Slider>();
         slider.targetGraphic = handleImage;
@@ -1618,7 +1637,7 @@ public class StartSceneController : MonoBehaviour
         label.font = GetBuiltinFont();
         label.text = labelText;
         label.alignment = TextAnchor.MiddleCenter;
-        label.color = Color.white;
+        label.color = MenuButtonLabelColor;
         label.fontSize = 30;
         label.fontStyle = FontStyle.Bold;
         label.raycastTarget = false;
@@ -1690,10 +1709,18 @@ public class StartSceneController : MonoBehaviour
     {
         ColorBlock colors = ColorBlock.defaultColorBlock;
         colors.normalColor = normalColor;
-        colors.highlightedColor = Color.Lerp(normalColor, Color.white, 0.15f);
-        colors.pressedColor = Color.Lerp(normalColor, Color.black, 0.18f);
+        colors.highlightedColor = new Color(
+            Mathf.Lerp(normalColor.r, 1f, 0.12f),
+            Mathf.Lerp(normalColor.g, 1f, 0.12f),
+            Mathf.Lerp(normalColor.b, 1f, 0.12f),
+            normalColor.a);
+        colors.pressedColor = new Color(
+            normalColor.r * 0.9f,
+            normalColor.g * 0.9f,
+            normalColor.b * 0.9f,
+            normalColor.a);
         colors.selectedColor = colors.highlightedColor;
-        colors.disabledColor = new Color(0.4f, 0.4f, 0.4f, 0.7f);
+        colors.disabledColor = new Color(normalColor.r, normalColor.g, normalColor.b, normalColor.a * 0.45f);
         return colors;
     }
 
@@ -2402,6 +2429,27 @@ public class StartSceneController : MonoBehaviour
         }
     }
 
+    private void ApplyMenuButtonAppearance(Button button)
+    {
+        if (button == null)
+        {
+            return;
+        }
+
+        if (button.TryGetComponent(out Image buttonImage))
+        {
+            buttonImage.color = MenuButtonBackgroundColor;
+        }
+
+        button.colors = CreateButtonColors(MenuButtonBackgroundColor);
+
+        Text label = button.GetComponentInChildren<Text>();
+        if (label != null)
+        {
+            label.color = MenuButtonLabelColor;
+        }
+    }
+
     private void ResetBindingScrollPosition()
     {
         ResetBindingScrollPosition(bindingScrollRect);
@@ -2500,11 +2548,11 @@ public class StartSceneController : MonoBehaviour
         }
 
         Color backgroundColor = isActive
-            ? new Color(0.9f, 0.94f, 0.86f, 1f)
-            : new Color(0.72f, 0.77f, 0.68f, 1f);
+            ? MenuPanelBackgroundColor
+            : MenuButtonBackgroundColor;
         Color labelColor = isActive
-            ? new Color(0.11f, 0.18f, 0.13f, 1f)
-            : new Color(0.25f, 0.31f, 0.26f, 1f);
+            ? MenuButtonLabelColor
+            : MenuMutedLabelColor;
 
         if (button.TryGetComponent(out Image buttonImage))
         {
@@ -2535,10 +2583,10 @@ public class StartSceneController : MonoBehaviour
 
         if (button.TryGetComponent(out Image buttonImage))
         {
-            buttonImage.color = new Color(1f, 1f, 1f, 0f);
+            buttonImage.color = MenuButtonBackgroundColor;
         }
 
-        button.colors = CreateButtonColors(new Color(1f, 1f, 1f, 0f));
+        button.colors = CreateButtonColors(MenuButtonBackgroundColor);
 
         Text label = button.GetComponentInChildren<Text>();
         if (label == null)
@@ -2575,7 +2623,7 @@ public class StartSceneController : MonoBehaviour
         checkboxImage.raycastTarget = false;
 
         Outline checkboxOutline = checkboxObject.GetComponent<Outline>();
-        checkboxOutline.effectColor = new Color(0.26f, 0.34f, 0.28f, 1f);
+        checkboxOutline.effectColor = MenuOutlineColor;
         checkboxOutline.effectDistance = new Vector2(1.5f, -1.5f);
 
         GameObject checkboxFillObject = new GameObject("Fill", typeof(RectTransform), typeof(Image));
@@ -2605,10 +2653,10 @@ public class StartSceneController : MonoBehaviour
             return;
         }
 
-        Color backgroundColor = new Color(1f, 1f, 1f, 0f);
+        Color backgroundColor = MenuButtonBackgroundColor;
         Color labelColor = isActive
-            ? new Color(0.1f, 0.33f, 0.18f, 1f)
-            : new Color(0.12f, 0.22f, 0.16f, 1f);
+            ? MenuButtonLabelColor
+            : MenuMutedLabelColor;
 
         if (button.TryGetComponent(out Image buttonImage))
         {
@@ -2620,14 +2668,14 @@ public class StartSceneController : MonoBehaviour
         if (checkboxImage != null)
         {
             checkboxImage.color = isActive
-                ? new Color(0.92f, 0.97f, 0.9f, 1f)
-                : new Color(0.98f, 0.99f, 0.98f, 1f);
+                ? new Color(0.96f, 0.98f, 1f, 1f)
+                : new Color(0.98f, 0.99f, 1f, 0.92f);
 
             if (checkboxImage.TryGetComponent(out Outline checkboxOutline))
             {
                 checkboxOutline.effectColor = isActive
-                    ? new Color(0.16f, 0.44f, 0.25f, 1f)
-                    : new Color(0.26f, 0.34f, 0.28f, 1f);
+                    ? MenuButtonLabelColor
+                    : MenuOutlineColor;
             }
         }
 
@@ -2652,11 +2700,11 @@ public class StartSceneController : MonoBehaviour
         }
 
         Color backgroundColor = isSelected
-            ? new Color(0.16f, 0.44f, 0.25f, 1f)
-            : new Color(0.72f, 0.82f, 0.72f, 1f);
+            ? MenuPanelBackgroundColor
+            : MenuButtonBackgroundColor;
         Color labelColor = isSelected
-            ? Color.white
-            : new Color(0.12f, 0.22f, 0.16f, 1f);
+            ? MenuButtonLabelColor
+            : MenuMutedLabelColor;
 
         if (button.TryGetComponent(out Image buttonImage))
         {

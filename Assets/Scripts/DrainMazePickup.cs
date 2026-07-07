@@ -258,7 +258,7 @@ internal sealed class DrainMazeOverlay : MonoBehaviour
             BackdropObjectName,
             out RectTransform backdropRectTransform);
         ConfigureStretchRect(backdropRectTransform, Vector2.zero, Vector2.zero);
-        backdropImage.color = new Color(0f, 0f, 0f, 0.72f);
+        backdropImage.color = new Color(0f, 0f, 0f, 0.46f);
         backdropImage.raycastTarget = false;
 
         Image panelImage = CreateImageObject(
@@ -298,7 +298,7 @@ internal sealed class DrainMazeOverlay : MonoBehaviour
         expandedHintText.font = RuntimeGaugeUiUtility.GetBuiltinFont();
         expandedHintText.fontSize = ExpandedHintFontSize;
         expandedHintText.alignment = TextAnchor.MiddleCenter;
-        expandedHintText.color = Color.white;
+        expandedHintText.color = new Color(0.97f, 0.98f, 1f, 1f);
         expandedHintText.raycastTarget = false;
         expandedHintText.text = ExpandedHintText;
     }
