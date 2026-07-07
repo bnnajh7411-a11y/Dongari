@@ -878,7 +878,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthPickup
   restoreAmount: 5
-  creditsDescription: "\uC57C\uC0DD \uB3D9\uBB3C\uC744 \uC704\uD55C \uC5B4\uCA4C\uAD6C"
+  creditsDescription: \uc57c\uc0dd\u0020\ub3d9\ubb3c\uc5d0\u0020\uad00\uc2ec\uc744\u0020\uac00\uc838\uc694
 --- !u!212 &584223782
 SpriteRenderer:
   serializedVersion: 2
