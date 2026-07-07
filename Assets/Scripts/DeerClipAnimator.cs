@@ -12,6 +12,7 @@ public class DeerClipAnimator : MonoBehaviour
     [SerializeField] private ViewMode viewMode = ViewMode.SideView;
     [SerializeField] private bool playStartClips = true;
     [SerializeField] private SideViewClips sideView = new SideViewClips();
+    [SerializeField] private SideViewClips waterSideView = new SideViewClips();
     [SerializeField] private TopViewClips topView = new TopViewClips();
 
     private PlayerMovement movement;
@@ -26,6 +27,7 @@ public class DeerClipAnimator : MonoBehaviour
     private float clipTime;
     private bool hasPlayable;
     private bool isPlayingStartClip;
+    private bool isUsingWaterSideView;
 
     private enum ViewMode
     {
@@ -156,6 +158,7 @@ public class DeerClipAnimator : MonoBehaviour
     private void UpdateStateFromMovement()
     {
         Vector2 animationMovement = GetAnimationMovement();
+        bool nextUseWaterSideView = ShouldUseWaterSideView();
         Direction nextDirection = currentDirection;
         if (viewMode == ViewMode.TopView && HasMovement(animationMovement))
         {
@@ -166,7 +169,9 @@ public class DeerClipAnimator : MonoBehaviour
         bool shouldRestart = viewMode == ViewMode.TopView
             && nextState != MotionState.Jump
             && nextDirection != currentDirection;
+        shouldRestart |= nextUseWaterSideView != isUsingWaterSideView;
 
+        isUsingWaterSideView = nextUseWaterSideView;
         currentDirection = nextDirection;
         PlayState(nextState, shouldRestart);
     }
@@ -174,6 +179,7 @@ public class DeerClipAnimator : MonoBehaviour
     private MotionState GetNextState(Vector2 animationMovement)
     {
         if (viewMode == ViewMode.SideView
+            && !movement.UsesWaterMovement
             && (movement.JumpPressedThisFrame || PlayerInputBindings.WasJumpPressedThisFrame() || movement.IsAirborne))
         {
             return MotionState.Jump;
@@ -314,35 +320,54 @@ public class DeerClipAnimator : MonoBehaviour
     {
         return viewMode == ViewMode.TopView
             ? GetDirectionClips(currentDirection).idle
-            : sideView.idle;
+            : GetActiveSideViewClips().idle;
     }
 
     private AnimationClip GetWalkStartClip()
     {
         return viewMode == ViewMode.TopView
             ? GetDirectionClips(currentDirection).walkStart
-            : sideView.walkStart;
+            : GetActiveSideViewClips().walkStart;
     }
 
     private AnimationClip GetWalkClip()
     {
         return viewMode == ViewMode.TopView
             ? GetDirectionClips(currentDirection).walk
-            : sideView.walk;
+            : GetActiveSideViewClips().walk;
     }
 
     private AnimationClip GetRunStartClip()
     {
         return viewMode == ViewMode.TopView
             ? GetDirectionClips(currentDirection).runStart
-            : sideView.runStart;
+            : GetActiveSideViewClips().runStart;
     }
 
     private AnimationClip GetRunClip()
     {
         return viewMode == ViewMode.TopView
             ? GetDirectionClips(currentDirection).run
-            : sideView.run;
+            : GetActiveSideViewClips().run;
+    }
+
+    private SideViewClips GetActiveSideViewClips()
+    {
+        return isUsingWaterSideView ? waterSideView : sideView;
+    }
+
+    private bool ShouldUseWaterSideView()
+    {
+        return viewMode == ViewMode.SideView
+            && movement != null
+            && movement.UsesWaterMovement
+            && movement.IsInWater
+            && HasAssignedSideViewClip(waterSideView.idle);
+    }
+
+    private static bool HasAssignedSideViewClip(AnimationClip clip)
+    {
+        return clip != null;
     }
 
     private DirectionClips GetDirectionClips(Direction direction)

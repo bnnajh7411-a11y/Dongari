@@ -129,6 +129,7 @@ public class PlayerMovement : MonoBehaviour
     public bool IsClimbing => isClimbing;
     public bool UsesTopDownMovement => isTopDownScene;
     public bool UsesWaterMovement => isWaterScene;
+    public bool IsInWater => IsWaterMovementActive();
     public bool JumpPressedThisFrame => jumpPressedThisFrame;
     public bool HasMovementInput => HasMovementInputValue();
     public bool IsAirborne => !isTopDownScene && !isWaterScene && !isClimbing && !isGrounded;

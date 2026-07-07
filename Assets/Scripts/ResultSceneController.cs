@@ -16,6 +16,7 @@ public class ResultSceneController : MonoBehaviour
     private const string CreditsViewportObjectName = "CreditsViewport";
     private const string CreditsContentObjectName = "CreditsContent";
     private const string FooterGroupObjectName = "FooterGroup";
+    private const string CreditsSummaryObjectName = "CollectedItemsSummary";
     private const string TitleObjectName = "Title";
     private const string BodyObjectName = "Body";
     private const string ButtonObjectName = "StartButton";
@@ -23,7 +24,9 @@ public class ResultSceneController : MonoBehaviour
     private const string CreditsBodyText = "\uc548\uc804\ud55c\u0020\uacf3\uc5d0\u0020\ub3c4\ucc29\ud588\uc2b5\ub2c8\ub2e4\u000d";
     private const string EmptyBodyText = "";
     private const string StartButtonText = "\ud0c0\uc774\ud2c0\ub85c";
+    private const string CreditsCollectedItemsSummaryFormat = "\ud68d\ub4dd\ud55c\u0020\uc544\uc774\ud15c\u0020{0}/12";
     private const float CreditsScrollSpeed = 82f;
+    private const float CreditsFastScrollMultiplier = 3.5f;
     private const float CreditsScrollPadding = 56f;
     private const float CreditsItemSize = 118f;
     private const float CreditsItemSpacing = 38f;
@@ -32,6 +35,7 @@ public class ResultSceneController : MonoBehaviour
     private const float CreditsItemTextSpacing = 28f;
     private const float CreditsItemTextVerticalPadding = 14f;
     private const int CreditsItemTextFontSize = 30;
+    private const int CreditsSummaryFontSize = 38;
     private const float FooterRevealDuration = 0.45f;
     private const int CanvasSortingOrder = 250;
     private static readonly Color GlassButtonColor = new Color(0.18f, 0.19f, 0.22f, 0.64f);
@@ -55,7 +59,10 @@ public class ResultSceneController : MonoBehaviour
     private RectTransform bodyRectTransform;
     private RectTransform footerRectTransform;
     private CanvasGroup footerCanvasGroup;
+    private Text creditsSummaryText;
+    private RectTransform creditsSummaryRectTransform;
     private Button startButton;
+    private RectTransform startButtonRectTransform;
     private bool isLoadingStartScene;
     private bool isCreditsMode;
     private bool creditsScrollComplete;
@@ -170,6 +177,13 @@ public class ResultSceneController : MonoBehaviour
                 ? GlassTextColor
                 : GlassMutedTextColor;
             bodyText.fontSize = isCreditsMode ? 56 : 28;
+        }
+
+        if (creditsSummaryText != null)
+        {
+            creditsSummaryText.gameObject.SetActive(isCreditsMode);
+            creditsSummaryText.text = string.Empty;
+            creditsSummaryText.color = GlassTextColor;
         }
 
 
@@ -326,7 +340,19 @@ public class ResultSceneController : MonoBehaviour
             TextAnchor.MiddleCenter);
         bodyRectTransform = bodyText.GetComponent<RectTransform>();
         footerRectTransform = CreateFooterGroup(panelImage.transform);
+        creditsSummaryText = CreateText(
+            footerRectTransform,
+            CreditsSummaryObjectName,
+            new Vector2(0f, 42f),
+            new Vector2(440f, 48f),
+            CreditsSummaryFontSize,
+            FontStyle.Bold,
+            TextAnchor.MiddleCenter);
+        creditsSummaryRectTransform = creditsSummaryText.GetComponent<RectTransform>();
+        creditsSummaryText.color = GlassTextColor;
+        creditsSummaryText.text = string.Empty;
         startButton = CreateButton(footerRectTransform, uiSprite, new Vector2(0f, -12f));
+        startButtonRectTransform = startButton.GetComponent<RectTransform>();
     }
 
     private Image CreateFullscreenImage(Transform parent, string objectName, Sprite sprite)
@@ -607,6 +633,20 @@ public class ResultSceneController : MonoBehaviour
                     new Vector2(480f, 150f));
             }
         }
+
+        if (creditsSummaryRectTransform != null)
+        {
+            creditsSummaryRectTransform.anchoredPosition = isCreditsDisplay
+                ? new Vector2(0f, 42f)
+                : new Vector2(0f, 34f);
+        }
+
+        if (startButtonRectTransform != null)
+        {
+            startButtonRectTransform.anchoredPosition = isCreditsDisplay
+                ? new Vector2(0f, -28f)
+                : new Vector2(0f, -12f);
+        }
     }
 
     private void ConfigureCreditsRoll()
@@ -631,6 +671,13 @@ public class ResultSceneController : MonoBehaviour
         float textHeight = Mathf.Max(bodyText.preferredHeight, 1f);
         CollectedPickupCreditsState.CreditEntry[] collectedEntries =
             CollectedPickupCreditsState.GetCollectedEntries();
+        if (creditsSummaryText != null)
+        {
+            creditsSummaryText.text = string.Format(
+                CreditsCollectedItemsSummaryFormat,
+                collectedEntries.Length);
+        }
+
         float[] itemHeights = new float[collectedEntries.Length];
         float itemsHeight = 0f;
         int visibleItemCount = 0;
@@ -657,9 +704,11 @@ public class ResultSceneController : MonoBehaviour
         bodyRectTransform.sizeDelta = new Vector2(viewportWidth, textHeight);
         bodyRectTransform.anchoredPosition = new Vector2(0f, (contentHeight * 0.5f) - (textHeight * 0.5f));
 
+        float currentTop = (contentHeight * 0.5f) - textHeight;
         if (visibleItemCount > 0)
         {
-            float currentTop = (contentHeight * 0.5f) - textHeight - CreditsTextToItemsSpacing;
+            currentTop -= CreditsTextToItemsSpacing;
+            int visibleItemIndex = 0;
             for (int i = 0; i < collectedEntries.Length; i++)
             {
                 CollectedPickupCreditsState.CreditEntry entry = collectedEntries[i];
@@ -671,7 +720,13 @@ public class ResultSceneController : MonoBehaviour
                 float itemHeight = itemHeights[i];
                 float centerY = currentTop - (itemHeight * 0.5f);
                 CreateCreditItem(entry, new Vector2(0f, centerY), viewportWidth, itemHeight);
-                currentTop -= itemHeight + CreditsItemSpacing;
+                currentTop -= itemHeight;
+                if (visibleItemIndex < visibleItemCount - 1)
+                {
+                    currentTop -= CreditsItemSpacing;
+                }
+
+                visibleItemIndex++;
             }
         }
 
@@ -689,7 +744,9 @@ public class ResultSceneController : MonoBehaviour
 
         if (!creditsScrollComplete)
         {
-            float nextY = creditsContentRectTransform.anchoredPosition.y + (CreditsScrollSpeed * Time.unscaledDeltaTime);
+            float currentScrollSpeed = CreditsScrollSpeed
+                * (Input.GetKey(KeyCode.Space) ? CreditsFastScrollMultiplier : 1f);
+            float nextY = creditsContentRectTransform.anchoredPosition.y + (currentScrollSpeed * Time.unscaledDeltaTime);
             if (nextY >= creditsEndY)
             {
                 nextY = creditsEndY;

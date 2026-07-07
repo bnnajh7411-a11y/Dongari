@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -87,7 +88,10 @@ internal sealed class DrainMazeOverlay : MonoBehaviour
     private const string ExpandedPanelObjectName = "ExpandedPanel";
     private const string ExpandedImageObjectName = "ExpandedImage";
     private const string ExpandedHintTextObjectName = "ExpandedHintText";
+    private const string CenterHelpPanelObjectName = "CenterHelpPanel";
+    private const string CenterHelpTextObjectName = "CenterHelpText";
     private const string ExpandedHintText = "\uc544\ubb34\u0020\uacf3\uc774\ub098\u0020\ud074\ub9ad\ud558\uc5ec\u0020\ub2eb\uae30";
+    private const string CenterHelpText = "\uc624\ub978\ucabd\u0020\uc704\uc758\u0020\uc9c0\ub3c4\ub97c\u0020\ud074\ub9ad\ud558\uc138\uc694";
     private const int OverlaySortingOrder = 115;
     private const float PreviewWidth = 220f;
     private const float PreviewHeight = 96f;
@@ -99,6 +103,11 @@ internal sealed class DrainMazeOverlay : MonoBehaviour
     private const int ExpandedHintFontSize = 30;
     private const float ExpandedHintBottomMargin = 18f;
     private const float ExpandedHintHeight = 400f;
+    private const float CenterHelpDuration = 3f;
+    private static readonly Vector2 CenterHelpPanelSize = new Vector2(760f, 132f);
+    private static readonly Color HelpPanelBackgroundColor = new Color(0.14f, 0.15f, 0.18f, 0.74f);
+    private static readonly Color HelpPanelOutlineColor = new Color(1f, 1f, 1f, 0.12f);
+    private static readonly Color HelpPanelLabelColor = new Color(0.88f, 0.92f, 0.97f, 0.95f);
 
     private static DrainMazeOverlay instance;
 
@@ -108,8 +117,11 @@ internal sealed class DrainMazeOverlay : MonoBehaviour
     private Image backdropImage;
     private Image expandedImage;
     private Text expandedHintText;
+    private Image centerHelpPanelImage;
+    private Text centerHelpText;
     private Sprite mazeSprite;
     private bool isExpanded;
+    private Coroutine centerHelpRoutine;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetOverlayState()
@@ -184,6 +196,7 @@ internal sealed class DrainMazeOverlay : MonoBehaviour
         EnsureLayout();
         ApplySprite();
         SetExpanded(false);
+        ShowCenterHelp();
     }
 
     private void EnsureCanvas()
@@ -210,6 +223,7 @@ internal sealed class DrainMazeOverlay : MonoBehaviour
 
         EnsurePreviewPanel();
         EnsureExpandedOverlay();
+        EnsureCenterHelpPanel();
     }
 
     private void EnsurePreviewPanel()
@@ -303,6 +317,51 @@ internal sealed class DrainMazeOverlay : MonoBehaviour
         expandedHintText.text = ExpandedHintText;
     }
 
+    private void EnsureCenterHelpPanel()
+    {
+        if (centerHelpPanelImage != null)
+        {
+            return;
+        }
+
+        centerHelpPanelImage = CreateImageObject(
+            overlayCanvas.transform,
+            CenterHelpPanelObjectName,
+            out RectTransform centerHelpPanelRectTransform);
+        ConfigureAnchoredRect(
+            centerHelpPanelRectTransform,
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0f, 0f),
+            CenterHelpPanelSize);
+        centerHelpPanelImage.sprite = RuntimeUiSpriteUtility.GetWhiteSprite();
+        centerHelpPanelImage.color = HelpPanelBackgroundColor;
+        centerHelpPanelImage.raycastTarget = false;
+
+        Outline outline = centerHelpPanelImage.gameObject.AddComponent<Outline>();
+        outline.effectColor = HelpPanelOutlineColor;
+        outline.effectDistance = new Vector2(2f, -2f);
+        outline.useGraphicAlpha = true;
+
+        centerHelpText = CreateTextObject(
+            centerHelpPanelRectTransform,
+            CenterHelpTextObjectName,
+            out RectTransform centerHelpTextRectTransform);
+        ConfigureStretchRect(
+            centerHelpTextRectTransform,
+            new Vector2(28f, 18f),
+            new Vector2(-28f, -18f));
+        centerHelpText.font = RuntimeGaugeUiUtility.GetBuiltinFont();
+        centerHelpText.fontSize = 34;
+        centerHelpText.alignment = TextAnchor.MiddleCenter;
+        centerHelpText.color = HelpPanelLabelColor;
+        centerHelpText.raycastTarget = false;
+        centerHelpText.text = CenterHelpText;
+
+        centerHelpPanelImage.gameObject.SetActive(false);
+    }
+
     private static Image CreateImageObject(
         Transform parent,
         string objectName,
@@ -372,6 +431,35 @@ internal sealed class DrainMazeOverlay : MonoBehaviour
             expandedImage.sprite = mazeSprite;
             expandedImage.enabled = mazeSprite != null;
         }
+    }
+
+    private void ShowCenterHelp()
+    {
+        if (centerHelpPanelImage == null)
+        {
+            return;
+        }
+
+        centerHelpPanelImage.gameObject.SetActive(true);
+
+        if (centerHelpRoutine != null)
+        {
+            StopCoroutine(centerHelpRoutine);
+        }
+
+        centerHelpRoutine = StartCoroutine(HideCenterHelpAfterDelay());
+    }
+
+    private IEnumerator HideCenterHelpAfterDelay()
+    {
+        yield return new WaitForSecondsRealtime(CenterHelpDuration);
+
+        if (centerHelpPanelImage != null)
+        {
+            centerHelpPanelImage.gameObject.SetActive(false);
+        }
+
+        centerHelpRoutine = null;
     }
 
     private void SetExpanded(bool expanded)
