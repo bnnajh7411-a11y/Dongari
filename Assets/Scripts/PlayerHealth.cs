@@ -39,8 +39,8 @@ public class PlayerHealth : MonoBehaviour
     [Header("UI")]
     [SerializeField] private Vector2 gaugeSize = new Vector2(320f, 24f);
     [SerializeField] private Vector2 gaugeAnchoredPosition = new Vector2(24f, -24f);
-    [SerializeField] private bool showBackgroundFrame = false;
-    [SerializeField] private Color backgroundColor = new Color(0.14f, 0.15f, 0.18f, 0.64f);
+    [SerializeField] private bool showBackgroundFrame = true;
+    [SerializeField] private Color backgroundColor = new Color(0f, 0f, 0f, 0.64f);
     [SerializeField] private Color healthFillColor = new Color(0.86f, 0.2f, 0.2f, 1f);
     [SerializeField] private string gaugeLabel = "\uccb4\ub825";
     [SerializeField] private Vector2 gaugeLabelOffset = new Vector2(16f, 0f);
