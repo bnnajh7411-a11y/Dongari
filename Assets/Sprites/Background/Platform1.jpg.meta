@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 828710a453830794b849e7dccd1976d5
+guid: a3f8571fc4f32624a986161ead0cf8eb
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5928705343348668692
-    second: BodoManhole_0
+      213: 1325028264418417928
+    second: Platform1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -51,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 10
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: BodoManhole_0
+      name: Platform1_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1264
-        height: 144
+        width: 400
+        height: 200
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 419f140291ef64250800000000000000
-      internalID: 5928705343348668692
+      spriteID: 80d130aaf22736210800000000000000
+      internalID: 1325028264418417928
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      BodoManhole_0: 5928705343348668692
+      Platform1_0: 1325028264418417928
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
