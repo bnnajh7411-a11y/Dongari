@@ -878,7 +878,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthPickup
   restoreAmount: 5
-  creditsDescription: \uc57c\uc0dd\u0020\ub3d9\ubb3c\uc5d0\u0020\uad00\uc2ec\uc744\u0020\uac00\uc838\uc694
+  creditsDescription: \uc57c\uc0dd\ub3d9\ubb3c\uc5d0\u0020\uad00\uc2ec\uc744\u0020\uac00\uc838\uc694
 --- !u!212 &584223782
 SpriteRenderer:
   serializedVersion: 2
@@ -5383,6 +5383,13 @@ MonoBehaviour:
     runStart: {fileID: 7400000, guid: b6fb0c767ea287343bd5ca0cd57f62d3, type: 2}
     run: {fileID: 7400000, guid: b664d196b25ecda43ad203fc36e9edae, type: 2}
     jump: {fileID: 7400000, guid: b7dd62b45fcf6f94bb3a9b7eb09ee4cf, type: 2}
+  waterSideView:
+    idle: {fileID: 0}
+    walkStart: {fileID: 0}
+    walk: {fileID: 0}
+    runStart: {fileID: 0}
+    run: {fileID: 0}
+    jump: {fileID: 0}
   topView:
     down:
       idle: {fileID: 0}

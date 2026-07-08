@@ -20,11 +20,19 @@ public class ResultSceneController : MonoBehaviour
     private const string TitleObjectName = "Title";
     private const string BodyObjectName = "Body";
     private const string ButtonObjectName = "StartButton";
-    private const string GameOverTitleText = "GAME OVER";
+    private const string GameOverTitleText = "\uc548\uc804\ud55c\u0020\uacf3\uc5d0\u0020\ub3c4\ucc29\ud558\uc9c0\u0020\ubabb\ud588\uc2b5\ub2c8\ub2e4";
     private const string CreditsBodyText = "\uc548\uc804\ud55c\u0020\uacf3\uc5d0\u0020\ub3c4\ucc29\ud588\uc2b5\ub2c8\ub2e4\u000d";
     private const string EmptyBodyText = "";
     private const string StartButtonText = "\ud0c0\uc774\ud2c0\ub85c";
     private const string CreditsCollectedItemsSummaryFormat = "\ud68d\ub4dd\ud55c\u0020\uc544\uc774\ud15c\u0020{0}/12";
+    private const float GameOverPanelWidth = 700f;
+    private const float GameOverPanelHeight = 320f;
+    private const float GameOverTitleWidth = 640f;
+    private const float GameOverTitleHeight = 96f;
+    private const float GameOverFooterWidth = 420f;
+    private const float GameOverFooterHeight = 120f;
+    private const float GameOverFooterY = -86f;
+    private const float GameOverTitleY = 40f;
     private const float CreditsScrollSpeed = 82f;
     private const float CreditsFastScrollMultiplier = 3.5f;
     private const float CreditsScrollPadding = 56f;
@@ -322,8 +330,8 @@ public class ResultSceneController : MonoBehaviour
         titleText = CreateText(
             panelImage.transform,
             TitleObjectName,
-            new Vector2(0f, 186f),
-            new Vector2(640f, 90f),
+            new Vector2(0f, GameOverTitleY),
+            new Vector2(GameOverTitleWidth, GameOverTitleHeight),
             46,
             FontStyle.Bold,
             TextAnchor.MiddleCenter);
@@ -389,7 +397,7 @@ public class ResultSceneController : MonoBehaviour
             new Vector2(0.5f, 0.5f),
             new Vector2(0.5f, 0.5f),
             Vector2.zero,
-            new Vector2(760f, 560f));
+            new Vector2(GameOverPanelWidth, GameOverPanelHeight));
 
         Image panel = panelObject.GetComponent<Image>();
         panel.sprite = sprite;
@@ -455,8 +463,8 @@ public class ResultSceneController : MonoBehaviour
             new Vector2(0.5f, 0.5f),
             new Vector2(0.5f, 0.5f),
             new Vector2(0.5f, 0.5f),
-            new Vector2(0f, -190f),
-            new Vector2(480f, 150f));
+            new Vector2(0f, GameOverFooterY),
+            new Vector2(GameOverFooterWidth, GameOverFooterHeight));
 
         footerCanvasGroup = footerObject.GetComponent<CanvasGroup>();
         return rectTransform;
@@ -560,7 +568,7 @@ public class ResultSceneController : MonoBehaviour
                     new Vector2(0.5f, 0.5f),
                     new Vector2(0.5f, 0.5f),
                     Vector2.zero,
-                    new Vector2(760f, 560f));
+                    new Vector2(GameOverPanelWidth, GameOverPanelHeight));
             }
         }
 
@@ -583,8 +591,8 @@ public class ResultSceneController : MonoBehaviour
                     new Vector2(0.5f, 0.5f),
                     new Vector2(0.5f, 0.5f),
                     new Vector2(0.5f, 0.5f),
-                    new Vector2(0f, 186f),
-                    new Vector2(640f, 90f));
+                    new Vector2(0f, GameOverTitleY),
+                    new Vector2(GameOverTitleWidth, GameOverTitleHeight));
             }
         }
 
@@ -592,6 +600,7 @@ public class ResultSceneController : MonoBehaviour
         {
             if (isCreditsDisplay)
             {
+                creditsViewportRectTransform.gameObject.SetActive(true);
                 ConfigureStretchRect(
                     creditsViewportRectTransform,
                     new Vector2(220f, 0f),
@@ -600,6 +609,7 @@ public class ResultSceneController : MonoBehaviour
             }
             else
             {
+                creditsViewportRectTransform.gameObject.SetActive(false);
                 ConfigureAnchoredRect(
                     creditsViewportRectTransform,
                     new Vector2(0.5f, 0.5f),
@@ -629,8 +639,8 @@ public class ResultSceneController : MonoBehaviour
                     new Vector2(0.5f, 0.5f),
                     new Vector2(0.5f, 0.5f),
                     new Vector2(0.5f, 0.5f),
-                    new Vector2(0f, -190f),
-                    new Vector2(480f, 150f));
+                    new Vector2(0f, GameOverFooterY),
+                    new Vector2(GameOverFooterWidth, GameOverFooterHeight));
             }
         }
 
@@ -1029,6 +1039,12 @@ public static class ResultSceneState
         {
             Debug.LogError($"Scene '{ResultSceneName}' is not available in Build Settings.");
             return false;
+        }
+
+        if (displayMode == DisplayMode.GameOver
+            && PlayerDeathSequenceController.PlayAndLoadScene(ResultSceneName))
+        {
+            return true;
         }
 
         return SceneFadeTransition.LoadScene(ResultSceneName);

@@ -7574,7 +7574,7 @@ GameObject:
   - component: {fileID: 349207485}
   - component: {fileID: 349207484}
   m_Layer: 0
-  m_Name: Text (TMP)
+  m_Name: ws
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -23698,6 +23698,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1005713927}
   - component: {fileID: 1005713926}
+  - component: {fileID: 1005713928}
   m_Layer: 0
   m_Name: MiroItem
   m_TagString: Untagged
@@ -23779,6 +23780,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 921700312}
   m_LocalEulerAnglesHint: {x: 0, y: 62.895, z: 0}
+--- !u!114 &1005713928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1005713925}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ab3f88c9fd844fdb247b6f3fe33b8a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DrainMazePickup
 --- !u!1 &1007786815
 GameObject:
   m_ObjectHideFlags: 0

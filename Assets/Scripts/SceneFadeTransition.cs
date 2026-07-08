@@ -53,6 +53,11 @@ public class SceneFadeTransition : MonoBehaviour
 
     public static bool LoadScene(string sceneName)
     {
+        return LoadScene(sceneName, true);
+    }
+
+    public static bool LoadScene(string sceneName, bool restorePreviousStateAfterLoad)
+    {
         if (string.IsNullOrWhiteSpace(sceneName))
         {
             return false;
@@ -64,7 +69,7 @@ public class SceneFadeTransition : MonoBehaviour
             return false;
         }
 
-        transition.StartCoroutine(transition.FadeAndLoadSceneRoutine(sceneName));
+        transition.StartCoroutine(transition.FadeAndLoadSceneRoutine(sceneName, restorePreviousStateAfterLoad));
         return true;
     }
 
@@ -256,7 +261,7 @@ public class SceneFadeTransition : MonoBehaviour
         }
     }
 
-    private IEnumerator FadeAndLoadSceneRoutine(string sceneName)
+    private IEnumerator FadeAndLoadSceneRoutine(string sceneName, bool restorePreviousStateAfterLoad)
     {
         isTransitioning = true;
         EnsureOverlay();
@@ -273,7 +278,10 @@ public class SceneFadeTransition : MonoBehaviour
         if (loadOperation == null)
         {
             Debug.LogError($"Failed to start async scene load for '{sceneName}'.", this);
-            RestoreSceneActivity(wasPaused, previousTimeScale, previousAudioPause);
+            RestoreSceneActivity(
+                restorePreviousStateAfterLoad ? wasPaused : false,
+                restorePreviousStateAfterLoad ? previousTimeScale : 1f,
+                restorePreviousStateAfterLoad ? previousAudioPause : false);
             SetLoadingOverlayVisible(false);
             SetLoadingProgress(0f);
             SetFadeAlpha(0f);
@@ -302,7 +310,10 @@ public class SceneFadeTransition : MonoBehaviour
             yield return null;
         }
 
-        RestoreSceneActivity(wasPaused, previousTimeScale, previousAudioPause);
+        RestoreSceneActivity(
+            restorePreviousStateAfterLoad ? wasPaused : false,
+            restorePreviousStateAfterLoad ? previousTimeScale : 1f,
+            restorePreviousStateAfterLoad ? previousAudioPause : false);
 
         yield return null;
         yield return FadeRoutine(1f, 0f, FadeInDuration, true);
