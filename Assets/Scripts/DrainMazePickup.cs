@@ -103,7 +103,7 @@ internal sealed class DrainMazeOverlay : MonoBehaviour
     private const int ExpandedHintFontSize = 30;
     private const float ExpandedHintBottomMargin = 18f;
     private const float ExpandedHintHeight = 400f;
-    private const float CenterHelpDuration = 3f;
+    private const float CenterHelpDuration = 1f;
     private static readonly Vector2 CenterHelpPanelSize = new Vector2(760f, 132f);
     private static readonly Color HelpPanelBackgroundColor = new Color(0.14f, 0.15f, 0.18f, 0.74f);
     private static readonly Color HelpPanelOutlineColor = new Color(1f, 1f, 1f, 0.12f);

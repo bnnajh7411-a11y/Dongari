@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
 public class PlayerMovement : MonoBehaviour
@@ -33,6 +34,15 @@ public class PlayerMovement : MonoBehaviour
     private const float ArtificialRiverBubbleVerticalScatter = 0.1f;
     private const int ArtificialRiverBubbleSpriteTextureSize = 48;
     private const float ArtificialRiverBubbleSpriteEdgeSoftness = 2f;
+    private const string GreenAlgaeTintCanvasObjectName = "GreenAlgaeTintCanvas";
+    private const string GreenAlgaeTintOverlayObjectName = "GreenAlgaeTintOverlay";
+    private const int GreenAlgaeTintCanvasSortingOrder = 99;
+    private const int GreenAlgaeTintSpriteTextureSize = 128;
+    private const int GreenAlgaeTintSpriteBorderPixels = 80;
+    private static readonly Color GreenAlgaeTintColor = new Color(0.09f, 0.39f, 0.11f, 1f);
+    private const float GreenAlgaeTintMaxAlpha = 0.3f;
+    private const float GreenAlgaeTintFadeInDuration = 0.16f;
+    private const float GreenAlgaeTintFadeOutDuration = 0.22f;
     private const float GreenAlgaeLeftMoveDistance = 10f;
     private const float GreenAlgaePushbackDuration = 0.45f;
     private const float GreenAlgaeMinXPosition = -21f;
@@ -114,9 +124,13 @@ public class PlayerMovement : MonoBehaviour
 
     private static AudioClip underwaterMovementAudioClip;
     private static Sprite artificialRiverBubbleSprite;
+    private static Sprite greenAlgaeTintSprite;
     private bool isArtificialRiverEntrySequenceActive;
     private float artificialRiverEntryElapsed;
     private float nextArtificialRiverBubbleSpawnTime;
+    private Image greenAlgaeTintImage;
+    private float greenAlgaeTintStartTime = -1f;
+    private float greenAlgaeTintEndTime = -1f;
     private bool isGreenAlgaePushbackActive;
     private float greenAlgaePushbackElapsed;
     private float greenAlgaePushbackDistance;
@@ -171,6 +185,7 @@ public class PlayerMovement : MonoBehaviour
         ResetMovementSpeedModifier();
         greenAlgaeContactColliders.Clear();
         ResetGreenAlgaePushback();
+        ResetGreenAlgaeTint();
         nextArtificialRiverBubbleSpawnTime = 0f;
     }
 
@@ -183,6 +198,8 @@ public class PlayerMovement : MonoBehaviour
     protected virtual void Update()
     {
         jumpPressedThisFrame = false;
+
+        UpdateGreenAlgaeTintOverlay();
 
         if (GamePauseState.IsPaused)
         {
@@ -452,6 +469,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         ApplyTemporaryMovementSpeedMultiplier(GreenAlgaeSlowMultiplier, GreenAlgaeSlowDuration);
+        RefreshGreenAlgaeTint(GreenAlgaeSlowDuration);
     }
 
     private void UpdateGreenAlgaeContacts(Collider2D other, bool isContacting)
@@ -1772,5 +1790,171 @@ public class PlayerMovement : MonoBehaviour
         greenAlgaePushbackElapsed = 0f;
         greenAlgaePushbackDistance = 0f;
         greenAlgaePushbackAppliedOffset = 0f;
+    }
+
+    private void RefreshGreenAlgaeTint(float duration)
+    {
+        if (duration <= 0f || !isWaterScene)
+        {
+            return;
+        }
+
+        EnsureGreenAlgaeTintOverlay();
+        if (greenAlgaeTintImage == null)
+        {
+            return;
+        }
+
+        float currentTime = Time.time;
+        if (greenAlgaeTintEndTime <= currentTime)
+        {
+            greenAlgaeTintStartTime = currentTime;
+        }
+
+        greenAlgaeTintEndTime = currentTime + duration;
+        UpdateGreenAlgaeTintOverlay();
+    }
+
+    private void UpdateGreenAlgaeTintOverlay()
+    {
+        if (greenAlgaeTintImage == null)
+        {
+            return;
+        }
+
+        float currentTime = Time.time;
+        if (greenAlgaeTintEndTime <= currentTime)
+        {
+            ResetGreenAlgaeTint();
+            return;
+        }
+
+        float alpha = GreenAlgaeTintMaxAlpha;
+
+        if (greenAlgaeTintStartTime >= 0f && currentTime < greenAlgaeTintStartTime + GreenAlgaeTintFadeInDuration)
+        {
+            float fadeInProgress = Mathf.Clamp01(
+                (currentTime - greenAlgaeTintStartTime) / Mathf.Max(GreenAlgaeTintFadeInDuration, Mathf.Epsilon));
+            alpha = GreenAlgaeTintMaxAlpha * Mathf.SmoothStep(0f, 1f, fadeInProgress);
+        }
+        else
+        {
+            float fadeOutStartTime = greenAlgaeTintEndTime - GreenAlgaeTintFadeOutDuration;
+            if (currentTime > fadeOutStartTime)
+            {
+                float fadeOutProgress = Mathf.Clamp01(
+                    (greenAlgaeTintEndTime - currentTime) / Mathf.Max(GreenAlgaeTintFadeOutDuration, Mathf.Epsilon));
+                alpha = GreenAlgaeTintMaxAlpha * Mathf.SmoothStep(0f, 1f, fadeOutProgress);
+            }
+        }
+
+        SetGreenAlgaeTintAlpha(alpha);
+    }
+
+    private void EnsureGreenAlgaeTintOverlay()
+    {
+        if (greenAlgaeTintImage != null)
+        {
+            return;
+        }
+
+        Canvas tintCanvas = RuntimeGaugeUiUtility.GetOrCreateOverlayCanvas(
+            null,
+            GreenAlgaeTintCanvasObjectName,
+            GreenAlgaeTintCanvasSortingOrder,
+            out _);
+        if (tintCanvas == null)
+        {
+            return;
+        }
+
+        GameObject overlayObject = new GameObject(GreenAlgaeTintOverlayObjectName, typeof(RectTransform), typeof(Image));
+        overlayObject.transform.SetParent(tintCanvas.transform, false);
+
+        RectTransform overlayRectTransform = overlayObject.GetComponent<RectTransform>();
+        overlayRectTransform.anchorMin = Vector2.zero;
+        overlayRectTransform.anchorMax = Vector2.one;
+        overlayRectTransform.offsetMin = Vector2.zero;
+        overlayRectTransform.offsetMax = Vector2.zero;
+
+        greenAlgaeTintImage = overlayObject.GetComponent<Image>();
+        greenAlgaeTintImage.sprite = GetGreenAlgaeTintSprite();
+        greenAlgaeTintImage.type = Image.Type.Sliced;
+        greenAlgaeTintImage.color = new Color(
+            GreenAlgaeTintColor.r,
+            GreenAlgaeTintColor.g,
+            GreenAlgaeTintColor.b,
+            0f);
+        greenAlgaeTintImage.raycastTarget = false;
+    }
+
+    private void SetGreenAlgaeTintAlpha(float alpha)
+    {
+        if (greenAlgaeTintImage == null)
+        {
+            return;
+        }
+
+        greenAlgaeTintImage.color = new Color(
+            GreenAlgaeTintColor.r,
+            GreenAlgaeTintColor.g,
+            GreenAlgaeTintColor.b,
+            Mathf.Clamp01(alpha));
+    }
+
+    private void ResetGreenAlgaeTint()
+    {
+        greenAlgaeTintStartTime = -1f;
+        greenAlgaeTintEndTime = -1f;
+        SetGreenAlgaeTintAlpha(0f);
+    }
+
+    private static Sprite GetGreenAlgaeTintSprite()
+    {
+        if (greenAlgaeTintSprite != null)
+        {
+            return greenAlgaeTintSprite;
+        }
+
+        int textureSize = Mathf.Max(2, GreenAlgaeTintSpriteTextureSize);
+        int borderPixels = Mathf.Clamp(GreenAlgaeTintSpriteBorderPixels, 1, textureSize / 2);
+        Texture2D texture = new Texture2D(textureSize, textureSize, TextureFormat.RGBA32, false)
+        {
+            name = "GreenAlgaeTintTexture",
+            wrapMode = TextureWrapMode.Clamp,
+            filterMode = FilterMode.Bilinear,
+            hideFlags = HideFlags.HideAndDontSave
+        };
+
+        Color32[] pixels = new Color32[textureSize * textureSize];
+        float border = borderPixels;
+
+        for (int y = 0; y < textureSize; y++)
+        {
+            for (int x = 0; x < textureSize; x++)
+            {
+                float distanceToEdge = Mathf.Min(
+                    Mathf.Min(x, textureSize - 1 - x),
+                    Mathf.Min(y, textureSize - 1 - y));
+                float normalizedDistance = Mathf.Clamp01(distanceToEdge / border);
+                float edgeAlpha = 1f - Mathf.SmoothStep(0f, 1f, normalizedDistance);
+                pixels[(y * textureSize) + x] = new Color32(255, 255, 255, (byte)Mathf.RoundToInt(edgeAlpha * 255f));
+            }
+        }
+
+        texture.SetPixels32(pixels);
+        texture.Apply(false, true);
+
+        greenAlgaeTintSprite = Sprite.Create(
+            texture,
+            new Rect(0f, 0f, textureSize, textureSize),
+            new Vector2(0.5f, 0.5f),
+            textureSize,
+            0,
+            SpriteMeshType.FullRect,
+            new Vector4(borderPixels, borderPixels, borderPixels, borderPixels));
+        greenAlgaeTintSprite.name = "GreenAlgaeTintSprite";
+        greenAlgaeTintSprite.hideFlags = HideFlags.HideAndDontSave;
+        return greenAlgaeTintSprite;
     }
 }
