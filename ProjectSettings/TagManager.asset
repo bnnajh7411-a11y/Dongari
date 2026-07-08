@@ -57,6 +57,12 @@ TagManager:
   - name: Water
     uniqueID: 485801243
     locked: 0
+  - name: Item
+    uniqueID: 1487626925
+    locked: 0
+  - name: Enemy
+    uniqueID: 2518725253
+    locked: 0
   m_RenderingLayers:
   - Default
   m_MigratedRenderPipelines: []
