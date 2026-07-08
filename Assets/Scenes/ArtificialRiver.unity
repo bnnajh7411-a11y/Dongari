@@ -2342,7 +2342,7 @@ Transform:
   m_GameObject: {fileID: 424229150}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: -20.56, y: 28.89, z: 0}
+  m_LocalPosition: {x: -25.78, y: 35.58, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -2363,11 +2363,11 @@ MonoBehaviour:
   viewMode: 0
   playStartClips: 1
   sideView:
-    idle: {fileID: 7400000, guid: 3143ba9c5f7a24044b7a06022ceabba2, type: 2}
-    walkStart: {fileID: 7400000, guid: f849e3711bea6de40a540113c99cfec2, type: 2}
-    walk: {fileID: 7400000, guid: acafb8f8b8c5c8a4680a8e6b6786818e, type: 2}
-    runStart: {fileID: 7400000, guid: b6fb0c767ea287343bd5ca0cd57f62d3, type: 2}
-    run: {fileID: 7400000, guid: b664d196b25ecda43ad203fc36e9edae, type: 2}
+    idle: {fileID: 7400000, guid: 1e0b705798f30e240863b714abf8ee41, type: 2}
+    walkStart: {fileID: 0}
+    walk: {fileID: 7400000, guid: 85dfe4e1333224b45beadecd12c4f830, type: 2}
+    runStart: {fileID: 0}
+    run: {fileID: 7400000, guid: 85dfe4e1333224b45beadecd12c4f830, type: 2}
     jump: {fileID: 7400000, guid: b7dd62b45fcf6f94bb3a9b7eb09ee4cf, type: 2}
   waterSideView:
     idle: {fileID: 7400000, guid: b23dc3baa58cf094daba3d5705fbedd3, type: 2}
