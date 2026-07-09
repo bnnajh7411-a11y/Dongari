@@ -1078,8 +1078,8 @@ Transform:
   m_GameObject: {fileID: 550104198}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.23345947, y: -0.17655945, z: 10}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -0.2605, y: -0.17655945, z: 10}
+  m_LocalScale: {x: 1.4678422, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 875909236}
@@ -3165,6 +3165,13 @@ MonoBehaviour:
     runStart: {fileID: 7400000, guid: b6fb0c767ea287343bd5ca0cd57f62d3, type: 2}
     run: {fileID: 7400000, guid: b664d196b25ecda43ad203fc36e9edae, type: 2}
     jump: {fileID: 7400000, guid: b7dd62b45fcf6f94bb3a9b7eb09ee4cf, type: 2}
+  waterSideView:
+    idle: {fileID: 0}
+    walkStart: {fileID: 0}
+    walk: {fileID: 0}
+    runStart: {fileID: 0}
+    run: {fileID: 0}
+    jump: {fileID: 0}
   topView:
     down:
       idle: {fileID: 7400000, guid: 1d96b8166853f3d40aa64c4a9523e52b, type: 2}
