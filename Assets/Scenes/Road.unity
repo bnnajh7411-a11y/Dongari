@@ -2585,6 +2585,13 @@ MonoBehaviour:
     runStart: {fileID: 0}
     run: {fileID: 0}
     jump: {fileID: 0}
+  waterSideView:
+    idle: {fileID: 0}
+    walkStart: {fileID: 0}
+    walk: {fileID: 0}
+    runStart: {fileID: 0}
+    run: {fileID: 0}
+    jump: {fileID: 0}
   topView:
     down:
       idle: {fileID: 7400000, guid: e70b1325bdfeda74b95f3abed4adfa8a, type: 2}
@@ -2812,14 +2819,20 @@ MonoBehaviour:
   laneCount: 4
   laneFollowGap: 1.1
   spawnLaneGap: 1.6
-  carScale: 1.2
+  carScale: 0.15
   colliderWidthFactor: 0.8
   colliderHeightFactor: 0.257
   colliderVerticalOffsetFactor: -0.31
   carDamage: 1
   sortingOrder: 1
-  pixelsPerUnit: 10
+  pixelsPerUnit: 1
   collisionSoundVolume: 1
+  carTextureOverrides:
+  - {fileID: 2800000, guid: 094a5d40291390a4eb985bac85580fc4, type: 3}
+  - {fileID: 2800000, guid: f28840843a7748b4887d80a1f0048038, type: 3}
+  carAnimationOverrides:
+  - {fileID: 7400000, guid: 20fb5cd2de6053847be69e2dbb65ffa4, type: 2}
+  - {fileID: 7400000, guid: f2c70daa59c25674ab991295fa073c3f, type: 2}
 --- !u!1 &2093957061
 GameObject:
   m_ObjectHideFlags: 0

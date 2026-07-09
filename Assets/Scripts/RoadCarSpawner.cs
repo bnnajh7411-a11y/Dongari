@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations;
 using UnityEngine.SceneManagement;
+using UnityEngine.Playables;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -23,9 +25,12 @@ public class RoadCarSpawner : MonoBehaviour
     private const float BottomLaneExtraYOffsetPercent = 0.10f;
     private const float UpperLaneYOffsetPercent = 0.20f;
     private static readonly float[] FourLaneFineTuneYOffsetPercents = { -0.20f, -0.13f, -0.11f, -0.14f };
+    private const float ReferenceCarTextureSize = 64f;
+    private const float AnimationSourcePixelsPerUnit = 100f;
 
 #if UNITY_EDITOR
-    private const string EditorCarAssetFolder = "Assets/Sprites";
+    private const string EditorCarAssetFolder = "Assets/Sprites/Graphic Art/Map/Road/Cars";
+    private const string EditorCarAnimationAssetFolder = "Assets/Animation/Road";
 #endif
 
     [SerializeField, Min(0.2f)] private float minSpawnInterval = 1.1f;
@@ -37,6 +42,7 @@ public class RoadCarSpawner : MonoBehaviour
     [SerializeField, Min(1)] private int laneCount = 4;
     [SerializeField, Min(0f)] private float laneFollowGap = 1.1f;
     [SerializeField, Min(0f)] private float spawnLaneGap = 1.6f;
+    [SerializeField] private float laneVerticalOffsetPixels = 50f;
     [SerializeField, Min(0.1f)] private float carScale = 3.0f;
     [SerializeField, Range(0.1f, 1f)] private float colliderWidthFactor = 0.68f;
     [SerializeField, Range(0.1f, 1f)] private float colliderHeightFactor = 0.12f;
@@ -45,8 +51,11 @@ public class RoadCarSpawner : MonoBehaviour
     [SerializeField] private int sortingOrder = 1;
     [SerializeField, Min(1f)] private float pixelsPerUnit = 100f;
     [SerializeField, Range(0f, 1f)] private float collisionSoundVolume = 1f;
+    [SerializeField] private Texture2D[] carTextureOverrides;
+    [SerializeField] private AnimationClip[] carAnimationOverrides;
 
     private readonly List<Sprite> carSprites = new List<Sprite>();
+    private readonly List<AnimationClip> carAnimations = new List<AnimationClip>();
     private readonly List<List<RoadCar>> carsByLane = new List<List<RoadCar>>();
 
     private Collider2D groundCollider;
@@ -91,6 +100,7 @@ public class RoadCarSpawner : MonoBehaviour
         LoadCollisionSound();
         EnsureCollisionAudioSource();
         LoadCarSprites();
+        LoadCarAnimations();
     }
 
     private void Start()
@@ -213,8 +223,16 @@ public class RoadCarSpawner : MonoBehaviour
     {
         carSprites.Clear();
 
-        Texture2D[] resourceTextures = Resources.LoadAll<Texture2D>(CarResourcesPath);
-        AddTexturesAsSprites(resourceTextures);
+        if (carTextureOverrides != null && carTextureOverrides.Length > 0)
+        {
+            AddTexturesAsSprites(carTextureOverrides);
+        }
+
+        if (carSprites.Count == 0)
+        {
+            Texture2D[] resourceTextures = Resources.LoadAll<Texture2D>(CarResourcesPath);
+            AddTexturesAsSprites(resourceTextures);
+        }
 
 #if UNITY_EDITOR
         if (carSprites.Count == 0)
@@ -229,7 +247,36 @@ public class RoadCarSpawner : MonoBehaviour
         }
 #endif
 
-        carSprites.Sort((left, right) => string.CompareOrdinal(left != null ? left.name : string.Empty, right != null ? right.name : string.Empty));
+        if (!HasAssignedCarAnimations())
+        {
+            carSprites.Sort((left, right) => string.CompareOrdinal(left != null ? left.name : string.Empty, right != null ? right.name : string.Empty));
+        }
+    }
+
+    private void LoadCarAnimations()
+    {
+        carAnimations.Clear();
+
+        if (carAnimationOverrides == null)
+        {
+            return;
+        }
+
+        bool hasAssignedAnimation = false;
+        for (int i = 0; i < carAnimationOverrides.Length; i++)
+        {
+            AnimationClip clip = carAnimationOverrides[i];
+            carAnimations.Add(clip);
+            hasAssignedAnimation |= clip != null;
+        }
+
+#if UNITY_EDITOR
+        if (!hasAssignedAnimation)
+        {
+            TryLoadEditorCarAnimationClip("Wcar");
+            TryLoadEditorCarAnimationClip("Bcar");
+        }
+#endif
     }
 
     private void AddTexturesAsSprites(Texture2D[] textures)
@@ -260,14 +307,54 @@ public class RoadCarSpawner : MonoBehaviour
             }
         }
 
+        float normalizedPixelsPerUnit = AnimationSourcePixelsPerUnit;
+
         Sprite sprite = Sprite.Create(
             texture,
             new Rect(0f, 0f, texture.width, texture.height),
             new Vector2(0.5f, 0.5f),
-            pixelsPerUnit);
+            normalizedPixelsPerUnit);
         sprite.name = texture.name;
         carSprites.Add(sprite);
     }
+
+    private bool HasAssignedCarAnimations()
+    {
+        return carAnimationOverrides != null && carAnimationOverrides.Length > 0;
+    }
+
+    private float ComputeCarVisualScale(Texture2D texture)
+    {
+        if (texture == null)
+        {
+            return carScale;
+        }
+
+        float textureSize = Mathf.Max(texture.width, texture.height);
+        if (textureSize <= 0f)
+        {
+            return carScale;
+        }
+
+        return carScale * ReferenceCarTextureSize * AnimationSourcePixelsPerUnit / (pixelsPerUnit * textureSize);
+    }
+
+#if UNITY_EDITOR
+    private void TryLoadEditorCarAnimationClip(string animationName)
+    {
+        string[] animationGuids = AssetDatabase.FindAssets("t:AnimationClip", new[] { EditorCarAnimationAssetFolder });
+        for (int i = 0; i < animationGuids.Length; i++)
+        {
+            string assetPath = AssetDatabase.GUIDToAssetPath(animationGuids[i]);
+            AnimationClip clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(assetPath);
+            if (clip != null && clip.name == animationName)
+            {
+                carAnimations.Add(clip);
+                return;
+            }
+        }
+    }
+#endif
 
     private void ScheduleNextSpawn()
     {
@@ -283,37 +370,57 @@ public class RoadCarSpawner : MonoBehaviour
             return;
         }
 
-        Sprite sprite = carSprites[Random.Range(0, carSprites.Count)];
+        bool useAnimations = carAnimations.Count > 0;
+        int carIndex = useAnimations
+            ? Random.Range(0, Mathf.Min(carSprites.Count, carAnimations.Count))
+            : Random.Range(0, carSprites.Count);
+
+        Sprite sprite = carSprites[carIndex];
         if (sprite == null)
         {
             return;
         }
 
+        AnimationClip animationClip = useAnimations && carIndex < carAnimations.Count
+            ? carAnimations[carIndex]
+            : null;
+        float visualScale = ComputeCarVisualScale(sprite.texture);
+
         Bounds groundBounds = groundCollider.bounds;
         Vector2 localSpriteSize = sprite.bounds.size;
-        float halfWidth = localSpriteSize.x * carScale * 0.5f;
-        float halfHeight = localSpriteSize.y * carScale * 0.5f;
+        float halfWidth = localSpriteSize.x * visualScale * 0.5f;
+        float halfHeight = localSpriteSize.y * visualScale * 0.5f;
 
         float minY = groundBounds.min.y + verticalPadding + halfHeight;
         float maxY = groundBounds.max.y - verticalPadding - halfHeight;
+        float laneVerticalOffsetWorld = -laneVerticalOffsetPixels / Mathf.Max(1f, pixelsPerUnit);
+        float shiftedMinY = minY + laneVerticalOffsetWorld;
+        float shiftedMaxY = maxY + laneVerticalOffsetWorld;
         if (!TrySelectSpawnLane(groundBounds, halfWidth, out int laneIndex, out bool movesRight))
         {
             return;
         }
 
         float spawnX = GetSpawnX(groundBounds, halfWidth, movesRight);
-        float spawnY = GetLaneCenterY(laneIndex, minY, maxY);
+        float spawnY = GetLaneCenterY(laneIndex, shiftedMinY, shiftedMaxY);
         float moveSpeed = Random.Range(minCarSpeed, maxCarSpeed);
 
         GameObject carObject = new GameObject("RoadCar");
         carObject.transform.position = new Vector3(spawnX, spawnY, carZPosition);
-        carObject.transform.localScale = new Vector3(carScale, carScale, 1f);
+        carObject.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+        carObject.transform.localScale = new Vector3(visualScale, visualScale, 1f);
 
         SpriteRenderer spriteRenderer = carObject.AddComponent<SpriteRenderer>();
         spriteRenderer.sprite = sprite;
         ApplyPlayerSortingLayer(spriteRenderer);
         spriteRenderer.sortingOrder = GetSortingOrderForLane(laneIndex);
         spriteRenderer.flipX = !movesRight;
+
+        if (animationClip != null)
+        {
+            RoadCarAnimationPlayer animationPlayer = carObject.AddComponent<RoadCarAnimationPlayer>();
+            animationPlayer.Play(animationClip);
+        }
 
         BoxCollider2D collider = carObject.AddComponent<BoxCollider2D>();
         collider.isTrigger = true;
@@ -632,6 +739,110 @@ public class RoadCarSpawner : MonoBehaviour
     private static void PruneLaneCars(List<RoadCar> laneCars)
     {
         laneCars.RemoveAll(car => car == null || !car.IsActiveOnRoad);
+    }
+}
+
+[DisallowMultipleComponent]
+[RequireComponent(typeof(SpriteRenderer))]
+public sealed class RoadCarAnimationPlayer : MonoBehaviour
+{
+    private Animator animator;
+    private PlayableGraph graph;
+    private AnimationPlayableOutput output;
+    private AnimationClipPlayable currentPlayable;
+    private bool hasPlayable;
+
+    public void Play(AnimationClip clip)
+    {
+        if (clip == null)
+        {
+            return;
+        }
+
+        EnsureAnimator();
+        EnsureGraph();
+
+        if (hasPlayable && currentPlayable.IsValid())
+        {
+            graph.DestroyPlayable(currentPlayable);
+        }
+
+        currentPlayable = AnimationClipPlayable.Create(graph, clip);
+        currentPlayable.SetApplyFootIK(false);
+        currentPlayable.SetTime(0d);
+        currentPlayable.SetSpeed(GamePauseState.IsPaused ? 0d : 1d);
+        output.SetSourcePlayable(currentPlayable);
+        hasPlayable = true;
+
+        if (!graph.IsPlaying())
+        {
+            graph.Play();
+        }
+
+        graph.Evaluate(0f);
+    }
+
+    private void EnsureAnimator()
+    {
+        if (animator != null)
+        {
+            return;
+        }
+
+        animator = GetComponent<Animator>();
+        if (animator == null)
+        {
+            animator = gameObject.AddComponent<Animator>();
+        }
+
+        animator.applyRootMotion = false;
+        animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+        animator.updateMode = AnimatorUpdateMode.Normal;
+        animator.runtimeAnimatorController = null;
+    }
+
+    private void EnsureGraph()
+    {
+        if (graph.IsValid())
+        {
+            return;
+        }
+
+        graph = PlayableGraph.Create($"{nameof(RoadCarAnimationPlayer)}_{name}");
+        graph.SetTimeUpdateMode(DirectorUpdateMode.GameTime);
+        output = AnimationPlayableOutput.Create(graph, "Animation", animator);
+    }
+
+    private void Update()
+    {
+        if (hasPlayable && currentPlayable.IsValid())
+        {
+            currentPlayable.SetSpeed(GamePauseState.IsPaused ? 0d : 1d);
+        }
+    }
+
+    private void OnEnable()
+    {
+        if (graph.IsValid())
+        {
+            graph.Play();
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (graph.IsValid())
+        {
+            graph.Stop();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (graph.IsValid())
+        {
+            graph.Destroy();
+        }
     }
 }
 
