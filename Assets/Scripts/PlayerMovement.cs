@@ -48,6 +48,7 @@ public class PlayerMovement : MonoBehaviour
     private const float GreenAlgaeMinXPosition = -21f;
     private const float ZooBoundarySkinWidth = 0.02f;
     private const int ZooBoundaryHitCapacity = 16;
+    private const int MountainGroundHitCapacity = 8;
     private const int MovementCastIterations = 3;
     private const float MovementMinDistance = 0.0001f;
     private const float MovementSurfaceSeparation = 0.001f;
@@ -81,6 +82,14 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float underwaterMovementSoundVolume = 1f;
     [SerializeField, Min(0f)] private float artificialRiverEntryDuration = 1.5f;
 
+    [Header("Mountain Jump Fix")]
+    [SerializeField, Min(0f)] private float mountainGroundProbeDistance = 0.18f;
+    [SerializeField, Min(0f)] private float mountainGroundSnapDistance = 0.22f;
+    [SerializeField, Min(0f)] private float mountainCoyoteTime = 0.1f;
+    [SerializeField, Min(0f)] private float mountainJumpBufferTime = 0.1f;
+    [SerializeField, Min(0f)] private float mountainSnapLockTime = 0.12f;
+    [SerializeField, Range(0f, 89f)] private float mountainMaxGroundAngle = 60f;
+
     private const float FacingThreshold = 0.01f;
     private const float GroundNormalThreshold = 0.5f;
     private const float VerticalVelocityThreshold = 0.01f;
@@ -103,6 +112,9 @@ public class PlayerMovement : MonoBehaviour
     private bool hasMovementBounds;
     private bool jumpRequested;
     private bool jumpPressedThisFrame;
+    private float mountainCoyoteCounter;
+    private float mountainJumpBufferCounter;
+    private float mountainSnapLockCounter;
     private Vector3 defaultScale;
     private Bounds movementBounds;
     private float movementSpeedMultiplier = 1f;
@@ -120,8 +132,11 @@ public class PlayerMovement : MonoBehaviour
     private readonly HashSet<Collider2D> wallColliders = new HashSet<Collider2D>();
     private readonly HashSet<Collider2D> waterColliders = new HashSet<Collider2D>();
     private readonly RaycastHit2D[] zooBoundaryHits = new RaycastHit2D[ZooBoundaryHitCapacity];
+    private readonly RaycastHit2D[] mountainGroundHits = new RaycastHit2D[MountainGroundHitCapacity];
     private ContactFilter2D zooBoundaryFilter;
     private bool hasZooBoundaryFilter;
+    private ContactFilter2D mountainGroundFilter;
+    private bool hasMountainGroundFilter;
 
     private static AudioClip underwaterMovementAudioClip;
     private static Sprite artificialRiverBubbleSprite;
@@ -187,6 +202,7 @@ public class PlayerMovement : MonoBehaviour
         greenAlgaeContactColliders.Clear();
         ResetGreenAlgaePushback();
         ResetGreenAlgaeTint();
+        ResetMountainJumpAssist();
         nextArtificialRiverBubbleSpawnTime = 0f;
     }
 
@@ -221,7 +237,11 @@ public class PlayerMovement : MonoBehaviour
         isRunning = IsRunPressed() && CanSprint() && HasMovementInputValue();
         UpdateClimbingState();
 
-        if (!isClimbing && !isTopDownScene && !IsWaterMovementActive() && jumpPressedThisFrame && isGrounded)
+        if (isMountainScene)
+        {
+            UpdateMountainJumpBuffer();
+        }
+        else if (!isClimbing && !isTopDownScene && !IsWaterMovementActive() && jumpPressedThisFrame && isGrounded)
         {
             jumpRequested = true;
         }
@@ -280,6 +300,11 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
+        if (isMountainScene)
+        {
+            UpdateMountainJumpAssist();
+        }
+
         float currentSpeed = (isRunning ? runSpeed : moveSpeed) * movementSpeedMultiplier;
         float horizontalSpeed = (!isGrounded && wallColliders.Count > 0)
             ? 0f
@@ -295,9 +320,22 @@ public class PlayerMovement : MonoBehaviour
             isGrounded = false;
             groundColliders.Clear();
             jumpRequested = false;
+
+            if (isMountainScene)
+            {
+                mountainCoyoteCounter = 0f;
+                mountainJumpBufferCounter = 0f;
+                mountainSnapLockCounter = mountainSnapLockTime;
+            }
         }
 
         ApplyGravity();
+
+        if (isMountainScene)
+        {
+            SnapMountainToGround();
+        }
+
         ConsumeRunStamina();
     }
     private void UpdateFacingDirection()
@@ -1666,6 +1704,153 @@ public class PlayerMovement : MonoBehaviour
 
         underwaterMovementAudioSource.volume =
             Mathf.Clamp01(underwaterMovementSoundVolume) * AudioSettingsStore.SoundEffectVolume;
+    }
+
+    private void UpdateMountainJumpBuffer()
+    {
+        if (!isMountainScene || isClimbing || isTopDownScene || IsWaterMovementActive())
+        {
+            mountainJumpBufferCounter = 0f;
+            return;
+        }
+
+        if (jumpPressedThisFrame)
+        {
+            mountainJumpBufferCounter = mountainJumpBufferTime;
+            return;
+        }
+
+        mountainJumpBufferCounter = Mathf.Max(0f, mountainJumpBufferCounter - Time.deltaTime);
+    }
+
+    private void UpdateMountainJumpAssist()
+    {
+        mountainSnapLockCounter = Mathf.Max(0f, mountainSnapLockCounter - Time.fixedDeltaTime);
+
+        if (isGrounded || IsMountainGroundClose(mountainGroundProbeDistance, out _))
+        {
+            mountainCoyoteCounter = mountainCoyoteTime;
+        }
+        else
+        {
+            mountainCoyoteCounter = Mathf.Max(0f, mountainCoyoteCounter - Time.fixedDeltaTime);
+        }
+
+        if (mountainJumpBufferCounter > 0f && mountainCoyoteCounter > 0f)
+        {
+            jumpRequested = true;
+            mountainJumpBufferCounter = 0f;
+        }
+    }
+
+    private void SnapMountainToGround()
+    {
+        if (!isMountainScene
+            || playerCollider == null
+            || isGrounded
+            || mountainSnapLockCounter > 0f
+            || rb.linearVelocity.y > VerticalVelocityThreshold)
+        {
+            return;
+        }
+
+        if (!IsMountainGroundClose(mountainGroundSnapDistance, out RaycastHit2D groundHit))
+        {
+            return;
+        }
+
+        if (groundHit.distance > MovementMinDistance)
+        {
+            rb.position += Vector2.down * groundHit.distance;
+        }
+
+        if (rb.linearVelocity.y < 0f)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
+        }
+
+        isGrounded = true;
+        mountainCoyoteCounter = mountainCoyoteTime;
+    }
+
+    private bool IsMountainGroundClose(float checkDistance, out RaycastHit2D nearestGroundHit)
+    {
+        nearestGroundHit = default;
+
+        if (!isMountainScene || playerCollider == null || checkDistance <= 0f)
+        {
+            return false;
+        }
+
+        EnsureMountainGroundFilter();
+        if (!hasMountainGroundFilter)
+        {
+            return false;
+        }
+
+        int hitCount = playerCollider.Cast(
+            Vector2.down,
+            mountainGroundFilter,
+            mountainGroundHits,
+            checkDistance);
+
+        return TryGetNearestMountainGroundHit(hitCount, out nearestGroundHit);
+    }
+
+    private bool TryGetNearestMountainGroundHit(int hitCount, out RaycastHit2D nearestGroundHit)
+    {
+        nearestGroundHit = default;
+        bool hasHit = false;
+        float groundNormalY = Mathf.Cos(mountainMaxGroundAngle * Mathf.Deg2Rad);
+
+        for (int i = 0; i < hitCount; i++)
+        {
+            RaycastHit2D hit = mountainGroundHits[i];
+            Collider2D hitCollider = hit.collider;
+            if (hitCollider == null || hitCollider == playerCollider || hitCollider.transform.IsChildOf(transform))
+            {
+                continue;
+            }
+
+            if (hit.normal.y < groundNormalY)
+            {
+                continue;
+            }
+
+            if (!hasHit || hit.distance < nearestGroundHit.distance)
+            {
+                nearestGroundHit = hit;
+                hasHit = true;
+            }
+        }
+
+        return hasHit;
+    }
+
+    private void EnsureMountainGroundFilter()
+    {
+        if (hasMountainGroundFilter || playerCollider == null)
+        {
+            return;
+        }
+
+        mountainGroundFilter = new ContactFilter2D
+        {
+            useLayerMask = true,
+            useTriggers = false,
+            useDepth = false,
+            useOutsideDepth = false
+        };
+        mountainGroundFilter.SetLayerMask(Physics2D.GetLayerCollisionMask(gameObject.layer));
+        hasMountainGroundFilter = true;
+    }
+
+    private void ResetMountainJumpAssist()
+    {
+        mountainCoyoteCounter = 0f;
+        mountainJumpBufferCounter = 0f;
+        mountainSnapLockCounter = 0f;
+        hasMountainGroundFilter = false;
     }
 
     private void ApplyGravity()

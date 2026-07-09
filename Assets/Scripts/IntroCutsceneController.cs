@@ -1,8 +1,6 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using UnityEngine.Video;
 
 [DisallowMultipleComponent]
 public class IntroCutsceneController : MonoBehaviour
@@ -13,25 +11,18 @@ public class IntroCutsceneController : MonoBehaviour
     private const string CanvasObjectName = "CutsceneCanvas";
     private const string SkipButtonObjectName = "SkipButton";
     private const string SkipButtonLabelObjectName = "Label";
-    private const float VideoPrepareTimeoutSeconds = 5f;
 
     private static string pendingNextSceneName;
 
     [SerializeField] private string fallbackNextSceneName = "Zoo";
-    [SerializeField] private string skipButtonLabel = "SKIP";
-    [SerializeField] private Color backgroundColor = Color.black;
+    [SerializeField] private string skipButtonLabel = "START";
     [SerializeField] private Color skipButtonColor = new Color(0.18f, 0.19f, 0.22f, 0.64f);
     [SerializeField] private Color skipButtonTextColor = new Color(0.97f, 0.98f, 1f, 1f);
-    [SerializeField] private VideoClip introVideoClip;
 
     private Font builtinFont;
-    private Camera cutsceneCamera;
     private Canvas cutsceneCanvas;
     private Button skipButton;
-    private VideoPlayer videoPlayer;
-    private Coroutine videoPrepareTimeoutCoroutine;
     private bool isLoadingNextScene;
-    private bool isUsingVideoPlayback;
 
     public static void SetPendingNextScene(string sceneName)
     {
@@ -40,113 +31,33 @@ public class IntroCutsceneController : MonoBehaviour
 
     private void Awake()
     {
-        cutsceneCamera = EnsureMainCamera();
-        PrimeVideoPlayerForManualPlayback();
         EnsureEventSystem();
         cutsceneCanvas = EnsureCanvas();
         skipButton = EnsureSkipButton(cutsceneCanvas.transform);
     }
 
-    private void Start()
-    {
-        if (introVideoClip != null)
-        {
-            StartVideoPlayback();
-            return;
-        }
-
-        StartImageCutscene();
-    }
-
-    private void OnDestroy()
-    {
-        UnregisterVideoCallbacks();
-    }
-
-    private void StartImageCutscene()
-    {
-        isUsingVideoPlayback = false;
-
-        if (cutsceneCanvas == null)
-        {
-            cutsceneCanvas = EnsureCanvas();
-        }
-
-    }
-
     private void Update()
     {
-        if (isLoadingNextScene || isUsingVideoPlayback || !ShouldAdvanceCutscene())
+        if (isLoadingNextScene)
         {
             return;
         }
-    }
 
-    private void StartVideoPlayback()
-    {
-        if (cutsceneCamera == null)
-        {
-            Debug.LogError("IntroCutsceneController could not find or create a camera for video playback.", this);
-            FallbackAfterVideoFailure();
-            return;
-        }
-
-        isUsingVideoPlayback = true;
-
-        videoPlayer = EnsureVideoPlayer();
-        if (videoPlayer == null)
-        {
-            FallbackAfterVideoFailure();
-            return;
-        }
-
-        videoPlayer.clip = introVideoClip;
-        videoPlayer.Prepare();
-
-        if (videoPlayer.isPrepared)
-        {
-            HandleVideoPrepared(videoPlayer);
-            return;
-        }
-
-        RestartVideoPrepareTimeout();
-    }
-
-    private bool ShouldAdvanceCutscene()
-    {
-        bool mouseClick = Input.GetMouseButtonDown(0);
-        // The whole cutscene is rendered with UI, so only the Skip button should block mouse-to-advance.
-        if (mouseClick && IsPointerOverSkipButton())
-        {
-            return false;
-        }
-
-        return mouseClick
-            || Input.GetKeyDown(KeyCode.Return)
+        if (Input.GetKeyDown(KeyCode.Return)
             || Input.GetKeyDown(KeyCode.KeypadEnter)
-            || Input.GetKeyDown(KeyCode.Space)
-            || PlayerInputBindings.WasJumpPressedThisFrame()
-            || PlayerInputBindings.WasInteractPressedThisFrame();
-    }
-
-    private bool IsPointerOverSkipButton()
-    {
-        if (skipButton == null)
+            || Input.GetKeyDown(KeyCode.Space))
         {
-            return false;
+            LoadNextScene();
         }
-
-        RectTransform skipButtonRectTransform = skipButton.transform as RectTransform;
-        if (skipButtonRectTransform == null)
-        {
-            return false;
-        }
-
-        return RectTransformUtility.RectangleContainsScreenPoint(skipButtonRectTransform, Input.mousePosition);
     }
 
     private void LoadNextScene()
     {
+        if (isLoadingNextScene)
+        {
+            return;
+        }
+
         string nextSceneName = string.IsNullOrWhiteSpace(pendingNextSceneName)
             ? fallbackNextSceneName
             : pendingNextSceneName;
@@ -181,31 +92,16 @@ public class IntroCutsceneController : MonoBehaviour
         eventSystemObject.AddComponent<StandaloneInputModule>();
     }
 
-    private Camera EnsureMainCamera()
-    {
-        if (Camera.main != null)
-        {
-            Camera.main.backgroundColor = backgroundColor;
-            Camera.main.clearFlags = CameraClearFlags.SolidColor;
-            Camera.main.orthographic = true;
-            return Camera.main;
-        }
-
-        GameObject cameraObject = new GameObject("Main Camera");
-        cameraObject.tag = "MainCamera";
-
-        Camera cameraComponent = cameraObject.AddComponent<Camera>();
-        cameraObject.AddComponent<AudioListener>();
-
-        cameraComponent.backgroundColor = backgroundColor;
-        cameraComponent.clearFlags = CameraClearFlags.SolidColor;
-        cameraComponent.orthographic = true;
-        return cameraComponent;
-    }
-
     private Canvas EnsureCanvas()
     {
-        GameObject canvasObject = new GameObject(CanvasObjectName);
+        GameObject canvasObject = GameObject.Find(CanvasObjectName);
+
+        if (canvasObject != null && canvasObject.TryGetComponent(out Canvas existingCanvas))
+        {
+            return existingCanvas;
+        }
+
+        canvasObject = new GameObject(CanvasObjectName);
 
         Canvas canvas = canvasObject.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -218,52 +114,21 @@ public class IntroCutsceneController : MonoBehaviour
         scaler.matchWidthOrHeight = 0.5f;
 
         canvasObject.AddComponent<GraphicRaycaster>();
+
         return canvas;
-    }
-
-    private void PrimeVideoPlayerForManualPlayback()
-    {
-        if (introVideoClip == null)
-        {
-            return;
-        }
-
-        videoPlayer = EnsureVideoPlayer();
-    }
-
-    private VideoPlayer EnsureVideoPlayer()
-    {
-        if (videoPlayer == null)
-        {
-            videoPlayer = GetComponent<VideoPlayer>();
-        }
-
-        if (videoPlayer == null)
-        {
-            videoPlayer = gameObject.AddComponent<VideoPlayer>();
-        }
-
-        UnregisterVideoCallbacks();
-
-        videoPlayer.source = VideoSource.VideoClip;
-        videoPlayer.renderMode = VideoRenderMode.CameraNearPlane;
-        videoPlayer.targetCamera = cutsceneCamera;
-        videoPlayer.targetCameraAlpha = 1f;
-        videoPlayer.aspectRatio = VideoAspectRatio.FitInside;
-        videoPlayer.playOnAwake = false;
-        videoPlayer.waitForFirstFrame = true;
-        videoPlayer.isLooping = false;
-        // The intro video is silent, so keep Unity's audio pipeline disabled.
-        videoPlayer.audioOutputMode = VideoAudioOutputMode.None;
-        videoPlayer.skipOnDrop = true;
-        videoPlayer.prepareCompleted += HandleVideoPrepared;
-        videoPlayer.loopPointReached += HandleVideoPlaybackFinished;
-        videoPlayer.errorReceived += HandleVideoErrorReceived;
-        return videoPlayer;
     }
 
     private Button EnsureSkipButton(Transform parent)
     {
+        GameObject existingButtonObject = GameObject.Find(SkipButtonObjectName);
+
+        if (existingButtonObject != null && existingButtonObject.TryGetComponent(out Button existingButton))
+        {
+            existingButton.onClick.RemoveAllListeners();
+            existingButton.onClick.AddListener(HandleSkipButtonPressed);
+            return existingButton;
+        }
+
         GameObject buttonObject = new GameObject(SkipButtonObjectName);
         buttonObject.transform.SetParent(parent, false);
 
@@ -285,9 +150,11 @@ public class IntroCutsceneController : MonoBehaviour
         button.targetGraphic = buttonImage;
         button.transition = Selectable.Transition.ColorTint;
         button.colors = CreateButtonColors(skipButtonColor);
+
         Navigation navigation = button.navigation;
         navigation.mode = Navigation.Mode.None;
         button.navigation = navigation;
+
         button.onClick.AddListener(HandleSkipButtonPressed);
 
         GameObject labelObject = new GameObject(SkipButtonLabelObjectName);
@@ -306,6 +173,7 @@ public class IntroCutsceneController : MonoBehaviour
         labelText.alignment = TextAnchor.MiddleCenter;
         labelText.color = skipButtonTextColor;
         labelText.text = skipButtonLabel;
+        labelText.raycastTarget = false;
 
         return button;
     }
@@ -317,134 +185,36 @@ public class IntroCutsceneController : MonoBehaviour
             skipButton.interactable = false;
         }
 
-        StopVideoPlayback();
         LoadNextScene();
-    }
-
-    private void HandleVideoPrepared(VideoPlayer source)
-    {
-        if (isLoadingNextScene || source != videoPlayer)
-        {
-            return;
-        }
-
-        CancelVideoPrepareTimeout();
-        source.Play();
-    }
-
-    private void HandleVideoPlaybackFinished(VideoPlayer source)
-    {
-        if (isLoadingNextScene || source != videoPlayer)
-        {
-            return;
-        }
-
-        LoadNextScene();
-    }
-
-    private void HandleVideoErrorReceived(VideoPlayer source, string errorMessage)
-    {
-        if (source != videoPlayer)
-        {
-            return;
-        }
-
-        Debug.LogError($"Intro cutscene video playback failed: {errorMessage}", this);
-        FallbackAfterVideoFailure();
-    }
-
-    private void FallbackAfterVideoFailure()
-    {
-        CancelVideoPrepareTimeout();
-        StopVideoPlayback();
-        isUsingVideoPlayback = false;
-
-        LoadNextScene();
-    }
-
-    private void StopVideoPlayback()
-    {
-        CancelVideoPrepareTimeout();
-
-        if (videoPlayer == null)
-        {
-            return;
-        }
-
-        if (videoPlayer.isPlaying || videoPlayer.isPrepared)
-        {
-            videoPlayer.Stop();
-        }
-    }
-
-    private void UnregisterVideoCallbacks()
-    {
-        if (videoPlayer == null)
-        {
-            return;
-        }
-
-        videoPlayer.prepareCompleted -= HandleVideoPrepared;
-        videoPlayer.loopPointReached -= HandleVideoPlaybackFinished;
-        videoPlayer.errorReceived -= HandleVideoErrorReceived;
-    }
-
-    private void RestartVideoPrepareTimeout()
-    {
-        CancelVideoPrepareTimeout();
-        videoPrepareTimeoutCoroutine = StartCoroutine(VideoPrepareTimeoutRoutine());
-    }
-
-    private void CancelVideoPrepareTimeout()
-    {
-        if (videoPrepareTimeoutCoroutine == null)
-        {
-            return;
-        }
-
-        StopCoroutine(videoPrepareTimeoutCoroutine);
-        videoPrepareTimeoutCoroutine = null;
-    }
-
-    private IEnumerator VideoPrepareTimeoutRoutine()
-    {
-        yield return new WaitForSecondsRealtime(VideoPrepareTimeoutSeconds);
-
-        if (isLoadingNextScene || !isUsingVideoPlayback || videoPlayer == null)
-        {
-            videoPrepareTimeoutCoroutine = null;
-            yield break;
-        }
-
-        if (videoPlayer.isPrepared || videoPlayer.isPlaying)
-        {
-            videoPrepareTimeoutCoroutine = null;
-            yield break;
-        }
-
-        videoPrepareTimeoutCoroutine = null;
-        Debug.LogError("Intro cutscene video preparation timed out.", this);
-        FallbackAfterVideoFailure();
     }
 
     private ColorBlock CreateButtonColors(Color normalColor)
     {
         ColorBlock colors = ColorBlock.defaultColorBlock;
+
         colors.normalColor = normalColor;
         colors.highlightedColor = new Color(
             Mathf.Lerp(normalColor.r, 1f, 0.12f),
             Mathf.Lerp(normalColor.g, 1f, 0.12f),
             Mathf.Lerp(normalColor.b, 1f, 0.12f),
             normalColor.a);
+
         colors.pressedColor = new Color(
             normalColor.r * 0.9f,
             normalColor.g * 0.9f,
             normalColor.b * 0.9f,
             normalColor.a);
+
         colors.selectedColor = colors.highlightedColor;
-        colors.disabledColor = new Color(normalColor.r, normalColor.g, normalColor.b, normalColor.a * 0.45f);
+        colors.disabledColor = new Color(
+            normalColor.r,
+            normalColor.g,
+            normalColor.b,
+            normalColor.a * 0.45f);
+
         colors.colorMultiplier = 1f;
         colors.fadeDuration = 0.08f;
+
         return colors;
     }
 
@@ -456,6 +226,7 @@ public class IntroCutsceneController : MonoBehaviour
         }
 
         builtinFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+
         if (builtinFont == null)
         {
             Debug.LogError("Could not load the built-in runtime font for the cutscene UI.", this);
