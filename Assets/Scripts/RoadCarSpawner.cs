@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.SceneManagement;
 using UnityEngine.Playables;
+using UnityEngine.Splines;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -14,17 +15,15 @@ public class RoadCarSpawner : MonoBehaviour
 {
     private const string TargetSceneName = "Road";
     private const string GroundObjectName = "Ground";
+    private const string RoadObjectName = "Road";
     private const string PlayerObjectName = "Player";
     private const string CarResourcesPath = "RoadCars";
     private const string CollisionAudioResourcesPath = "Audios/K드라마 효과음 (1342)";
     private const string CollisionAudioSourceObjectName = "RoadCarImpactAudioSource";
     private const int PlayerSortingOrderOffset = 1;
     private const int SecondFromBottomLaneIndex = 1;
-    private const int SecondFromBottomLaneSortingOrderOffset = 2;
-    private const float LowerLaneYOffsetPercent = 0.25f;
-    private const float BottomLaneExtraYOffsetPercent = 0.10f;
-    private const float UpperLaneYOffsetPercent = 0.20f;
-    private static readonly float[] FourLaneFineTuneYOffsetPercents = { -0.20f, -0.13f, -0.11f, -0.14f };
+    private const int SecondFromBottomLaneSortingOrderOffset = 5;
+    private const float LaneSplineSampleT = 0.5f;
     private const float ReferenceCarTextureSize = 64f;
     private const float AnimationSourcePixelsPerUnit = 100f;
 
@@ -42,7 +41,6 @@ public class RoadCarSpawner : MonoBehaviour
     [SerializeField, Min(1)] private int laneCount = 4;
     [SerializeField, Min(0f)] private float laneFollowGap = 1.1f;
     [SerializeField, Min(0f)] private float spawnLaneGap = 1.6f;
-    [SerializeField] private float laneVerticalOffsetPixels = 50f;
     [SerializeField, Min(0.1f)] private float carScale = 3.0f;
     [SerializeField, Range(0.1f, 1f)] private float colliderWidthFactor = 0.68f;
     [SerializeField, Range(0.1f, 1f)] private float colliderHeightFactor = 0.12f;
@@ -57,6 +55,7 @@ public class RoadCarSpawner : MonoBehaviour
     private readonly List<Sprite> carSprites = new List<Sprite>();
     private readonly List<AnimationClip> carAnimations = new List<AnimationClip>();
     private readonly List<List<RoadCar>> carsByLane = new List<List<RoadCar>>();
+    private readonly List<SplineContainer> laneSplines = new List<SplineContainer>();
 
     private Collider2D groundCollider;
     private AudioClip collisionSoundClip;
@@ -101,6 +100,7 @@ public class RoadCarSpawner : MonoBehaviour
         EnsureCollisionAudioSource();
         LoadCarSprites();
         LoadCarAnimations();
+        CacheLaneSplines();
     }
 
     private void Start()
@@ -275,6 +275,9 @@ public class RoadCarSpawner : MonoBehaviour
         {
             TryLoadEditorCarAnimationClip("Wcar");
             TryLoadEditorCarAnimationClip("Bcar");
+            TryLoadEditorCarAnimationClip("Bcar2");
+            TryLoadEditorCarAnimationClip("Wcar2");
+            TryLoadEditorCarAnimationClip("Gcar");
         }
 #endif
     }
@@ -393,16 +396,13 @@ public class RoadCarSpawner : MonoBehaviour
 
         float minY = groundBounds.min.y + verticalPadding + halfHeight;
         float maxY = groundBounds.max.y - verticalPadding - halfHeight;
-        float laneVerticalOffsetWorld = -laneVerticalOffsetPixels / Mathf.Max(1f, pixelsPerUnit);
-        float shiftedMinY = minY + laneVerticalOffsetWorld;
-        float shiftedMaxY = maxY + laneVerticalOffsetWorld;
         if (!TrySelectSpawnLane(groundBounds, halfWidth, out int laneIndex, out bool movesRight))
         {
             return;
         }
 
         float spawnX = GetSpawnX(groundBounds, halfWidth, movesRight);
-        float spawnY = GetLaneCenterY(laneIndex, shiftedMinY, shiftedMaxY);
+        float spawnY = Mathf.Clamp(GetLaneCenterY(laneIndex, minY, maxY), minY, maxY);
         float moveSpeed = Random.Range(minCarSpeed, maxCarSpeed);
 
         GameObject carObject = new GameObject("RoadCar");
@@ -525,7 +525,7 @@ public class RoadCarSpawner : MonoBehaviour
 
     private void EnsureLaneRegistry()
     {
-        int totalLanes = Mathf.Max(1, laneCount);
+        int totalLanes = GetTotalLaneCount();
 
         while (carsByLane.Count < totalLanes)
         {
@@ -629,9 +629,36 @@ public class RoadCarSpawner : MonoBehaviour
         return movesRight ? centerX + halfWidth : centerX - halfWidth;
     }
 
+    private void CacheLaneSplines()
+    {
+        laneSplines.Clear();
+
+        GameObject roadObject = GameObject.Find(RoadObjectName);
+        if (roadObject == null)
+        {
+            return;
+        }
+
+        Transform roadTransform = roadObject.transform;
+        for (int i = 0; i < roadTransform.childCount; i++)
+        {
+            Transform child = roadTransform.GetChild(i);
+            if (child != null && child.TryGetComponent(out SplineContainer laneSpline))
+            {
+                laneSplines.Add(laneSpline);
+            }
+        }
+
+        laneSplines.Sort(CompareLaneSplinesByWorldY);
+        if (laneSplines.Count > 0)
+        {
+            laneCount = laneSplines.Count;
+        }
+    }
+
     private bool IsLaneRightMoving(int laneIndex)
     {
-        int totalLanes = Mathf.Max(1, laneCount);
+        int totalLanes = GetTotalLaneCount();
         return laneIndex >= totalLanes / 2;
     }
 
@@ -663,31 +690,14 @@ public class RoadCarSpawner : MonoBehaviour
         spriteRenderer.sortingLayerID = playerSpriteRenderer.sortingLayerID;
     }
 
-    private static float GetFineTuneLaneYOffsetPercent(int laneIndex, int totalLanes)
+    private int GetTotalLaneCount()
     {
-        int clampedLaneIndex = Mathf.Clamp(laneIndex, 0, Mathf.Max(0, totalLanes - 1));
-
-        if (totalLanes == FourLaneFineTuneYOffsetPercents.Length)
+        if (laneSplines.Count == 0)
         {
-            return FourLaneFineTuneYOffsetPercents[clampedLaneIndex];
+            CacheLaneSplines();
         }
 
-        if (clampedLaneIndex == 0)
-        {
-            return FourLaneFineTuneYOffsetPercents[0];
-        }
-
-        if (clampedLaneIndex == totalLanes - 1)
-        {
-            return FourLaneFineTuneYOffsetPercents[3];
-        }
-
-        if (clampedLaneIndex >= totalLanes - 2)
-        {
-            return FourLaneFineTuneYOffsetPercents[2];
-        }
-
-        return FourLaneFineTuneYOffsetPercents[1];
+        return Mathf.Max(1, laneSplines.Count > 0 ? laneSplines.Count : laneCount);
     }
 
     private float GetLaneCenterY(int laneIndex, float minY, float maxY)
@@ -697,29 +707,74 @@ public class RoadCarSpawner : MonoBehaviour
             return (minY + maxY) * 0.5f;
         }
 
-        int totalLanes = Mathf.Max(1, laneCount);
-        float laneRange = maxY - minY;
-        float laneHeight = laneRange / totalLanes;
+        if (TryGetLaneWorldCenterY(laneIndex, out float laneCenterY))
+        {
+            return Mathf.Clamp(laneCenterY, minY, maxY);
+        }
+
+        int totalLanes = GetTotalLaneCount();
         int clampedLaneIndex = Mathf.Clamp(laneIndex, 0, totalLanes - 1);
-        float laneCenterY = minY + (laneHeight * (clampedLaneIndex + 0.5f));
+        float laneHeight = (maxY - minY) / totalLanes;
+        return minY + (laneHeight * (clampedLaneIndex + 0.5f));
+    }
 
-        if (IsLaneRightMoving(clampedLaneIndex))
+    private bool TryGetLaneWorldCenterY(int laneIndex, out float laneCenterY)
+    {
+        if (laneSplines.Count == 0)
         {
-            laneCenterY += laneRange * UpperLaneYOffsetPercent;
-        }
-        else
-        {
-            laneCenterY += laneRange * LowerLaneYOffsetPercent;
-
-            if (clampedLaneIndex == 0)
-            {
-                laneCenterY += laneRange * BottomLaneExtraYOffsetPercent;
-            }
+            CacheLaneSplines();
         }
 
-        laneCenterY += laneRange * GetFineTuneLaneYOffsetPercent(clampedLaneIndex, totalLanes);
+        if (laneIndex < 0 || laneIndex >= laneSplines.Count)
+        {
+            laneCenterY = 0f;
+            return false;
+        }
 
-        return Mathf.Clamp(laneCenterY, minY, maxY);
+        laneCenterY = GetLaneSplineWorldCenterY(laneSplines[laneIndex]);
+        return true;
+    }
+
+    private static int CompareLaneSplinesByWorldY(SplineContainer left, SplineContainer right)
+    {
+        if (left == right)
+        {
+            return 0;
+        }
+
+        if (left == null)
+        {
+            return -1;
+        }
+
+        if (right == null)
+        {
+            return 1;
+        }
+
+        int yComparison = GetLaneSplineWorldCenterY(left).CompareTo(GetLaneSplineWorldCenterY(right));
+        if (yComparison != 0)
+        {
+            return yComparison;
+        }
+
+        return left.transform.GetSiblingIndex().CompareTo(right.transform.GetSiblingIndex());
+    }
+
+    private static float GetLaneSplineWorldCenterY(SplineContainer laneSpline)
+    {
+        if (laneSpline == null)
+        {
+            return 0f;
+        }
+
+        if (laneSpline.CalculateLength() <= 0f)
+        {
+            return laneSpline.transform.position.y;
+        }
+
+        var lanePosition = laneSpline.EvaluatePosition(LaneSplineSampleT);
+        return lanePosition.y;
     }
 
     private bool TryGetLaneCars(int laneIndex, out List<RoadCar> laneCars)
