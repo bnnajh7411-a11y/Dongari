@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 8486d789acd967e40b57e709276493bf
+guid: d129d121b8f5de9448717873910c59a6
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -49,7 +49,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -59,7 +59,7 @@ TextureImporter:
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
-  spriteTessellationDetail: 0
+  spriteTessellationDetail: -1
   textureType: 8
   textureShape: 1
   singleChannelComponent: 0
@@ -75,10 +75,10 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 4096
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 3
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -88,6 +88,19 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
     buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -111,7 +124,7 @@ TextureImporter:
         width: 730
         height: 280
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -133,7 +146,7 @@ TextureImporter:
         width: 1927
         height: 1170
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -148,66 +161,10 @@ TextureImporter:
       weights: []
     outline: []
     customData: 
-    physicsShape:
-    - - {x: -555, y: -529}
-      - {x: -320, y: -526}
-      - {x: 767, y: -109}
-      - {x: 1315, y: 240}
-      - {x: 1230, y: 359}
-      - {x: 1105, y: 444}
-      - {x: 1027, y: 465}
-      - {x: 891, y: 464}
-      - {x: 862, y: 456}
-      - {x: 790, y: 396}
-      - {x: 741, y: 322}
-      - {x: 697, y: 199}
-      - {x: 686, y: 148}
-      - {x: 687, y: 15}
-      - {x: 622, y: -6}
-      - {x: 571, y: 8}
-      - {x: 474, y: -4}
-      - {x: 429, y: 11}
-      - {x: 381, y: 8}
-      - {x: 324, y: 3}
-      - {x: 298, y: -8}
-      - {x: 205, y: 10}
-      - {x: 111, y: 8}
-      - {x: 73, y: 0}
-      - {x: 50, y: -29}
-      - {x: -69, y: 9}
-      - {x: -104, y: 12}
-      - {x: -119, y: 2}
-      - {x: -180, y: -92}
-      - {x: -160, y: -196}
-      - {x: -217, y: -262}
-      - {x: -309, y: -265}
-      - {x: -339, y: -270}
-      - {x: -379, y: -307}
-      - {x: -455, y: -319}
-      - {x: -472, y: -337}
-      - {x: -475, y: -364}
-      - {x: -461, y: -397}
-      - {x: -546, y: -488}
-    - - {x: -1245, y: 473}
-      - {x: -1278, y: 423}
-      - {x: -1277, y: 407}
-      - {x: -555, y: 412}
-      - {x: -559, y: 477}
-      - {x: -625, y: 521}
-      - {x: -676, y: 514}
-      - {x: -722, y: 516}
-      - {x: -818, y: 516}
-      - {x: -844, y: 493}
-      - {x: -864, y: 515}
-      - {x: -903, y: 520}
-      - {x: -1008, y: 515}
-      - {x: -1042, y: 502}
-      - {x: -1108.2114, y: 494.95618}
-      - {x: -1184, y: 519}
-      - {x: -1198, y: 514}
+    physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
-    internalID: 1537655665
+    spriteID: 
+    internalID: 0
     vertices: []
     indices: 
     edges: []
