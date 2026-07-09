@@ -99,6 +99,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isTopDownScene;
     private bool isZooScene;
     private bool isWaterScene;
+    private bool isMountainScene;
     private bool hasMovementBounds;
     private bool jumpRequested;
     private bool jumpPressedThisFrame;
@@ -592,6 +593,7 @@ public class PlayerMovement : MonoBehaviour
         isTopDownScene = IsTopDownScene(activeSceneName);
         isZooScene = activeSceneName == ZooSceneName;
         isWaterScene = activeSceneName == ArtificialRiverSceneName;
+        isMountainScene = activeSceneName == MountainSceneName;
         rb.bodyType = isTopDownScene ? RigidbodyType2D.Kinematic : baseBodyType;
         rb.useFullKinematicContacts = isTopDownScene;
         rb.gravityScale = isTopDownScene ? 0f : baseGravityScale;

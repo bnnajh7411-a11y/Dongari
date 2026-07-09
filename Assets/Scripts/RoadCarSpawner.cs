@@ -374,19 +374,25 @@ public class RoadCarSpawner : MonoBehaviour
         }
 
         bool useAnimations = carAnimations.Count > 0;
-        int carIndex = useAnimations
-            ? Random.Range(0, Mathf.Min(carSprites.Count, carAnimations.Count))
+
+        int animationIndex = useAnimations
+            ? Random.Range(0, carAnimations.Count)
+            : -1;
+
+        int spriteIndex = useAnimations
+            ? Mathf.Clamp(animationIndex, 0, carSprites.Count - 1)
             : Random.Range(0, carSprites.Count);
 
-        Sprite sprite = carSprites[carIndex];
+        Sprite sprite = carSprites[spriteIndex];
         if (sprite == null)
         {
             return;
         }
 
-        AnimationClip animationClip = useAnimations && carIndex < carAnimations.Count
-            ? carAnimations[carIndex]
+        AnimationClip animationClip = useAnimations
+            ? carAnimations[animationIndex]
             : null;
+
         float visualScale = ComputeCarVisualScale(sprite.texture);
 
         Bounds groundBounds = groundCollider.bounds;
@@ -412,8 +418,7 @@ public class RoadCarSpawner : MonoBehaviour
 
         SpriteRenderer spriteRenderer = carObject.AddComponent<SpriteRenderer>();
         spriteRenderer.sprite = sprite;
-        ApplyPlayerSortingLayer(spriteRenderer);
-        spriteRenderer.sortingOrder = GetSortingOrderForLane(laneIndex);
+        ApplySortingForLane(spriteRenderer, laneIndex);
         spriteRenderer.flipX = !movesRight;
 
         if (animationClip != null)
@@ -446,6 +451,49 @@ public class RoadCarSpawner : MonoBehaviour
             laneFollowGap,
             carDamage,
             movesRight);
+    }
+
+    private void ApplySortingForLane(SpriteRenderer spriteRenderer, int laneIndex)
+    {
+        if (spriteRenderer == null)
+        {
+            return;
+        }
+        // 라인 1
+        if (laneIndex == 0)
+        {
+            spriteRenderer.sortingLayerName = "Last";
+            spriteRenderer.sortingOrder = 10;
+            return;
+        }
+
+        // 라인 2
+        if (laneIndex == 1)
+        {
+            spriteRenderer.sortingLayerName = "Last";
+            spriteRenderer.sortingOrder = 5;
+            return;
+        }
+
+        // 라인 3
+        if (laneIndex == 2)
+        {
+            spriteRenderer.sortingLayerName = "Last";
+            spriteRenderer.sortingOrder = -1;
+            return;
+        }
+
+        // 라인 4
+        if (laneIndex == 3)
+        {
+            spriteRenderer.sortingLayerName = "Last";
+            spriteRenderer.sortingOrder = -2;
+            return;
+        }
+
+        // 나머지 라인은 기존 방식 유지
+        ApplyPlayerSortingLayer(spriteRenderer);
+        spriteRenderer.sortingOrder = GetSortingOrderForLane(laneIndex);
     }
 
     public void RegisterCar(RoadCar roadCar, int laneIndex)
