@@ -3,7 +3,7 @@ using UnityEngine;
 public abstract class TriggerSpritePickupBase : MonoBehaviour
 {
     private const string PickupAudioSourceObjectName = "PickupAudioSource";
-    private const string PickupAudioResourcePath = "Audios/Item3";
+    private const string PickupAudioResourcePath = "Audios/freesound_community-item-pick-up-38258";
 
     private static AudioSource pickupAudioSource;
     private static AudioClip pickupAudioClip;
